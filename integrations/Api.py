@@ -1,7 +1,11 @@
 from requests_oauthlib import OAuth2Session
 import webbrowser
+import os
+import django
 from users.models import User
+from users.models import Secrets 
 from integration.models import Account
+
 #Abstract class for APIS that we will implement 
 #by subclassing this class. These classes can further be modified
 #by modifying, adding and overriding methods.
@@ -11,6 +15,7 @@ class Api:
         self.user = user_id
         self.name = api_name
         self.token = Account.objects.get(user_id=user_id).token
+        self.application_secret = Secrets.objects.get(API=self.name)
         self.refresh_token = Account.objects.get(user_id=user_id).refresh_token
         self.redirect_uri = Account.objects.get(user_id=user_id).redirect_uri
 
