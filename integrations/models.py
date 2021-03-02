@@ -29,7 +29,7 @@ class ApiInfo(models.Model):
     base_url = models.CharField(max_length=2083, unique=True)
     token_endpoint = models.CharField(max_length=2083)
     redirect_u = models.CharField(max_length=500, default="")
-    scope = JSONField(max_length=400, default="")
+    scope = JSONField(max_length=1000, default="")
 
 
 #Abstract class for APIS that we will implement 
@@ -46,21 +46,23 @@ class Api:
         self.client_secret = ApiInfo.objects.get(api_name=api_name).secret
         self.base_url = ApiInfo.objects.get(api_name=api_name).base_url
         self.token_endpoint = ApiInfo.objects.get(api_name=api_name).token_endpoint
-        self.scopeAsJson = ApiInfo.objects.get(api_name=api_name).scope  #https://stackoverflow.com/questions/10973614/convert-json-array-to-python-list
+        self.scopeAsJson = ApiInfo.objects.get(api_name=api_name).scope 
         if(self.scopeAsJson): #checks if actually holds data
             self.scope  = json.loads(self.scopeAsJson)
+        else:
+            self.scope = []
 
-    def init_contact(): #for first authentication
-        api = OAuth2Session(client_id, scope=self.scope, redirect_uri=self.redirect_uri)
+    def init_contact(self): #for first authentication
+        api = OAuth2Session(self.client_id, scope=self.scope, redirect_uri=self.redirect_uri)
         auth_url, state = api.authorization_url(self.base_url)
         webbrowser.open(auth_url)
         response = input("Paste URL redirected to: ")
-        token = api.fetch_token(token_endpoint, client_secret=client_secret, authorization_response=response)
-        
+        token = api.fetch_token(self.token_endpoint, client_secret=self.client_secret, authorization_response=response)
+        print(token)
 
-    def contact_api(): #method to be called by threadpool 
+    def contact_api(self): #method to be called by threadpool 
         pass
 
-    def get_new_token(): #uses refresh_token to get a new key
+    def get_new_token(self): #uses refresh_token to get a new key
         pass
 
