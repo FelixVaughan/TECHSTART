@@ -23,7 +23,7 @@ class Account(models.Model):
 #Note: while Accounts (and all its children) houses info about users, this class
 #houses info on the APIs themselves 
 class ApiInfo(models.Model): 
-    api_name = models.CharField(max_length=20, unique=True) 
+    api_name = models.CharField(max_length=20, unique=True, primary_key=True) 
     client_id = models.CharField(max_length=100)
     secret = models.CharField(max_length=100)
     base_url = models.CharField(max_length=2083, unique=True)
@@ -41,13 +41,14 @@ class Api:
         self.api_to_contact = api_name
         self.token = Account.objects.get(user_id=self.user_id).token
         self.refresh_token = Account.objects.get(user_id=self.user_id).refresh_token
-        self.redirect_uri = ApiInfo.objects.get(user_id=self.user_id).redirect_u
+        self.redirect_uri = ApiInfo.objects.get(api_name=self.api_to_contact).redirect_u
         self.client_id = ApiInfo.objects.get(api_name=api_name).client_id
         self.client_secret = ApiInfo.objects.get(api_name=api_name).secret
         self.base_url = ApiInfo.objects.get(api_name=api_name).base_url
         self.token_endpoint = ApiInfo.objects.get(api_name=api_name).token_endpoint
-        scopeAsJson = ApiInfo.objects.get(api_name=api_name).scope  #https://stackoverflow.com/questions/10973614/convert-json-array-to-python-list
-        self.scope  = json.loads(scopeAsJson)
+        self.scopeAsJson = ApiInfo.objects.get(api_name=api_name).scope  #https://stackoverflow.com/questions/10973614/convert-json-array-to-python-list
+        if(self.scopeAsJson): #checks if actually holds data
+            self.scope  = json.loads(self.scopeAsJson)
 
     def init_contact(): #for first authentication
         api = OAuth2Session(client_id, scope=self.scope, redirect_uri=self.redirect_uri)
