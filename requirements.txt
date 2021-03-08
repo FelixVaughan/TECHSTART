@@ -2,3 +2,6 @@ django
 requests-oauthlib
 json
 jsonfield
+tekore
+praw 
+*Also requires sql download as database is configured to use Mysql* 
