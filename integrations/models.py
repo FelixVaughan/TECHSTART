@@ -111,6 +111,9 @@ class Spotify_User_Info(User_Account_Info):
 class Reddit_User_Info(User_Account_Info):
     account_name = models.CharField(max_length=6, default="reddit", editable=False)
 
+class Discord_User_Info(User_Account_Info):
+    account_name = models.CharField(max_length=7, default="discord", editable=False)
+
 class SpotifyApi(Api):
     def __init__(self, user_id, api_name="spotify"):
         super().__init__(user_id, api_name)
@@ -152,6 +155,19 @@ class RedditApi(Api):
         code = obtain_url_code(coded_url)
         access_info = reddit.get_access_information(code) #contains token
         print(access_info)
+
+class DiscordApi(Api):
+    def __init__(self, user_id, api_name="discord"):
+        super().__init__(user_id, api_name)
+        self.user_to_serve = Discord_User_Info.objects.get(user_id=user_id) 
+        self.token = self.user_to_serve.token #set to blank in parent class. Has to be set here
+        self.refresh_token = self.user_to_serve.refresh_token #set to blank in parent class. Has to be set here
+
+    def init_contact(self):
+
+    
+        
+    
         
 
 
