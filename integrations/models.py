@@ -9,13 +9,11 @@ from users.models import User
 import requests
 import tekore #spotiy api
 import praw #reddit api
+import queue
+from time import sleep
 
-#extracts the code from a url
-def obtain_url_code(url):
-    index = url.index("code=") #throws ValueError if index not found
-    code = url[index+5:len(url)-2]
-    print(code)
-    return code
+user_code_queue = queue.Queue() #Whenever a user is redirected via an api's rauthentication process, the code repsent in the uri is stored here for the calling method to fetch
+
 
 
 #Each Entry will contain info about a user pertaining to a specific account
@@ -124,6 +122,8 @@ class SpotifyApi(Api):
             conf = (self.client_id, self.client_secret, self.redirect_uri)
             access_token = tekore.prompt_for_user_token(*conf, scope=tekore.scope.every)
             self.user_to_serve.token = access_token
+            self.user_to_serve.save()
+
         except Exception as e:
             print("Authentication with spotify API could NOT be completed. access token NOT set!")
         
@@ -147,12 +147,15 @@ class RedditApi(Api):
         reddit = praw.Reddit("platform:zJA0hcGv_sx5AA:V1(by /u/techstartucalgary)") #TODO: change to actual details
         reddit.set_oauth_app_info(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
         auth_url = reddit.get_authorize_url('read','submit',True)
-        webbrowser.open(auth_url)
-        coded_url = input("Paste redirect URL here: ")
-        code = obtain_url_code(coded_url)
+        while(os.path.isfile("transfer.txt") is False):
+            pass
+        read_code_from_file = file("transfer.txt","r")
+        url_code = read_code_from_file.readline()
+        read_code_from_file.close()
+        print(url_code)
         access_info = reddit.get_access_information(code) #contains token
         print(access_info)
-        
+
 
 
 
