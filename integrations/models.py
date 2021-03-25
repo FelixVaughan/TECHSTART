@@ -159,20 +159,17 @@ class RedditApi(Api):
         access_info = reddit.get_access_information(code) #contains token
         print(access_info)
 
-<<<<<<< HEAD
-=======
-class DiscordApi(Api):
-    def __init__(self, user_id, api_name="discord"):
-        super().__init__(user_id, api_name)
-        self.user_to_serve = Discord_User_Info.objects.get(user_id=user_id) 
-        self.token = self.user_to_serve.token #set to blank in parent class. Has to be set here
-        self.refresh_token = self.user_to_serve.refresh_token #set to blank in parent class. Has to be set here
+# class DiscordApi(Api):
+#     def __init__(self, user_id, api_name="discord"):
+#         super().__init__(user_id, api_name)
+#         self.user_to_serve = Discord_User_Info.objects.get(user_id=user_id) 
+#         self.token = self.user_to_serve.token #set to blank in parent class. Has to be set here
+#         self.refresh_token = self.user_to_serve.refresh_token #set to blank in parent class. Has to be set here
 
-    #def init_contact(self):
-        
+#     def init_contact(self):
+#         pass
     
         
->>>>>>> 1ea448d1ad2d3d5326d9d38ac5893b6b367892b9
 
 
 
