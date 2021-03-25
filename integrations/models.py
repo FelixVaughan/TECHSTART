@@ -168,9 +168,7 @@ class DiscordApi(Api):
         self.token = self.user_to_serve.token #set to blank in parent class. Has to be set here
         self.refresh_token = self.user_to_serve.refresh_token #set to blank in parent class. Has to be set here
 
-    def init_contact(self):
-
-    
+    #def init_contact(self):
         
     
         
