@@ -5,22 +5,22 @@ import webbrowser
 import os
 import django
 import json
-from users.models import User 
+from django.contrib.auth.models import User
 import requests
-import tekore #spotiy api
-import praw #reddit api
+import tekore  # spotiy api
+import praw  # reddit api
 import queue
 from time import sleep
 
-user_code_queue = queue.Queue() #Whenever a user is redirected via an api's rauthentication process, the code repsent in the uri is stored here for the calling method to fetch
+# Whenever a user is redirected via an api's rauthentication process, the code repsent in the uri is stored here for the calling method to fetch
+user_code_queue = queue.Queue()
 
 
-
-#Each Entry will contain info about a user pertaining to a specific account
+# Each Entry will contain info about a user pertaining to a specific account
 class User_Account_Info(models.Model):
-    account_name = models.CharField(max_length=20) #spotify, facebook, etc
+    account_name = models.CharField(max_length=20)  # spotify, facebook, etc
     account_user_name = models.CharField(max_length=30, default="")
-    users = models.ManyToManyField(User)
+    users = models.ForeignKey(User, on_delete=models.CASCADE, default='1')
     user_id = models.CharField(max_length=10)
     token = models.CharField(max_length=2048, default="")
     refresh_token = models.CharField(max_length=512, blank=True)
@@ -31,54 +31,64 @@ class User_Account_Info(models.Model):
     class Meta:
         abstract = True
 
-#Each api gives client id and secret after app registration. These are stored here.
-#Note: while Accounts (and all its children) houses info about users, this class
-#houses info on the APIs themselves 
-class ApiInfo(models.Model): 
-    api_name = models.CharField(max_length=20, unique=True, primary_key=True) 
+# Each api gives client id and secret after app registration. These are stored here.
+# Note: while Accounts (and all its children) houses info about users, this class
+# houses info on the APIs themselves
+
+
+class ApiInfo(models.Model):
+    api_name = models.CharField(max_length=20, unique=True, primary_key=True)
     client_id = models.CharField(max_length=100, blank=False, default="N/A")
     secret = models.CharField(max_length=100)
     base_url = models.CharField(max_length=2083, unique=True)
-    api_endpoint = models.CharField(max_length=2083, blank=False, default="N/A")
+    api_endpoint = models.CharField(
+        max_length=2083, blank=False, default="N/A")
     token_endpoint = models.CharField(max_length=2083)
     redirect_url = models.CharField(max_length=500, default="")
     scope = JSONField(max_length=1000, default="")
 
 
-#Abstract class for APIS that we will implement 
-#by subclassing this class. These classes can further be modified
-#by modifying, adding and overriding methods.
+# Abstract class for APIS that we will implement
+# by subclassing this class. These classes can further be modified
+# by modifying, adding and overriding methods.
 class Api:
-    def __init__(self,user_id,api_name):
+    def __init__(self, user_id, api_name):
         self.user_id = user_id
         self.api_to_contact = api_name
-        self.token = "" 
-        self.refresh_token = "" 
-        #TODO: Declutter. Create an object of ApiInfo.objects.get(api_name=api_name) and reuse instead of calling every time
-        self.redirect_uri = ApiInfo.objects.get(api_name=api_name).redirect_url #should probably be changed to an inhouse url before launch
+        self.token = ""
+        self.refresh_token = ""
+        # TODO: Declutter. Create an object of ApiInfo.objects.get(api_name=api_name) and reuse instead of calling every time
+        # should probably be changed to an inhouse url before launch
+        self.redirect_uri = ApiInfo.objects.get(api_name=api_name).redirect_url
         self.client_id = ApiInfo.objects.get(api_name=api_name).client_id
         self.client_secret = ApiInfo.objects.get(api_name=api_name).secret
         self.base_url = ApiInfo.objects.get(api_name=api_name).base_url
-        self.token_endpoint = ApiInfo.objects.get(api_name=api_name).token_endpoint
-        self.scopeAsJson = ApiInfo.objects.get(api_name=api_name).scope 
-        if(self.scopeAsJson): #checks if actually holds data
-            self.scope  = json.loads(self.scopeAsJson)
+        self.token_endpoint = ApiInfo.objects.get(
+            api_name=api_name).token_endpoint
+        self.scopeAsJson = ApiInfo.objects.get(api_name=api_name).scope
+        if(self.scopeAsJson):  # checks if actually holds data
+            self.scope = json.loads(self.scopeAsJson)
         else:
             self.scope = []
 
-    def init_contact(self): #for first authentication
-        api = OAuth2Session(self.client_id, scope=self.scope, redirect_uri=self.redirect_uri)
+    def init_contact(self):  # for first authentication
+        api = OAuth2Session(self.client_id, scope=self.scope,
+                            redirect_uri=self.redirect_uri)
         auth_url, state = api.authorization_url(self.base_url)
         webbrowser.open(auth_url)
         response = input("Paste URL redirected to: ")
-        token = api.fetch_token(self.token_endpoint, client_secret=self.client_secret, authorization_response=response)
-        user = User.objects.get(user_id=self.user_id) 
-        user_account_table = Spotify_User_Info.objects.create(user_id=self.user_id) #had to use with the spotify table because User_Account_Info is abstract
+        token = api.fetch_token(
+            self.token_endpoint, client_secret=self.client_secret, authorization_response=response)
+        user = User.objects.get(user_id=self.user_id)
+        # had to use with the spotify table because User_Account_Info is abstract
+        user_account_table = Spotify_User_Info.objects.create(
+            user_id=self.user_id)
         user_account_table.users.add(user)
         self.populate_user_table(user_account_table, token)
 
-    #Whole method could probably be implemented in a more efficient manner with a for loop but we'd need a way to access all field attributes.
-    def populate_user_table(self, user_table_ref, given_dict): #should take in a model that is a child of User_Account_Info
+    # Whole method could probably be implemented in a more efficient manner with a for loop but we'd need a way to access all field attributes.
+    # should take in a model that is a child of User_Account_Info
+    def populate_user_table(self, user_table_ref, given_dict):
         print(f"Populated {user_table_ref.account_name} table with row data: ")
         if "access_token" in given_dict.keys():
             user_table_ref.token = given_dict['access_token']
@@ -97,80 +107,87 @@ class Api:
             print(f"expires at: {user_table_ref.expires_at}")
         user_table_ref.save()
 
-    def contact_api(self): #method to be called by threadpool 
+    def contact_api(self):  # method to be called by threadpool
         pass
 
-    def get_new_token(self): #uses refresh_token to get a new key
+    def get_new_token(self):  # uses refresh_token to get a new key
         pass
+
 
 class Spotify_User_Info(User_Account_Info):
-    account_name = models.CharField(max_length=7, default="spotify", editable=False)
+    account_name = models.CharField(
+        max_length=7, default="spotify", editable=False)
+
 
 class Reddit_User_Info(User_Account_Info):
-    account_name = models.CharField(max_length=6, default="reddit", editable=False)
+    account_name = models.CharField(
+        max_length=6, default="reddit", editable=False)
+
 
 class Discord_User_Info(User_Account_Info):
-    account_name = models.CharField(max_length=7, default="discord", editable=False)
+    account_name = models.CharField(
+        max_length=7, default="discord", editable=False)
+
 
 class SpotifyApi(Api):
     def __init__(self, user_id, api_name="spotify"):
         super().__init__(user_id, api_name)
-        self.user_to_serve = Spotify_User_Info.objects.get(user_id=user_id) 
-        self.token = self.user_to_serve.token #set to blank in parent class. Has to be set here
-        self.refresh_token = self.user_to_serve.refresh_token #set to blank in parent class. Has to be set here
-
+        self.user_to_serve = Spotify_User_Info.objects.get(user_id=user_id)
+        # set to blank in parent class. Has to be set here
+        self.token = self.user_to_serve.token
+        # set to blank in parent class. Has to be set here
+        self.refresh_token = self.user_to_serve.refresh_token
 
     def init_contact(self):
         try:
             conf = (self.client_id, self.client_secret, self.redirect_uri)
-            access_token = tekore.prompt_for_user_token(*conf, scope=tekore.scope.every)
+            access_token = tekore.prompt_for_user_token(
+                *conf, scope=tekore.scope.every)
             self.user_to_serve.token = access_token
             self.user_to_serve.save()
 
         except Exception as e:
-            print("Authentication with spotify API could NOT be completed. access token NOT set!")
-        
+            print(
+                "Authentication with spotify API could NOT be completed. access token NOT set!")
 
-    def contact_api(self): #will def need parameters in the future
+    def contact_api(self):  # will def need parameters in the future
         spotify = tekore.Spotify(self.user_to_serve.token)
-        
 
-    def get_new_token(self): #token is non-expiring so there is no need 
-        pass 
+    def get_new_token(self):  # token is non-expiring so there is no need
+        pass
+
 
 class RedditApi(Api):
     def __init__(self, user_id, api_name="reddit"):
         super().__init__(user_id, api_name)
-        self.user_to_serve = Reddit_User_Info.objects.get(user_id=user_id) 
-        self.token = self.user_to_serve.token #set to blank in parent class. Has to be set here
-        self.refresh_token = self.user_to_serve.refresh_token #set to blank in parent class. Has to be set here
-    
+        self.user_to_serve = Reddit_User_Info.objects.get(user_id=user_id)
+        # set to blank in parent class. Has to be set here
+        self.token = self.user_to_serve.token
+        # set to blank in parent class. Has to be set here
+        self.refresh_token = self.user_to_serve.refresh_token
 
     def init_contact(self):
-        reddit = praw.Reddit("platform:zJA0hcGv_sx5AA:V1(by /u/techstartucalgary)") #TODO: change to actual details
-        reddit.set_oauth_app_info(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
-        auth_url = reddit.get_authorize_url('read','submit',True)
+        # TODO: change to actual details
+        reddit = praw.Reddit(
+            "platform:zJA0hcGv_sx5AA:V1(by /u/techstartucalgary)")
+        reddit.set_oauth_app_info(
+            client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
+        auth_url = reddit.get_authorize_url('read', 'submit', True)
         while(os.path.isfile("transfer.txt") is False):
             pass
-        read_code_from_file = file("transfer.txt","r")
+        read_code_from_file = file("transfer.txt", "r")
         url_code = read_code_from_file.readline()
         read_code_from_file.close()
         print(url_code)
-        access_info = reddit.get_access_information(code) #contains token
+        access_info = reddit.get_access_information(code)  # contains token
         print(access_info)
 
 # class DiscordApi(Api):
 #     def __init__(self, user_id, api_name="discord"):
 #         super().__init__(user_id, api_name)
-#         self.user_to_serve = Discord_User_Info.objects.get(user_id=user_id) 
+#         self.user_to_serve = Discord_User_Info.objects.get(user_id=user_id)
 #         self.token = self.user_to_serve.token #set to blank in parent class. Has to be set here
 #         self.refresh_token = self.user_to_serve.refresh_token #set to blank in parent class. Has to be set here
 
 #     def init_contact(self):
 #         pass
-    
-        
-
-
-
-
