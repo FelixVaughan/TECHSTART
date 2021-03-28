@@ -18,7 +18,7 @@ user_code_queue = queue.Queue()
 
 # Each Entry will contain info about a user pertaining to a specific account
 class User_Account_Info(models.Model):
-    account_name = models.CharField(max_length=20)  # spotify, facebook, etc
+    account_name = models.CharField(max_length=20)  # spotify, facebook, etc. Set by default in subclass implementation constructors
     account_user_name = models.CharField(max_length=30, default="")
     users = models.ForeignKey(User, on_delete=models.CASCADE, default='1')
     user_id = models.CharField(max_length=10)
@@ -41,8 +41,7 @@ class ApiInfo(models.Model):
     client_id = models.CharField(max_length=100, blank=False, default="N/A")
     secret = models.CharField(max_length=100)
     base_url = models.CharField(max_length=2083, unique=True)
-    api_endpoint = models.CharField(
-        max_length=2083, blank=False, default="N/A")
+    api_endpoint = models.CharField(max_length=2083, blank=False, default="N/A") #undeeded
     token_endpoint = models.CharField(max_length=2083)
     redirect_url = models.CharField(max_length=500, default="")
     scope = JSONField(max_length=1000, default="")
@@ -51,7 +50,8 @@ class ApiInfo(models.Model):
 # Abstract class for APIS that we will implement
 # by subclassing this class. These classes can further be modified
 # by modifying, adding and overriding methods.
-class Api:
+
+class Api:  
     def __init__(self, user_id, api_name):
         self.user_id = user_id
         self.api_to_contact = api_name
@@ -137,18 +137,19 @@ class SpotifyApi(Api):
         self.token = self.user_to_serve.token
         # set to blank in parent class. Has to be set here
         self.refresh_token = self.user_to_serve.refresh_token
+    
 
     def init_contact(self):
         try:
             conf = (self.client_id, self.client_secret, self.redirect_uri)
-            access_token = tekore.prompt_for_user_token(
-                *conf, scope=tekore.scope.every)
+            scp = tekore.Scope("user-top-read","user-read-recently-played","user-read-playback-position","user-read-playback-state","user-modify-playback-state","user-read-currently-playing","app-remote-control","streaming");
+            access_token = tekore.prompt_for_user_token(*conf, scope=scp) 
             self.user_to_serve.token = access_token
             self.user_to_serve.save()
-
+        except KeyError as e:
+            print("Authentication with spotify API could NOT be completed as no code was found. Access token NOT set!")
         except Exception as e:
-            print(
-                "Authentication with spotify API could NOT be completed. access token NOT set!")
+            print("Could not authenticate fully, problem undiagnosed and token not set! ")
 
     def contact_api(self):  # will def need parameters in the future
         spotify = tekore.Spotify(self.user_to_serve.token)
@@ -168,19 +169,10 @@ class RedditApi(Api):
 
     def init_contact(self):
         # TODO: change to actual details
-        reddit = praw.Reddit(
-            "platform:zJA0hcGv_sx5AA:V1(by /u/techstartucalgary)")
-        reddit.set_oauth_app_info(
-            client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
-        auth_url = reddit.get_authorize_url('read', 'submit', True)
-        while(os.path.isfile("transfer.txt") is False):
-            pass
-        read_code_from_file = file("transfer.txt", "r")
-        url_code = read_code_from_file.readline()
-        read_code_from_file.close()
-        print(url_code)
-        access_info = reddit.get_access_information(code)  # contains token
-        print(access_info)
+        reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri, user_agent="techstart");
+        auth_url = reddit.auth.url(["identity"], "permanent")
+        webbrowser.open(auth_url)
+        
 
 # class DiscordApi(Api):
 #     def __init__(self, user_id, api_name="discord"):
