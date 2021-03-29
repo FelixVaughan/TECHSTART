@@ -11,6 +11,8 @@ import tekore  # spotiy api
 import praw  # reddit api
 import queue
 from time import sleep
+from tempfile import NamedTemporaryFile
+from praw.util.token_manager import FileTokenManager
 
 # Whenever a user is redirected via an api's rauthentication process, the code repsent in the uri is stored here for the calling method to fetch
 user_code_queue = queue.Queue()
@@ -132,27 +134,32 @@ class Discord_User_Info(User_Account_Info):
 class SpotifyApi(Api):
     def __init__(self, user_id, api_name="spotify"):
         super().__init__(user_id, api_name)
-        self.user_to_serve = Spotify_User_Info.objects.get(user_id=user_id)
+        self.current_user = Spotify_User_Info.objects.get(user_id=user_id)
         # set to blank in parent class. Has to be set here
-        self.token = self.user_to_serve.token
+        self.token = self.current_user.token
         # set to blank in parent class. Has to be set here
-        self.refresh_token = self.user_to_serve.refresh_token
+        self.refresh_token = self.current_user.refresh_token
     
 
     def init_contact(self):
         try:
             conf = (self.client_id, self.client_secret, self.redirect_uri)
-            scp = tekore.Scope("user-top-read","user-read-recently-played","user-read-playback-position","user-read-playback-state","user-modify-playback-state","user-read-currently-playing","app-remote-control","streaming");
+            scp = tekore.Scope("user-top-read","user-read-recently-played","user-read-playback-position","user-read-playback-state","user-library-read","user-modify-playback-state","user-read-currently-playing","app-remote-control","streaming");
             access_token = tekore.prompt_for_user_token(*conf, scope=scp) 
-            self.user_to_serve.token = access_token
-            self.user_to_serve.save()
+            self.current_user.token = access_token
+            self.current_user.save()
         except KeyError as e:
             print("Authentication with spotify API could NOT be completed as no code was found. Access token NOT set!")
         except Exception as e:
             print("Could not authenticate fully, problem undiagnosed and token not set! ")
 
     def contact_api(self):  # will def need parameters in the future
-        spotify = tekore.Spotify(self.user_to_serve.token)
+        spotify = tekore.Spotify(self.current_user.token)
+        tracks = spotify.current_user_top_tracks(limit=10)
+        album = spotify.saved_albums(limit=1).items[0].album
+        album_uri = tekore.to_uri('album', album.id)
+        spotify.playback_start_context(album_uri)
+        #here
 
     def get_new_token(self):  # token is non-expiring so there is no need
         pass
@@ -161,25 +168,41 @@ class SpotifyApi(Api):
 class RedditApi(Api):
     def __init__(self, user_id, api_name="reddit"):
         super().__init__(user_id, api_name)
-        self.user_to_serve = Reddit_User_Info.objects.get(user_id=user_id)
+        self.current_user = Reddit_User_Info.objects.get(user_id=user_id)
         # set to blank in parent class. Has to be set here
-        self.token = self.user_to_serve.token
+        self.token = self.current_user.token
         # set to blank in parent class. Has to be set here
-        self.refresh_token = self.user_to_serve.refresh_token
+        self.refresh_token = self.current_user.refresh_token
 
     def init_contact(self):
-        # TODO: change to actual details
         reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri, user_agent="techstart");
         auth_url = reddit.auth.url(["identity"], "permanent")
         webbrowser.open(auth_url)
-        
+        waittime = 0
+        while not os.path.isfile("./code.txt"):
+            sleep(0.2);
+            if waittime == 25:
+                raise TimeoutError("Could not authenticate")
+        f = open("./code.txt", "r")
+        code = f.readline()
+        f.close()
+        os.remove("./code.txt")
+        refresh_token =  reddit.auth.authorize(code)
+        self.current_user.refresh_token = refresh_token
+        self.current_user.save()
+        print(reddit.user.me())
+
+    
+    def contact_api(self, read):
+        pass
+        #here
 
 # class DiscordApi(Api):
 #     def __init__(self, user_id, api_name="discord"):
 #         super().__init__(user_id, api_name)
-#         self.user_to_serve = Discord_User_Info.objects.get(user_id=user_id)
-#         self.token = self.user_to_serve.token #set to blank in parent class. Has to be set here
-#         self.refresh_token = self.user_to_serve.refresh_token #set to blank in parent class. Has to be set here
+#         self.current_user = Discord_User_Info.objects.get(user_id=user_id)
+#         self.token = self.current_user.token #set to blank in parent class. Has to be set here
+#         self.refresh_token = self.current_user.refresh_token #set to blank in parent class. Has to be set here
 
 #     def init_contact(self):
 #         pass
