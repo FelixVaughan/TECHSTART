@@ -33,12 +33,45 @@ class User_Account_Info(models.Model):
     class Meta:
         abstract = True
 
-# Each api gives client id and secret after app registration. These are stored here.
-# Note: while Accounts (and all its children) houses info about users, this class
-# houses info on the APIs themselves
-
-
 class ApiInfo(models.Model):
+    """Where the hardcoded values for accessing each API are from
+
+    Notes
+    -----
+    - This class contains the HARDCODED general values for accessing each API (i.e. details for accessing redit API)
+    - The API class is used for data from EACH User to access the API (i.e. details for accessing John Doe's reddit account)
+
+    Attributes
+    ----------
+    api_name: models.CharField
+        The colloquial name of the API
+
+    client_id: models.CharField
+        Our client ID for the specified class (i.e. our spotify client_id)
+
+    secret: models.CharField
+        Our Secret for the specified class (i.e. our spotify secret)
+
+    base_url: models.CharField
+        The base URL for the api (i.e. https://accounts.spotify.com/authorize)
+
+    api_endpoint: models.CharField
+        The URL that is used to access various aspects of the api
+
+    token_endpoint: models.CharField
+        The endpoint for the token (i.e. https://accounts.spotify.com/api/token)
+
+    redirect_url: models.CharField
+        The URL the user gets redirected to after completing authorization
+
+    scope: JSONField
+        The amount of access being provisioned
+
+    Notes
+    -----
+    - while Accounts (and all its children) houses info about users, this class houses info
+        on the APIs themselves
+    """
     api_name = models.CharField(max_length=20, unique=True, primary_key=True)
     client_id = models.CharField(max_length=100, blank=False, default="N/A")
     secret = models.CharField(max_length=100)
@@ -48,12 +81,15 @@ class ApiInfo(models.Model):
     redirect_url = models.CharField(max_length=500, default="")
     scope = JSONField(max_length=1000, default="")
 
-
-# Abstract class for APIS that we will implement
-# by subclassing this class. These classes can further be modified
-# by modifying, adding and overriding methods.
-
 class Api:  
+    """This class takes in user info and info about the api (from APIInfo)
+    and uses it to 
+
+    Notes
+    -----
+    - This class contains the info for each access to the API (i.e. details for accessing John Doe's reddit account)
+    - The APIInfo class is used **hardcoded** general values for accessing each API (i.e. details for accessing redit API)
+    """
     def __init__(self, user_id, api_name):
         self.user_id = user_id
         self.api_to_contact = api_name
@@ -117,21 +153,38 @@ class Api:
 
 
 class Spotify_User_Info(User_Account_Info):
+    """Creates a Spotify specific User_Account_Info class to store a user's info
+    into a table"""
     account_name = models.CharField(
         max_length=7, default="spotify", editable=False)
 
 
 class Reddit_User_Info(User_Account_Info):
+    """Creates a Reddit specific User_Account_Info class to store a user's info
+    into a table"""
     account_name = models.CharField(
         max_length=6, default="reddit", editable=False)
 
 
 class Discord_User_Info(User_Account_Info):
+    """Creates a Discord specific User_Account_Info class to store a user's info
+    into a table"""
     account_name = models.CharField(
         max_length=7, default="discord", editable=False)
 
 
 class SpotifyApi(Api):
+    """The specific implementation for 
+
+    Examples
+    --------
+    #### Add the user with user ID of 1
+    ```
+    from integrations.models import *
+
+    spot = SpotifyApi(1)
+    ```
+    """
     def __init__(self, user_id, api_name="spotify"):
         super().__init__(user_id, api_name)
         self.current_user = Spotify_User_Info.objects.get(user_id=user_id)
@@ -196,6 +249,29 @@ class RedditApi(Api):
     def contact_api(self, read):
         pass
         #here
+
+
+class SpotifyAPIInfo(ApiInfo):
+    """The spotify specific ApiInfo subclass"""
+    def __init__(self):
+        self.api_name = "spotify"
+        self.client_id = "eab08f62731b44c4a49010295cd3776f"
+        self.secret = "5e4dcc7236ba4cc4b38ca3dbc7f03217" #TODO: make env variable
+        self.base_url = "https://accounts.spotify.com/authorize"
+        self.token_endpoint = "https://accounts.spotify.com/api/token"
+        self.redirect_url = "https://www.spotify.com/ca-en/account/overview/"
+
+
+class RedditAPIInfo(ApiInfo):
+    """The reddit specific ApiInfo subclass"""
+    def __init__(self):
+        self.api_name = "reddit"
+        self.client_id = "RouUl0Nxn9pysw"
+        self.secret = "4-KNQ9Z9SsKRvpJzVMs2TGP9V2u-hA" #TODO: make env variable
+        self.base_url = "https://www.reddit.com/api/v1/authorize"
+        self.token_endpoint = "https://www.reddit.com/api/v1/access_token"
+        self.redirect_url = "https://127.0.0.1:8000.api.redirect"
+        # self.scope #TODO: Determine scope settings; possibly {'edit':True}
 
 # class DiscordApi(Api):
 #     def __init__(self, user_id, api_name="discord"):
