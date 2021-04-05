@@ -90,20 +90,19 @@ class Api:
     - This class contains the info for each access to the API (i.e. details for accessing John Doe's reddit account)
     - The APIInfo class is used **hardcoded** general values for accessing each API (i.e. details for accessing redit API)
     """
-    def __init__(self, user_id, api_name):
+    def __init__(self, user_id, api_name, info_class):
         self.user_id = user_id
         self.api_to_contact = api_name
         self.token = ""
         self.refresh_token = ""
         # TODO: Declutter. Create an object of ApiInfo.objects.get(api_name=api_name) and reuse instead of calling every time
         # should probably be changed to an inhouse url before launch
-        self.redirect_uri = ApiInfo.objects.get(api_name=api_name).redirect_url
-        self.client_id = ApiInfo.objects.get(api_name=api_name).client_id
-        self.client_secret = ApiInfo.objects.get(api_name=api_name).secret
-        self.base_url = ApiInfo.objects.get(api_name=api_name).base_url
-        self.token_endpoint = ApiInfo.objects.get(
-            api_name=api_name).token_endpoint
-        self.scopeAsJson = ApiInfo.objects.get(api_name=api_name).scope
+        self.redirect_uri = info_class().redirect_url
+        self.client_id = info_class().client_id
+        self.client_secret = info_class().secret
+        self.base_url = info_class().base_url
+        self.token_endpoint = info_class().token_endpoint
+        self.scopeAsJson = info_class().scope
         if(self.scopeAsJson):  # checks if actually holds data
             self.scope = json.loads(self.scopeAsJson)
         else:
@@ -186,7 +185,7 @@ class SpotifyApi(Api):
     ```
     """
     def __init__(self, user_id, api_name="spotify"):
-        super().__init__(user_id, api_name)
+        super().__init__(user_id, api_name, SpotifyAPIInfo)
         self.current_user = Spotify_User_Info.objects.get(user_id=user_id)
         # set to blank in parent class. Has to be set here
         self.token = self.current_user.token
@@ -220,7 +219,7 @@ class SpotifyApi(Api):
 
 class RedditApi(Api):
     def __init__(self, user_id, api_name="reddit"):
-        super().__init__(user_id, api_name)
+        super().__init__(user_id, api_name, RedditAPIInfo)
         self.current_user = Reddit_User_Info.objects.get(user_id=user_id)
         # set to blank in parent class. Has to be set here
         self.token = self.current_user.token
@@ -260,6 +259,7 @@ class SpotifyAPIInfo(ApiInfo):
         self.base_url = "https://accounts.spotify.com/authorize"
         self.token_endpoint = "https://accounts.spotify.com/api/token"
         self.redirect_url = "https://www.spotify.com/ca-en/account/overview/"
+        self.scope = {}
 
 
 class RedditAPIInfo(ApiInfo):
@@ -271,7 +271,8 @@ class RedditAPIInfo(ApiInfo):
         self.base_url = "https://www.reddit.com/api/v1/authorize"
         self.token_endpoint = "https://www.reddit.com/api/v1/access_token"
         self.redirect_url = "https://127.0.0.1:8000.api.redirect"
-        # self.scope #TODO: Determine scope settings; possibly {'edit':True}
+        self.scope = {} #TODO: Determine scope settings; possibly {'edit':True}
+        # self.scope 
 
 # class DiscordApi(Api):
 #     def __init__(self, user_id, api_name="discord"):
@@ -282,3 +283,15 @@ class RedditAPIInfo(ApiInfo):
 
 #     def init_contact(self):
 #         pass
+
+
+# Example shell code to setup user and use an integration
+# from django.contrib.auth.models import User
+# user=User.objects.create_user('fhgfhgjhfgjfhgj', password='bar')
+# user.save()
+# from integrations.models import *
+# entry = Spotify_User_Info(user_id=user.id, account_name="yeet")
+# entry.save()
+# user.spotify_user_info_set.add(entry)
+# user.save()
+# user.id
