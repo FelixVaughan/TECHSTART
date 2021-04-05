@@ -173,16 +173,11 @@ class Discord_User_Info(User_Account_Info):
 
 
 class SpotifyApi(Api):
-    """The specific implementation for 
+    """The specific implementation for the spotify api
 
-    Examples
-    --------
-    #### Add the user with user ID of 1
-    ```
-    from integrations.models import *
-
-    spot = SpotifyApi(1)
-    ```
+    Notes
+    -----
+    - See SpotifyApi.contact_api() for details about class usage
     """
     def __init__(self, user_id, api_name="spotify"):
         super().__init__(user_id, api_name, SpotifyAPIInfo)
@@ -194,6 +189,34 @@ class SpotifyApi(Api):
     
 
     def init_contact(self):
+        """Initializes contact with the API
+
+        Examples
+        --------
+        ### Creating a user in django shell and initializing API
+        ```
+        import random
+        import string
+        from integrations.models import *
+        from django.contrib.auth.models import User
+
+        # Create user
+        ran_name = lambda n: ''.join([random.choice(string.lowercase) for i in range(n)])
+        user=User.objects.create_user(ran_name(random.randint(0, 10)), password='bar')
+        user.save()
+        
+        # Add user to Spotify_User_Info table
+        entry = Spotify_User_Info(user_id=user.id, account_name="yeet")
+        entry.save()
+        user.spotify_user_info_set.add(entry)
+        user.save()
+
+        # Initialize and access the spotify api
+        spot = SpotifyApi(user.id)
+        spot.init_contact()
+
+        ... # need to wait to paste url and finalize initialization 
+        """
         try:
             conf = (self.client_id, self.client_secret, self.redirect_uri)
             scp = tekore.Scope("user-top-read","user-read-recently-played","user-read-playback-position","user-read-playback-state","user-library-read","user-modify-playback-state","user-read-currently-playing","app-remote-control","streaming");
@@ -205,13 +228,82 @@ class SpotifyApi(Api):
         except Exception as e:
             print("Could not authenticate fully, problem undiagnosed and token not set! ")
 
-    def contact_api(self):  # will def need parameters in the future
+    def contact_api(self, album_uri:str = "") -> dict:  # will def need parameters in the future
+        """Contacts Spotify API and returns a dictionary of values
+
+        parameters
+        ----------
+        album_uri (optional):
+            If you want to play a specific album pass the URI as a string here to play it
+
+        References
+        ----------
+        - PrivateUser docs: https://tekore.readthedocs.io/en/stable/reference/models.html?highlight=privateuser#tekore.model.PrivateUser
+        - FullTrackPaging docs: https://tekore.readthedocs.io/en/stable/reference/models.html#tekore.model.FullTrackPaging
+        - FullArtist docs: https://tekore.readthedocs.io/en/stable/reference/models.html?highlight=FullArtist#tekore.model.FullArtist
+
+        Returns
+        -------
+        dict
+            A dictionary with 3 keys:
+
+                1. 'current_user'; a PrivateUser of the provided users account 
+                2. 'top_tracks'; a FullTrackPaging of the provided users most listened to songs 
+                3. 'top_artist'; a FullArtist of the provided users most listened to artist
+
+        Throws
+        ------
+        tekore.NotFound:
+            This error is thrown if you try to set an album to play and there's no device
+            currently active on the user's account
+
+        Examples
+        --------
+        ### Creating a user in django shell 
+        ```
+        import random
+        import string
+        from integrations.models import *
+        from django.contrib.auth.models import User
+
+        # Create user
+        ran_name = lambda n: ''.join([random.choice(string.lowercase) for i in range(n)])
+        user=User.objects.create_user(ran_name(random.randint(0, 10)), password='bar')
+        user.save()
+        
+        # Add user to Spotify_User_Info table
+        entry = Spotify_User_Info(user_id=user.id, account_name="yeet")
+        entry.save()
+        user.spotify_user_info_set.add(entry)
+        user.save()
+
+        # Initialize and access the spotify api
+        spot = SpotifyApi(user.id)
+        spot.init_contact()
+
+        ... # need to wait to paste url and finalize initialization 
+
+        # Contact API and get data
+        data = SpotifyApi(user.id).contact_api()
+        ```
+        """
+
+        user_values = {}
+
         spotify = tekore.Spotify(self.current_user.token)
-        tracks = spotify.current_user_top_tracks(limit=10)
-        album = spotify.saved_albums(limit=1).items[0].album
-        album_uri = tekore.to_uri('album', album.id)
-        spotify.playback_start_context(album_uri)
+
+        user_values["current_user"] = spotify.current_user()
+        user_values["top_tracks"] = spotify.current_user_top_tracks(limit=10)
+
+        if album_uri:
+            spotify.playback_start_context(album_uri)
+
+        # Set object attributes
+        user_values["top_artist"] = spotify.current_user_top_artists(limit=1).items[0]
         #here
+        return user_values
+
+    
 
     def get_new_token(self):  # token is non-expiring so there is no need
         pass
@@ -258,7 +350,7 @@ class SpotifyAPIInfo(ApiInfo):
         self.secret = "5e4dcc7236ba4cc4b38ca3dbc7f03217" #TODO: make env variable
         self.base_url = "https://accounts.spotify.com/authorize"
         self.token_endpoint = "https://accounts.spotify.com/api/token"
-        self.redirect_url = "https://www.spotify.com/ca-en/account/overview/"
+        self.redirect_url = "https://127.0.0.1:800/api/redirect"
         self.scope = {}
 
 
@@ -270,7 +362,7 @@ class RedditAPIInfo(ApiInfo):
         self.secret = "4-KNQ9Z9SsKRvpJzVMs2TGP9V2u-hA" #TODO: make env variable
         self.base_url = "https://www.reddit.com/api/v1/authorize"
         self.token_endpoint = "https://www.reddit.com/api/v1/access_token"
-        self.redirect_url = "https://127.0.0.1:8000.api.redirect"
+        self.redirect_url = "https://127.0.0.1:800/api/redirect"
         self.scope = {} #TODO: Determine scope settings; possibly {'edit':True}
         # self.scope 
 
@@ -283,15 +375,3 @@ class RedditAPIInfo(ApiInfo):
 
 #     def init_contact(self):
 #         pass
-
-
-# Example shell code to setup user and use an integration
-# from django.contrib.auth.models import User
-# user=User.objects.create_user('fhgfhgjhfgjfhgj', password='bar')
-# user.save()
-# from integrations.models import *
-# entry = Spotify_User_Info(user_id=user.id, account_name="yeet")
-# entry.save()
-# user.spotify_user_info_set.add(entry)
-# user.save()
-# user.id
