@@ -54,6 +54,7 @@ class ApiInfo(models.Model):
 # by modifying, adding and overriding methods.
 
 class Api:  
+
     def __init__(self, user_id, api_name):
         self.user_id = user_id
         self.api_to_contact = api_name
@@ -132,6 +133,7 @@ class Discord_User_Info(User_Account_Info):
 
 
 class SpotifyApi(Api):
+    
     def __init__(self, user_id, api_name="spotify"):
         super().__init__(user_id, api_name)
         self.current_user = Spotify_User_Info.objects.get(user_id=user_id)
@@ -159,7 +161,7 @@ class SpotifyApi(Api):
         album = spotify.saved_albums(limit=1).items[0].album
         album_uri = tekore.to_uri('album', album.id)
         spotify.playback_start_context(album_uri)
-        #here
+        #here (feel free to modify everything after the first line, it's just an example)
 
     def get_new_token(self):  # token is non-expiring so there is no need
         pass
@@ -194,6 +196,10 @@ class RedditApi(Api):
 
     
     def contact_api(self, read):
+        pass
+        #here
+
+    def get_new_token():
         pass
         #here
 
