@@ -1,3 +1,4 @@
+from typing import Tuple
 from django.db import models
 from requests_oauthlib import OAuth2Session
 from jsonfield import JSONField
@@ -177,7 +178,8 @@ class SpotifyApi(Api):
 
     Notes
     -----
-    - See SpotifyApi.contact_api() for details about class usage
+    - See SpotifyApi.init_contact() and SpotifyApi.contact_api() for details 
+        about class usage
     """
     def __init__(self, user_id, api_name="spotify"):
         super().__init__(user_id, api_name, SpotifyAPIInfo)
@@ -201,7 +203,7 @@ class SpotifyApi(Api):
         from django.contrib.auth.models import User
 
         # Create user
-        ran_name = lambda n: ''.join([random.choice(string.lowercase) for i in range(n)])
+        ran_name = lambda n: ''.join([random.choice(string.ascii_lowercase) for i in range(n)])
         user=User.objects.create_user(ran_name(random.randint(0, 10)), password='bar')
         user.save()
         
@@ -267,7 +269,7 @@ class SpotifyApi(Api):
         from django.contrib.auth.models import User
 
         # Create user
-        ran_name = lambda n: ''.join([random.choice(string.lowercase) for i in range(n)])
+        ran_name = lambda n: ''.join([random.choice(string.ascii_lowercase) for i in range(n)])
         user=User.objects.create_user(ran_name(random.randint(0, 10)), password='bar')
         user.save()
         
@@ -318,28 +320,105 @@ class RedditApi(Api):
         # set to blank in parent class. Has to be set here
         self.refresh_token = self.current_user.refresh_token
 
-    def init_contact(self):
-        reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri, user_agent="techstart");
+    def init_contact(self) -> Tuple[praw.Reddit, praw.models.Redditor]:
+        """Initializes contact with the API
+
+        Examples
+        --------
+        ### Creating a user in django shell and initializing API
+        ```
+        import random
+        import string
+        from integrations.models import *
+        from django.contrib.auth.models import User
+
+        # Create user
+        ran_name = lambda n: ''.join([random.choice(string.ascii_lowercase) for i in range(n)])
+        user=User.objects.create_user(ran_name(random.randint(0, 10)), password='bar')
+        user.save()
+
+        # Add user to Reddit_User_Info table
+        entry = Reddit_User_Info(user_id=user.id, account_name="yeet")
+        entry.save()
+        user.reddit_user_info_set.add(entry)
+        user.save()
+
+        # Initialize and access the reddit api
+        red = RedditApi(user.id)
+        reddit, reddit_user = red.init_contact()
+        """
+        reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri, user_agent="techstart")
         auth_url = reddit.auth.url(["identity"], "permanent")
         webbrowser.open(auth_url)
-        waittime = 0
-        while not os.path.isfile("./code.txt"):
-            sleep(0.2);
-            if waittime == 25:
-                raise TimeoutError("Could not authenticate")
-        f = open("./code.txt", "r")
-        code = f.readline()
-        f.close()
-        os.remove("./code.txt")
+        code = input("Enter url plz: ")
+        if code.startswith(r"http://localhost:8000/?state=permanent&code="):
+            code = code.replace(r"http://localhost:8000/?state=permanent&code=", "")
+
+        if code.endswith("#_"):
+            code = code.replace(r"#_", "")
         refresh_token =  reddit.auth.authorize(code)
         self.current_user.refresh_token = refresh_token
         self.current_user.save()
-        print(reddit.user.me())
+        return reddit, reddit.user.me()
 
     
-    def contact_api(self, read):
-        pass
-        #here
+    def contact_api(self, reddit:praw.Reddit, user:praw.models.Redditor) -> dict:
+        """Contacts the API and gets the user data
+
+        References
+        ----------
+        - 
+
+        Returns
+        -------
+        dict
+            A dictionary with 7 keys:
+                1. 'all_unread'; a ListingGenerator that has unread mentions, replies and messages
+                2. 'mentions'; a ListingGenerator that has unread mentions
+                3. 'messages'; a ListingGenerator that has unread messages
+                4. 'replies'; a ListingGenerator that has unread replies
+                5. 'top_day'; a ListingGenerator that has top posts of the last day
+                6. 'top_week'; a ListingGenerator that has top posts of the last week
+                7. 'top_year'; a ListingGenerator that has top posts of the last year
+
+        Examples
+        --------
+        ### Creating a user in django shell and initializing API
+        ```
+        import random
+        import string
+        from integrations.models import *
+        from django.contrib.auth.models import User
+
+        # Create user
+        ran_name = lambda n: ''.join([random.choice(string.ascii_lowercase) for i in range(n)])
+        user=User.objects.create_user(ran_name(random.randint(0, 10)), password='bar')
+        user.save()
+
+        # Add user to Reddit_User_Info table
+        entry = Reddit_User_Info(user_id=user.id, account_name="yeet")
+        entry.save()
+        user.reddit_user_info_set.add(entry)
+        user.save()
+
+        # Initialize and access the reddit api
+        red = RedditApi(user.id)
+        reddit, reddit_user = red.init_contact()
+        ... # need to wait to paste url and finalize initialization 
+        
+        # Contact API to get data
+        user_data = red.contact_api(reddit, reddit_user)
+        """
+        data = {}
+
+        data["messages"] = reddit.inbox.messages(limit=5)
+        data["replies"] = reddit.inbox.comment_replies()
+        data["mentions"] = reddit.inbox.mentions(limit=25)
+        data["all_unread"] = reddit.inbox.unread(limit=None)
+        data["top_day"] =user.top("day")
+        data["top_week"] =user.top("week")
+        data["top_year"] =user.top("year")
+        return data
 
 
 class SpotifyAPIInfo(ApiInfo):
@@ -350,7 +429,7 @@ class SpotifyAPIInfo(ApiInfo):
         self.secret = "5e4dcc7236ba4cc4b38ca3dbc7f03217" #TODO: make env variable
         self.base_url = "https://accounts.spotify.com/authorize"
         self.token_endpoint = "https://accounts.spotify.com/api/token"
-        self.redirect_url = "https://127.0.0.1:800/api/redirect"
+        self.redirect_url = "https://127.0.0.1:8000/api/redirect"
         self.scope = {}
 
 
@@ -362,7 +441,7 @@ class RedditAPIInfo(ApiInfo):
         self.secret = "4-KNQ9Z9SsKRvpJzVMs2TGP9V2u-hA" #TODO: make env variable
         self.base_url = "https://www.reddit.com/api/v1/authorize"
         self.token_endpoint = "https://www.reddit.com/api/v1/access_token"
-        self.redirect_url = "https://127.0.0.1:800/api/redirect"
+        self.redirect_url = "http://localhost:8000"
         self.scope = {} #TODO: Determine scope settings; possibly {'edit':True}
         # self.scope 
 
