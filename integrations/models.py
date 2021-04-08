@@ -1,3 +1,4 @@
+from typing import Tuple
 from django.db import models
 from requests_oauthlib import OAuth2Session
 from jsonfield import JSONField
@@ -33,12 +34,45 @@ class User_Account_Info(models.Model):
     class Meta:
         abstract = True
 
-# Each api gives client id and secret after app registration. These are stored here.
-# Note: while Accounts (and all its children) houses info about users, this class
-# houses info on the APIs themselves
-
-
 class ApiInfo(models.Model):
+    """Where the hardcoded values for accessing each API are from
+
+    Notes
+    -----
+    - This class contains the HARDCODED general values for accessing each API (i.e. details for accessing redit API)
+    - The API class is used for data from EACH User to access the API (i.e. details for accessing John Doe's reddit account)
+
+    Attributes
+    ----------
+    api_name: models.CharField
+        The colloquial name of the API
+
+    client_id: models.CharField
+        Our client ID for the specified class (i.e. our spotify client_id)
+
+    secret: models.CharField
+        Our Secret for the specified class (i.e. our spotify secret)
+
+    base_url: models.CharField
+        The base URL for the api (i.e. https://accounts.spotify.com/authorize)
+
+    api_endpoint: models.CharField
+        The URL that is used to access various aspects of the api
+
+    token_endpoint: models.CharField
+        The endpoint for the token (i.e. https://accounts.spotify.com/api/token)
+
+    redirect_url: models.CharField
+        The URL the user gets redirected to after completing authorization
+
+    scope: JSONField
+        The amount of access being provisioned
+
+    Notes
+    -----
+    - while Accounts (and all its children) houses info about users, this class houses info
+        on the APIs themselves
+    """
     api_name = models.CharField(max_length=20, unique=True, primary_key=True)
     client_id = models.CharField(max_length=100, blank=False, default="N/A")
     secret = models.CharField(max_length=100)
@@ -48,27 +82,28 @@ class ApiInfo(models.Model):
     redirect_url = models.CharField(max_length=500, default="")
     scope = JSONField(max_length=1000, default="")
 
+class Api:
+    """This class takes in user info and info about the api (from APIInfo)
+    and uses it to 
 
-# Abstract class for APIS that we will implement
-# by subclassing this class. These classes can further be modified
-# by modifying, adding and overriding methods.
-
-class Api:  
-
-    def __init__(self, user_id, api_name):
+    Notes
+    -----
+    - This class contains the info for each access to the API (i.e. details for accessing John Doe's reddit account)
+    - The APIInfo class is used **hardcoded** general values for accessing each API (i.e. details for accessing redit API)
+    """
+    def __init__(self, user_id, api_name, info_class):
         self.user_id = user_id
         self.api_to_contact = api_name
         self.token = ""
         self.refresh_token = ""
         # TODO: Declutter. Create an object of ApiInfo.objects.get(api_name=api_name) and reuse instead of calling every time
         # should probably be changed to an inhouse url before launch
-        self.redirect_uri = ApiInfo.objects.get(api_name=api_name).redirect_url
-        self.client_id = ApiInfo.objects.get(api_name=api_name).client_id
-        self.client_secret = ApiInfo.objects.get(api_name=api_name).secret
-        self.base_url = ApiInfo.objects.get(api_name=api_name).base_url
-        self.token_endpoint = ApiInfo.objects.get(
-            api_name=api_name).token_endpoint
-        self.scopeAsJson = ApiInfo.objects.get(api_name=api_name).scope
+        self.redirect_uri = info_class().redirect_url
+        self.client_id = info_class().client_id
+        self.client_secret = info_class().secret
+        self.base_url = info_class().base_url
+        self.token_endpoint = info_class().token_endpoint
+        self.scopeAsJson = info_class().scope
         if(self.scopeAsJson):  # checks if actually holds data
             self.scope = json.loads(self.scopeAsJson)
         else:
@@ -118,24 +153,36 @@ class Api:
 
 
 class Spotify_User_Info(User_Account_Info):
+    """Creates a Spotify specific User_Account_Info class to store a user's info
+    into a table"""
     account_name = models.CharField(
         max_length=7, default="spotify", editable=False)
 
 
 class Reddit_User_Info(User_Account_Info):
+    """Creates a Reddit specific User_Account_Info class to store a user's info
+    into a table"""
     account_name = models.CharField(
         max_length=6, default="reddit", editable=False)
 
 
 class Discord_User_Info(User_Account_Info):
+    """Creates a Discord specific User_Account_Info class to store a user's info
+    into a table"""
     account_name = models.CharField(
         max_length=7, default="discord", editable=False)
 
 
 class SpotifyApi(Api):
-    
+    """The specific implementation for the spotify api
+
+    Notes
+    -----
+    - See SpotifyApi.init_contact() and SpotifyApi.contact_api() for details 
+        about class usage
+    """
     def __init__(self, user_id, api_name="spotify"):
-        super().__init__(user_id, api_name)
+        super().__init__(user_id, api_name, SpotifyAPIInfo)
         self.current_user = Spotify_User_Info.objects.get(user_id=user_id)
         # set to blank in parent class. Has to be set here
         self.token = self.current_user.token
@@ -144,6 +191,34 @@ class SpotifyApi(Api):
     
 
     def init_contact(self):
+        """Initializes contact with the API
+
+        Examples
+        --------
+        ### Creating a user in django shell and initializing API
+        ```
+        import random
+        import string
+        from integrations.models import *
+        from django.contrib.auth.models import User
+
+        # Create user
+        ran_name = lambda n: ''.join([random.choice(string.ascii_lowercase) for i in range(n)])
+        user=User.objects.create_user(ran_name(random.randint(0, 10)), password='bar')
+        user.save()
+        
+        # Add user to Spotify_User_Info table
+        entry = Spotify_User_Info(user_id=user.id, account_name="yeet")
+        entry.save()
+        user.spotify_user_info_set.add(entry)
+        user.save()
+
+        # Initialize and access the spotify api
+        spot = SpotifyApi(user.id)
+        spot.init_contact()
+
+        ... # need to wait to paste url and finalize initialization 
+        """
         try:
             conf = (self.client_id, self.client_secret, self.redirect_uri)
             scp = tekore.Scope("user-top-read","user-read-recently-played","user-read-playback-position","user-read-playback-state","user-library-read","user-modify-playback-state","user-read-currently-playing","app-remote-control","streaming");
@@ -155,13 +230,80 @@ class SpotifyApi(Api):
         except Exception as e:
             print("Could not authenticate fully, problem undiagnosed and token not set! ")
 
-    def contact_api(self):  # will def need parameters in the future
+    def contact_api(self, album_uri:str = "") -> dict:  # will def need parameters in the future
+        """Contacts Spotify API and returns a dictionary of values
+
+        parameters
+        ----------
+        album_uri (optional):
+            If you want to play a specific album pass the URI as a string here to play it
+
+        References
+        ----------
+        - PrivateUser docs: https://tekore.readthedocs.io/en/stable/reference/models.html?highlight=privateuser#tekore.model.PrivateUser
+        - FullTrackPaging docs: https://tekore.readthedocs.io/en/stable/reference/models.html#tekore.model.FullTrackPaging
+        - FullArtist docs: https://tekore.readthedocs.io/en/stable/reference/models.html?highlight=FullArtist#tekore.model.FullArtist
+
+        Returns
+        -------
+        dict
+            A dictionary with 3 keys:
+
+                1. 'current_user'; a PrivateUser of the provided users account 
+                2. 'top_tracks'; a FullTrackPaging of the provided users most listened to songs 
+                3. 'top_artist'; a FullArtist of the provided users most listened to artist
+
+        Throws
+        ------
+        tekore.NotFound:
+            This error is thrown if you try to set an album to play and there's no device
+            currently active on the user's account
+
+        Examples
+        --------
+        ### Creating a user in django shell 
+        ```
+        import random
+        import string
+        from integrations.models import *
+        from django.contrib.auth.models import User
+
+        # Create user
+        ran_name = lambda n: ''.join([random.choice(string.ascii_lowercase) for i in range(n)])
+        user=User.objects.create_user(ran_name(random.randint(0, 10)), password='bar')
+        user.save()
+        
+        # Add user to Spotify_User_Info table
+        entry = Spotify_User_Info(user_id=user.id, account_name="yeet")
+        entry.save()
+        user.spotify_user_info_set.add(entry)
+        user.save()
+
+        # Initialize and access the spotify api
+        spot = SpotifyApi(user.id)
+        spot.init_contact()
+
+        ... # need to wait to paste url and finalize initialization 
+
+        # Contact API and get data
+        data = SpotifyApi(user.id).contact_api()
+        ```
+        """
+
+        user_values = {}
+
         spotify = tekore.Spotify(self.current_user.token)
-        tracks = spotify.current_user_top_tracks(limit=10)
-        album = spotify.saved_albums(limit=1).items[0].album
-        album_uri = tekore.to_uri('album', album.id)
-        spotify.playback_start_context(album_uri)
-        #here (feel free to modify everything after the first line, it's just an example)
+
+        user_values["current_user"] = spotify.current_user()
+        user_values["top_tracks"] = spotify.current_user_top_tracks(limit=10)
+
+        if album_uri:
+            spotify.playback_start_context(album_uri)
+
+        # Set object attributes
+        user_values["top_artist"] = spotify.current_user_top_artists(limit=1).items[0]
+        #here
+        return user_values
 
     def get_new_token(self):  # token is non-expiring so there is no need
         pass
@@ -169,35 +311,137 @@ class SpotifyApi(Api):
 
 class RedditApi(Api):
     def __init__(self, user_id, api_name="reddit"):
-        super().__init__(user_id, api_name)
+        super().__init__(user_id, api_name, RedditAPIInfo)
         self.current_user = Reddit_User_Info.objects.get(user_id=user_id)
         # set to blank in parent class. Has to be set here
         self.token = self.current_user.token
         # set to blank in parent class. Has to be set here
         self.refresh_token = self.current_user.refresh_token
 
-    def init_contact(self):
-        reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri, user_agent="techstart");
+    def init_contact(self) -> Tuple[praw.Reddit, praw.models.Redditor]:
+        """Initializes contact with the API
+
+        Examples
+        --------
+        ### Creating a user in django shell and initializing API
+        ```
+        import random
+        import string
+        from integrations.models import *
+        from django.contrib.auth.models import User
+
+        # Create user
+        ran_name = lambda n: ''.join([random.choice(string.ascii_lowercase) for i in range(n)])
+        user=User.objects.create_user(ran_name(random.randint(0, 10)), password='bar')
+        user.save()
+
+        # Add user to Reddit_User_Info table
+        entry = Reddit_User_Info(user_id=user.id, account_name="yeet")
+        entry.save()
+        user.reddit_user_info_set.add(entry)
+        user.save()
+
+        # Initialize and access the reddit api
+        red = RedditApi(user.id)
+        reddit, reddit_user = red.init_contact()
+        """
+        reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri, user_agent="techstart")
         auth_url = reddit.auth.url(["identity"], "permanent")
         webbrowser.open(auth_url)
-        waittime = 0
-        while not os.path.isfile("./code.txt"):
-            sleep(0.2);
-            if waittime == 25:
-                raise TimeoutError("Could not authenticate")
-        f = open("./code.txt", "r")
-        code = f.readline()
-        f.close()
-        os.remove("./code.txt")
+        code = input("Enter url plz: ")
+        if code.startswith(r"http://localhost:8000/?state=permanent&code="):
+            code = code.replace(r"http://localhost:8000/?state=permanent&code=", "")
+
+        if code.endswith("#_"):
+            code = code.replace(r"#_", "")
         refresh_token =  reddit.auth.authorize(code)
         self.current_user.refresh_token = refresh_token
         self.current_user.save()
-        print(reddit.user.me())
+        return reddit, reddit.user.me()
 
     
-    def contact_api(self, read):
-        pass
-        #here
+    def contact_api(self, reddit:praw.Reddit, user:praw.models.Redditor) -> dict:
+        """Contacts the API and gets the user data
+
+        References
+        ----------
+        - 
+
+        Returns
+        -------
+        dict
+            A dictionary with 7 keys:
+                1. 'all_unread'; a ListingGenerator that has unread mentions, replies and messages
+                2. 'mentions'; a ListingGenerator that has unread mentions
+                3. 'messages'; a ListingGenerator that has unread messages
+                4. 'replies'; a ListingGenerator that has unread replies
+                5. 'top_day'; a ListingGenerator that has top posts of the last day
+                6. 'top_week'; a ListingGenerator that has top posts of the last week
+                7. 'top_year'; a ListingGenerator that has top posts of the last year
+
+        Examples
+        --------
+        ### Creating a user in django shell and initializing API
+        ```
+        import random
+        import string
+        from integrations.models import *
+        from django.contrib.auth.models import User
+
+        # Create user
+        ran_name = lambda n: ''.join([random.choice(string.ascii_lowercase) for i in range(n)])
+        user=User.objects.create_user(ran_name(random.randint(0, 10)), password='bar')
+        user.save()
+
+        # Add user to Reddit_User_Info table
+        entry = Reddit_User_Info(user_id=user.id, account_name="yeet")
+        entry.save()
+        user.reddit_user_info_set.add(entry)
+        user.save()
+
+        # Initialize and access the reddit api
+        red = RedditApi(user.id)
+        reddit, reddit_user = red.init_contact()
+        ... # need to wait to paste url and finalize initialization 
+        
+        # Contact API to get data
+        user_data = red.contact_api(reddit, reddit_user)
+        """
+        data = {}
+
+        data["messages"] = reddit.inbox.messages(limit=5)
+        data["replies"] = reddit.inbox.comment_replies()
+        data["mentions"] = reddit.inbox.mentions(limit=25)
+        data["all_unread"] = reddit.inbox.unread(limit=None)
+        data["top_day"] =user.top("day")
+        data["top_week"] =user.top("week")
+        data["top_year"] =user.top("year")
+        return data
+
+
+class SpotifyAPIInfo(ApiInfo):
+    """The spotify specific ApiInfo subclass"""
+    def __init__(self):
+        self.api_name = "spotify"
+        self.client_id = "eab08f62731b44c4a49010295cd3776f"
+        self.secret = "5e4dcc7236ba4cc4b38ca3dbc7f03217" #TODO: make env variable
+        self.base_url = "https://accounts.spotify.com/authorize"
+        self.token_endpoint = "https://accounts.spotify.com/api/token"
+        self.redirect_url = "https://127.0.0.1:8000/api/redirect"
+        self.scope = {}
+
+
+class RedditAPIInfo(ApiInfo):
+    """The reddit specific ApiInfo subclass"""
+    def __init__(self):
+        self.api_name = "reddit"
+        self.client_id = "RouUl0Nxn9pysw"
+        self.secret = "4-KNQ9Z9SsKRvpJzVMs2TGP9V2u-hA" #TODO: make env variable
+        self.base_url = "https://www.reddit.com/api/v1/authorize"
+        self.token_endpoint = "https://www.reddit.com/api/v1/access_token"
+        self.redirect_url = "http://localhost:8000"
+        self.scope = {} #TODO: Determine scope settings; possibly {'edit':True}
+        # self.scope 
 
     def get_new_token():
         pass
