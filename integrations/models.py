@@ -82,7 +82,7 @@ class ApiInfo(models.Model):
     redirect_url = models.CharField(max_length=500, default="")
     scope = JSONField(max_length=1000, default="")
 
-class Api:  
+class Api:
     """This class takes in user info and info about the api (from APIInfo)
     and uses it to 
 
@@ -305,8 +305,6 @@ class SpotifyApi(Api):
         #here
         return user_values
 
-    
-
     def get_new_token(self):  # token is non-expiring so there is no need
         pass
 
@@ -445,12 +443,48 @@ class RedditAPIInfo(ApiInfo):
         self.scope = {} #TODO: Determine scope settings; possibly {'edit':True}
         # self.scope 
 
-# class DiscordApi(Api):
-#     def __init__(self, user_id, api_name="discord"):
-#         super().__init__(user_id, api_name)
-#         self.current_user = Discord_User_Info.objects.get(user_id=user_id)
-#         self.token = self.current_user.token #set to blank in parent class. Has to be set here
-#         self.refresh_token = self.current_user.refresh_token #set to blank in parent class. Has to be set here
+    def get_new_token():
+        pass
+        #here
 
-#     def init_contact(self):
-#         pass
+class DiscordApi(Api):
+    def __init__(self, user_id, api_name="discord"):
+        super().__init__(user_id, api_name)
+        self.current_user = Discord_User_Info.objects.get(user_id=user_id)
+        self.token = self.current_user.token #set to blank in parent class. Has to be set here
+        self.refresh_token = self.current_user.refresh_token #set to blank in parent class. Has to be set here
+
+    def init_contact(self):
+        auth_url = "https://discord.com/api/oauth2/authorize?client_id=829140725307932733&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fapi%2Fredirect&response_type=code&scope=connections%20rpc.notifications.read%20rpc%20messages.read%20rpc.activities.write"
+        webbrowser.open(auth_url)
+        waittime = 0
+        while not os.path.isfile("./code.txt"):
+            sleep(0.2);
+            if waittime == 25:
+                raise TimeoutError("Could not authenticate")
+        f = open("./code.txt", "r")
+        code = f.readline()
+        f.close()
+        os.remove("./code.txt")
+        token_json = obtain_token(code); 
+
+    def obtain_token(code):
+        data = {
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'grant_type': 'authorization_code',
+            'code': code,
+            'redirect_uri': self.redirect_uri,
+            'scope': 'identify email connections'
+        }
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+        r = requests.post('%s/oauth2/token' % self.token_endpoint, data=data, headers=headers)
+        r.raise_for_status()
+        print(json.dumps(r.json()))
+        return r.json()
+
+    
+#todo add try catch with finally in file transactions to make sure code file is always deleted
+#todo save gotten discord data to table

@@ -6,14 +6,17 @@ import errno
 import os
 #extracts the code from a url
 def obtain_url_code(url):
-    index = url.index("code=") #throws ValueError if index not found
-    amp_separator = url.find("&", index) #sometimes codes re delimited by '&'
-    code = ""
-    if (amp_separator != -1):
-        code = url[index+5:amp_separator]
-    else:
-        code = url[index+5:len(url)-3]
-    return code
+    try:
+        index = url.index("code=") #throws ValueError if index not found
+        amp_separator = url.find("&", index) #sometimes codes re delimited by '&'
+        code = ""
+        if (amp_separator != -1):
+            code = url[index+5:amp_separator]
+        else:
+            code = url[index+5:len(url)-3]
+        return code
+    except Exception as e:
+        print(f"could not find code in string {str(url)}")
     
 def redirect(request): #used to extrapolate code info from redirect uris 
     url = str(request.build_absolute_uri)
