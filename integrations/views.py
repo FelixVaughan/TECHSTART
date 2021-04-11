@@ -6,6 +6,7 @@ import errno
 import os
 #extracts the code from a url
 def obtain_url_code(url):
+    print(f"code request {url}")
     try:
         index = url.index("code=") #throws ValueError if index not found
         amp_separator = url.find("&", index) #sometimes codes re delimited by '&'
@@ -17,15 +18,19 @@ def obtain_url_code(url):
         return code
     except Exception as e:
         print(f"could not find code in string {str(url)}")
+        return -1
     
 def redirect(request): #used to extrapolate code info from redirect uris 
     url = str(request.build_absolute_uri)
     code = obtain_url_code(url)
+    if(code is -1):
+        msg = "Code not set as it was not found in redirect. Url probably malformed..."
+        print(msg)
+        return(msg)
     if os.path.exists("code.txt"):
         os.remove("code.txt") 
-    else:
-        write_code_to_file = open("code.txt","w")
-        write_code_to_file.write(code)
-        write_code_to_file.close()
+    write_code_to_file = open("code.txt","w")
+    write_code_to_file.write(code)
+    write_code_to_file.close()
 
     return HttpResponse("<h1>Redirect page<h1>")
