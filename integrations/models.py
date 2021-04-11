@@ -428,7 +428,7 @@ class DiscordApi(Api):
 
     def init_contact(self):
         try:
-            auth_url = "https://discord.com/api/oauth2/authorize?client_id=829140725307932733&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fapi%2Fredirect&response_type=code&scope=email%20connections%20rpc.notifications.read%20rpc%20rpc.activities.write%20messages.read"
+            auth_url = 'https://discord.com/api/oauth2/authorize?client_id=829140725307932733&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fapi%2Fredirect&response_type=code&scope=email%20connections%20rpc%20rpc.notifications.read%20rpc.activities.write%20messages.read'
             webbrowser.open(auth_url)
             waittime = 0
             while not os.path.isfile("./code.txt"):
@@ -437,6 +437,7 @@ class DiscordApi(Api):
                     raise TimeoutError("Could not authenticate")
             f = open("./code.txt", "r")
             code = f.readline()
+            code = str(code)
             token_json = self.obtain_token(code); 
             print(f"code set: {code}")
         except Exception as e:
@@ -451,21 +452,18 @@ class DiscordApi(Api):
             'client_secret': self.client_secret,
             'grant_type': 'authorization_code',
             'code': code,
-            'redirect_uri': 'http://discord.com',
+            'redirect_uri': self.redirect_uri,
             'scope': 'email connections rpc rpc.notifications.read rpc.activities.write messages.read'
         }
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
-        r = requests.post('https://discord.com/api/v8/oauth2/token', data=data, headers=headers)
+        r = requests.post('https://discord.com/api/oauth2/token', data=data, headers=headers)
         print(f"r: {r.text}\nclient_id: |{self.client_id}|\nsecret: |{self.client_secret}|\ncode:|{code}|\nredirect: |{self.redirect_uri}|\n")
         r.raise_for_status()
         print(json.dumps(r.json()))
         return r.json()
 
-    
-#todo add try catch with finally in file transactions to make sure code file is always deleted
-#todo save gotten discord data to table
 
 
 class SpotifyAPIInfo(ApiInfo):
