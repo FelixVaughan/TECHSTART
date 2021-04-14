@@ -34,3 +34,9 @@ def redirect(request): #used to extrapolate code info from redirect uris
     write_code_to_file.close()
 
     return HttpResponse("<h1>Redirect page<h1>")
+
+def index(request):
+    userinfo = {'current_user': 'bingo',
+                'top_tracks': 'Some Music',
+                'top_artists': 'Celine Dion'}
+    return render(request, 'integrations/index.html', {'userinfo':userinfo})
