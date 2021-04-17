@@ -416,6 +416,7 @@ class RedditApi(Api):
         data["top_day"] =user.top("day")
         data["top_week"] =user.top("week")
         data["top_year"] =user.top("year")
+        print(data)
         return data
 
 
