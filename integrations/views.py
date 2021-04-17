@@ -36,7 +36,7 @@ def redirect(request): #used to extrapolate code info from redirect uris
     except Exception as e:
         pass
     finally:
-        return HttpResponse("<h1>Redirect page<h1>")
+        return render(request, 'users/redirect.html')
 
 def index(request):
     userinfo = {'current_user': 'bingo',
