@@ -1,0 +1,10 @@
+{% extends "users/base.html"%}
+    {% block content %}
+    <div class="redirect">
+        <div class="spinner-border text-light" style="width: 3rem; height: 3rem;" role="status"></div>
+        <h2>Redirect endpoint. Follow this to go back to homepage.</h2>
+        <button onclick="location.href = '/';">
+            Click Here to Continue
+        </button>
+    </div>
+    {% endblock content %}
