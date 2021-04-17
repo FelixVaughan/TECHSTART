@@ -20,20 +20,23 @@ def obtain_url_code(url):
         print(f"could not find code in string {str(url)}")
         return -1
     
-def redirect(request): #used to extrapolate code info from redirect uris 
-    url = str(request.build_absolute_uri)
-    code = obtain_url_code(url)
-    if(code is -1):
-        msg = "Code not set as it was not found in redirect. Url probably malformed..."
-        print(msg)
-        return(msg)
-    if os.path.exists("code.txt"):
-        os.remove("code.txt") 
-    write_code_to_file = open("code.txt","w")
-    write_code_to_file.write(code)
-    write_code_to_file.close()
-
-    return HttpResponse("<h1>Redirect page<h1>")
+def redirect(request): #used to extrapolate code info from redirect uris
+    try: 
+        url = str(request.build_absolute_uri)
+        code = obtain_url_code(url)
+        if(code is -1):
+            msg = "Code not set as it was not found in redirect. Url probably malformed..."
+            print(msg)
+            return(msg)
+        if os.path.exists("code.txt"):
+            os.remove("code.txt") 
+        write_code_to_file = open("code.txt","w")
+        write_code_to_file.write(code)
+        write_code_to_file.close()
+    except Exception as e:
+        pass
+    finally:
+        return HttpResponse("<h1>Redirect page<h1>")
 
 def index(request):
     userinfo = {'current_user': 'bingo',
