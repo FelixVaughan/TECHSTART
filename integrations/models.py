@@ -459,13 +459,18 @@ class DiscordApi(Api):
             'Content-Type': 'application/x-www-form-urlencoded'
         }
         r = requests.post('https://discord.com/api/oauth2/token', data=data, headers=headers)
-        print(f"r: {r.text}\nclient_id: |{self.client_id}|\nsecret: |{self.client_secret}|\ncode:|{code}|\nredirect: |{self.redirect_uri}|\n")
         r.raise_for_status()
         print(json.dumps(r.json()))
         return r.json()
 
+    def contact_api():
+        #Kieran
+
+    def get_new_token():
+        #Hrithvik and Anay
 
 
+#anay
 class SpotifyAPIInfo(ApiInfo):
     """The spotify specific ApiInfo subclass"""
     def __init__(self):
@@ -489,10 +494,6 @@ class RedditAPIInfo(ApiInfo):
         self.redirect_url = "http://localhost:8000"
         self.scope = {} #TODO: Determine scope settings; possibly {'edit':True}
         # self.scope 
-
-    def get_new_token():
-        pass
-        #here
 
         
 class DiscordAPIInfo(ApiInfo):
