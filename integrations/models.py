@@ -439,6 +439,7 @@ class DiscordApi(Api):
             code = f.readline()
             code = str(code)
             token_json = self.obtain_token(code); 
+            
             print(f"code set: {code}")
         except Exception as e:
             print(f"code NOT set. {e}")
@@ -464,9 +465,11 @@ class DiscordApi(Api):
         return r.json()
 
     def contact_api():
+        pass
         #Kieran
 
     def get_new_token():
+        pass
         #Hrithvik and Anay
 
 
