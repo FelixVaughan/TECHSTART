@@ -81,22 +81,22 @@ class Api:
 
     #Whole method could probably be implemented in a more efficient manner with a for loop but we'd need a way to access all field attributes.
     def populate_user_table(self, user_table_ref, given_dict): #should take in a model that is a child of User_Account_Info
-        print(f"Populated {user_table_ref.account_name} table with row data: ")
+        #print(f"Populated {user_table_ref.account_name} table with row data: ")
         if "access_token" in given_dict.keys():
             user_table_ref.token = given_dict['access_token']
-            print(f"token: {user_table_ref.token}")
+            #print(f"token: {user_table_ref.token}")
         if "refresh_token" in given_dict.keys():
             user_table_ref.refresh_token = given_dict['refresh_token']
-            print(f"refresh token: {user_table_ref.refresh_token}")
+            #print(f"refresh token: {user_table_ref.refresh_token}")
         if "token_type" in given_dict.keys():
             user_table_ref.token_type = given_dict['token_type']
-            print(f"token type: {user_table_ref.token_type}")
+           # print(f"token type: {user_table_ref.token_type}")
         if "expires_in" in given_dict.keys():
             user_table_ref.expires_in = given_dict['expires_in']
-            print(f"expires in: {user_table_ref.expires_in}")
+            #print(f"expires in: {user_table_ref.expires_in}")
         if "expires_at" in given_dict.keys():
             user_table_ref.expires_in = given_dict['expires_at']
-            print(f"expires at: {user_table_ref.expires_at}")
+            #print(f"expires at: {user_table_ref.expires_at}")
         user_table_ref.save()
 
     def contact_api(self): #method to be called by threadpool 
@@ -162,14 +162,7 @@ class DiscordApi(Api):
         self.user_to_serve = Discord_User_Info.objects.get(user_id=user_id) 
         self.token = self.user_to_serve.token #set to blank in parent class. Has to be set here
         self.refresh_token = self.user_to_serve.refresh_token #set to blank in parent class. Has to be set here
-
+    
     def init_contact(self):
-
-    
-        
-    
-        
-
-
-
-
+        selfDirectUri = "http://127.0.0.1:8000/api/redirect?code=osXs6cZSKLd4SaeEXo65Qt3DEz7Bpd"
+        webbrowser.open(selfDirectUri)
