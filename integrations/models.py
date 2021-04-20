@@ -6,6 +6,7 @@ import webbrowser
 import os
 import django
 import json
+import urllib
 from django.contrib.auth.models import User
 import requests
 import tekore  # spotiy api
@@ -471,9 +472,60 @@ class DiscordApi(Api):
 
     def get_new_token():
         pass
-        #Hrithvik and Anay
+        #Hrithvik 
 
+class OutlookApi(Api):
+    def __init__(self, user_id, api_name="discord"):
+        super().__init__(user_id, api_name, OutlookAPIInfo)
+        self.current_user = Discord_User_Info.objects.get(user_id=user_id)
+        self.token = self.current_user.token #set to blank in parent class. Has to be set here
+        self.refresh_token = self.current_user.refresh_token #set to blank in parent class. Has to be set here
+    
+    def init_contact(self):
+        auth_url = f"https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?client_id={self.client_id}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fredirect&response_mode=query&scope=https://graph.microsoft.com/.default"
+        webbrowser.open(auth_url);
+        waittime = 0
+        try:
+            while not os.path.isfile("./code.txt"):
+                sleep(0.2);
+                if waittime == 25:
+                    raise TimeoutError("Could not authenticate")
+            f = open("./code.txt", "r")
+            code = f.readline()
+            code = str(code)
+            print(f"code {code}")
+            token = self.obtain_token(code)
+            print(token)
+            
+        except Exception as e:
+            print(e)
 
+        finally:
+            f.close()
+            os.remove("./code.txt")
+        
+    def obtain_token(self, code):
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+        url = self.token_endpoint
+        payload = f'client_id={self.client_id}&scope=https://graph.microsoft.com/.default&code={code}&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fredirect&grant_type=authorization_code&client_secret={self.client_secret}'
+        r = requests.post(url, headers=headers, data=payload)
+        print('request sent')
+        print(r.text)
+        token = r.json().get('access_token')
+        return token
+        # Use the token using microsoft graph endpoints
+        # url = 'https://graph.microsoft.com/v1.0/users/{}/events'.format(user_email) 
+        # headers = {
+        #     'Authorization': 'Bearer {}'.format(token)
+        # }
+
+    def contact_api(self):
+        pass
+
+    def get_new_token(self):
+        pass
 #anay
 class SpotifyAPIInfo(ApiInfo):
     """The spotify specific ApiInfo subclass"""
@@ -482,7 +534,7 @@ class SpotifyAPIInfo(ApiInfo):
         self.client_id = "eab08f62731b44c4a49010295cd3776f"
         self.secret = "5e4dcc7236ba4cc4b38ca3dbc7f03217" #TODO: make env variable
         self.base_url = "https://accounts.spotify.com/authorize"
-        self.token_endpoint = "https://accounts.spotify.com/api/token"
+        self.token_endpoint = "https://login.microsoftonline.com/consumer/oauth2/v2.0/token"
         self.redirect_url = "https://127.0.0.1:8000/api/redirect"
         self.scope = {}
 
@@ -501,7 +553,7 @@ class RedditAPIInfo(ApiInfo):
 
         
 class DiscordAPIInfo(ApiInfo):
-    """The reddit specific ApiInfo subclass"""
+    """The discord specific ApiInfo subclass"""
     def __init__(self):
         self.api_name = "discord"
         self.client_id = '829140725307932733'
@@ -512,4 +564,15 @@ class DiscordAPIInfo(ApiInfo):
         self.scope = {} 
         # self.scope 
 
+class OutlookAPIInfo(ApiInfo):
+    """The outlook specific ApiInfo subclass"""
+    def __init__(self):
+        self.api_name = "outlook"
+        self.client_id = "9bb0ebfa-b59b-4717-af05-506e0188c0bb"
+        self.secret = "w.0ywb5.VL3VxQ~cCkEs~G6p-c8i_~-Q9~" 
+        self.base_url = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize"
+        self.token_endpoint = 'https://login.microsoftonline.com/consumers/oauth2/v2.0/token'
+        self.redirect_url = 'http://localhost:8000/api/redirect' 
+        self.scope = {} 
+        # self.scope 
 
