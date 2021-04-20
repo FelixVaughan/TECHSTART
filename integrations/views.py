@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.http import *
-from integrations.models import user_code_queue
 from tempfile import NamedTemporaryFile
 import errno
 import os
@@ -30,9 +29,9 @@ def redirect(request): #used to extrapolate code info from redirect uris
             return(msg)
         if os.path.exists("code.txt"):
             os.remove("code.txt") 
-        write_code_to_file = open("code.txt","w")
-        write_code_to_file.write(code)
-        write_code_to_file.close()
+        f = open("code.txt","w")
+        f.write(code)
+        f.close()
     except Exception as e:
         pass
     finally:

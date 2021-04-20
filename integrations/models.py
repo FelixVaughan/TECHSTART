@@ -11,16 +11,33 @@ from django.contrib.auth.models import User
 import requests
 import tekore  # spotiy api
 import praw  # reddit api
-import queue
 from time import sleep
 from tempfile import NamedTemporaryFile
 from praw.util.token_manager import FileTokenManager
 
-# Whenever a user is redirected via an api's rauthentication process, the code repsent in the uri is stored here for the calling method to fetch
-user_code_queue = queue.Queue()
+#possibly make part of a general handler
+def local_code_flow():
+    waittime = 0
+    code = ""
+    try:
+        while not os.path.isfile("./code.txt"):
+            sleep(0.1)
+            waittime+=1 #10 == 1sec
+            if (waittime == 350): #35 seconds
+                print("Session timed out. Could not authenticate. Code NOT aquired")
+                return ""
+        f = open("./code.txt", "r")
+        code = str(f.readline())
+        f.close()
+    except Exception as e:
+        if(len(code) == 0):
+            print("Local error occured. code NOT aquired")
+            print(e)
+    finally:
+        if os.path.exists("./code.txt"):
+            os.remove("./code.txt")
+    return code
 
-
-# Each Entry will contain info about a user pertaining to a specific account
 class User_Account_Info(models.Model):
     account_name = models.CharField(max_length=20)  # spotify, facebook, etc. Set by default in subclass implementation constructors
     account_user_name = models.CharField(max_length=30, default="")
@@ -128,7 +145,7 @@ class Api:
     # Whole method could probably be implemented in a more efficient manner with a for loop but we'd need a way to access all field attributes.
     # should take in a model that is a child of User_Account_Info
     def populate_user_table(self, user_table_ref, given_dict):
-        print(f"Populated {user_table_ref.account_name} table with row data: ")
+        print(f"Populating {user_table_ref.account_name} table with row data: ")
         if "access_token" in given_dict.keys():
             user_table_ref.token = given_dict['access_token']
             print(f"token: {user_table_ref.token}")
@@ -429,25 +446,11 @@ class DiscordApi(Api):
         self.refresh_token = self.current_user.refresh_token #set to blank in parent class. Has to be set here
 
     def init_contact(self):
-        try:
-            auth_url = 'https://discord.com/api/oauth2/authorize?client_id=829140725307932733&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fapi%2Fredirect&response_type=code&scope=email%20connections%20rpc%20rpc.notifications.read%20rpc.activities.write%20messages.read'
-            webbrowser.open(auth_url)
-            waittime = 0
-            while not os.path.isfile("./code.txt"):
-                sleep(0.2);
-                if waittime == 25:
-                    raise TimeoutError("Could not authenticate")
-            f = open("./code.txt", "r")
-            code = f.readline()
-            code = str(code)
-            token_json = self.obtain_token(code); 
-            
-            print(f"code set: {code}")
-        except Exception as e:
-            print(f"code NOT set. {e}")
-        finally:
-            f.close()
-            os.remove("./code.txt")
+        auth_url = 'https://discord.com/api/oauth2/authorize?client_id=829140725307932733&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fapi%2Fredirect&response_type=code&scope=email%20connections%20rpc%20rpc.notifications.read%20rpc.activities.write%20messages.read'
+        webbrowser.open(auth_url)
+        code = local_code_flow()
+        token_json = self.obtain_token(code); 
+        print(token_json)
 
     def obtain_token(self,code):
         data = {
@@ -484,25 +487,9 @@ class OutlookApi(Api):
     def init_contact(self):
         auth_url = f"https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?client_id={self.client_id}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fredirect&response_mode=query&scope=https://graph.microsoft.com/.default"
         webbrowser.open(auth_url);
-        waittime = 0
-        try:
-            while not os.path.isfile("./code.txt"):
-                sleep(0.2);
-                if waittime == 25:
-                    raise TimeoutError("Could not authenticate")
-            f = open("./code.txt", "r")
-            code = f.readline()
-            code = str(code)
-            print(f"code {code}")
-            token = self.obtain_token(code)
-            print(token)
-            
-        except Exception as e:
-            print(e)
-
-        finally:
-            f.close()
-            os.remove("./code.txt")
+        code = local_code_flow()
+        token = self.obtain_token(code)
+        print(token)
         
     def obtain_token(self, code):
         headers = {
@@ -515,11 +502,6 @@ class OutlookApi(Api):
         print(r.text)
         token = r.json().get('access_token')
         return token
-        # Use the token using microsoft graph endpoints
-        # url = 'https://graph.microsoft.com/v1.0/users/{}/events'.format(user_email) 
-        # headers = {
-        #     'Authorization': 'Bearer {}'.format(token)
-        # }
 
     def contact_api(self):
         pass
