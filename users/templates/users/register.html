@@ -1,27 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Register page</title>
-</head>
-<body>
-      <div class="content-section">
-          <form method='POST'>
-              {% csrf_token %}
-              <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Join Today</legend>
-                {{ form }}
-              </fieldset>
-              <div class="form-group">
-                <button type="submit" class="btn btn-outline-info">Sign Up</button>
-              </div>
-          </form>
-          <div class="border-top pt-3">
-            <small class="text-muted">
-                Already Have an account ? <a class="ml-2" href="#">Sign In</a>
-            </small>
+{% extends "users/base.html"%}
+  {% block content %}
+        <div class="content-section">
+            <form method='POST'>
+                {% csrf_token %}
+                <fieldset class="form-group">
+                  <legend class="border-bottom mb-4">Join Today</legend>
+                  {{ form }}
+                </fieldset>
+                <div class="form-group">
+                  <button type="submit" class="btn btn-outline-info">Sign Up</button>
+                </div>
+            </form>
+            <div class="border-top pt-3">
+              <small class="text-muted">
+                  Already Have an account ? <a class="ml-2" href="#">Sign In</a>
+              </small>
 
-          </div>
-      </div>
-</body>
-</html>
+            </div>
+        </div>
+  {% endblock content %}
