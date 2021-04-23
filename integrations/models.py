@@ -341,7 +341,7 @@ class RedditApi(Api):
         self.token = self.current_user.token
         self.refresh_token = self.current_user.refresh_token
 
-    def init_contact(self) -> Tuple[praw.Reddit, praw.models.Redditor]:
+    def init_contact(self):
         """Initializes contact with the API
 
         Examples
@@ -369,16 +369,15 @@ class RedditApi(Api):
         reddit, reddit_user = red.init_contact()
         """
         reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri, user_agent="techstart")
-        auth_url = reddit.auth.url(["identity"], "permanent")
+        auth_url = reddit.auth.url(["*"], "permanent")
         webbrowser.open(auth_url)
         code = local_code_flow()
         refresh_token =  reddit.auth.authorize(code)
         self.current_user.refresh_token = refresh_token
         self.current_user.save()
-        return reddit, reddit.user.me()
 
     
-    def contact_api(self) -> dict:
+    def contact_api(self):
         """Contacts the API and gets the user data
 
         References
@@ -424,6 +423,7 @@ class RedditApi(Api):
         
         # Contact API to get data
         user_data = red.contact_api(reddit, reddit_user)
+
         """
         data = {}
         refresh_file = "./reddit_refresh.txt"
@@ -460,7 +460,6 @@ class RedditApi(Api):
 
     def get_new_token(self): #hanlded in contact_api as praw annoyingly loves to self refresh tokens
         pass 
-
 
 
 class DiscordApi(Api):
