@@ -114,31 +114,22 @@ class Api:
         self.api_to_contact = api_name
         self.token = ""
         self.refresh_token = ""
-        # TODO: Declutter. Create an object of ApiInfo.objects.get(api_name=api_name) and reuse instead of calling every time
-        # should probably be changed to an inhouse url before launch
         self.redirect_uri = info_class().redirect_url
         self.client_id = info_class().client_id
         self.client_secret = info_class().secret
         self.base_url = info_class().base_url
         self.token_endpoint = info_class().token_endpoint
-        self.scopeAsJson = info_class().scope
-        if(self.scopeAsJson):  # checks if actually holds data
-            self.scope = json.loads(self.scopeAsJson)
-        else:
-            self.scope = []
+        self.scope = info_class().scope
+        
 
     def init_contact(self):  # for first authentication
-        api = OAuth2Session(self.client_id, scope=self.scope,
-                            redirect_uri=self.redirect_uri)
+        api = OAuth2Session(self.client_id, scope=self.scope, redirect_uri=self.redirect_uri)
         auth_url, state = api.authorization_url(self.base_url)
         webbrowser.open(auth_url)
         response = input("Paste URL redirected to: ")
-        token = api.fetch_token(
-            self.token_endpoint, client_secret=self.client_secret, authorization_response=response)
+        token = api.fetch_token(self.token_endpoint, client_secret=self.client_secret, authorization_response=response)
         user = User.objects.get(user_id=self.user_id)
-        # had to use with the spotify table because User_Account_Info is abstract
-        user_account_table = Spotify_User_Info.objects.create(
-            user_id=self.user_id)
+        user_account_table = Spotify_User_Info.objects.create(user_id=self.user_id)
         user_account_table.users.add(user)
         self.populate_user_table(user_account_table, token)
 
@@ -202,11 +193,9 @@ class SpotifyApi(Api):
     def __init__(self, user_id, api_name="spotify"):
         super().__init__(user_id, api_name, SpotifyAPIInfo)
         self.current_user = Spotify_User_Info.objects.get(user_id=user_id)
-        # set to blank in parent class. Has to be set here
         self.token = self.current_user.token
-        # set to blank in parent class. Has to be set here
         self.refresh_token = self.current_user.refresh_token
-    
+        self.conf = (self.client_id, self.client_secret, self.redirect_uri)
 
     def init_contact(self):
         """Initializes contact with the API
@@ -238,15 +227,19 @@ class SpotifyApi(Api):
         ... # need to wait to paste url and finalize initialization 
         """
         try:
-            conf = (self.client_id, self.client_secret, self.redirect_uri)
-            scp = tekore.Scope("user-top-read","user-read-recently-played","user-read-playback-position","user-read-playback-state","user-library-read","user-modify-playback-state","user-read-currently-playing","app-remote-control","streaming");
-            access_token = tekore.prompt_for_user_token(*conf, scope=scp) 
+            spotify = tekore.RefreshingCredentials(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
+            auth_url = spotify.user_authorisation_url(scope=self.scope)
+            webbrowser.open(auth_url)
+            code = local_code_flow()
+            access_token = spotify.request_user_token(code)
             self.current_user.token = access_token
+            self.current_user.refresh_token = access_token.refresh_token
             self.current_user.save()
         except KeyError as e:
             print("Authentication with spotify API could NOT be completed as no code was found. Access token NOT set!")
         except Exception as e:
-            print("Could not authenticate fully, problem undiagnosed and token not set! ")
+            print(e)
+
 
     def contact_api(self, album_uri:str = "") -> dict:  # will def need parameters in the future
         """Contacts Spotify API and returns a dictionary of values
@@ -309,31 +302,43 @@ class SpotifyApi(Api):
         """
 
         user_values = {}
+        try:
+            spotify = tekore.Spotify(self.current_user.token)
 
-        spotify = tekore.Spotify(self.current_user.token)
+            user_values["current_user"] = spotify.current_user()
+            user_values["top_tracks"] = spotify.current_user_top_tracks(limit=10)
 
-        user_values["current_user"] = spotify.current_user()
-        user_values["top_tracks"] = spotify.current_user_top_tracks(limit=10)
+            if album_uri:
+                spotify.playback_start_context(album_uri)
 
-        if album_uri:
-            spotify.playback_start_context(album_uri)
+            # Set object attributes
+            user_values["top_artist"] = spotify.current_user_top_artists(limit=1).items[0]
+            #here
+            return user_values
+        except tekore.ServiceUnavailable as err:
+            print("It looks like you are currently not logged into spotify...")
+        except Exception as e:
+            self.get_new_token(true)
 
-        # Set object attributes
-        user_values["top_artist"] = spotify.current_user_top_artists(limit=1).items[0]
-        #here
-        return user_values
-
-    def get_new_token(self):  # token is non-expiring so there is no need
-        pass
+    def get_new_token(self,retry): #retry is used to try a failed api contact
+        spotify = tekore.RefreshingCredentials(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
+        new_access_token = spotify.refresh_user_token(self.current_user.refresh_token)
+        self.current_user.token = new_access_token
+        self.current_user.refresh_token = new_access_token.refresh_token
+        self.current_user.save()
+        if(retry):
+            try:
+                self.contact_api()
+            except Exception as e:
+                print(e)
+        
 
 
 class RedditApi(Api):
     def __init__(self, user_id, api_name="reddit"):
         super().__init__(user_id, api_name, RedditAPIInfo)
         self.current_user = Reddit_User_Info.objects.get(user_id=user_id)
-        # set to blank in parent class. Has to be set here
         self.token = self.current_user.token
-        # set to blank in parent class. Has to be set here
         self.refresh_token = self.current_user.refresh_token
 
     def init_contact(self) -> Tuple[praw.Reddit, praw.models.Redditor]:
@@ -436,6 +441,14 @@ class RedditApi(Api):
         data["top_year"] =user.top("year")
         print(data)
         return data
+    
+    def contact_api():
+        pass
+        #Kieran
+
+    def get_new_token():
+        pass
+        #Hrithvik 
 
 
 class DiscordApi(Api):
@@ -517,8 +530,8 @@ class SpotifyAPIInfo(ApiInfo):
         self.secret = "5e4dcc7236ba4cc4b38ca3dbc7f03217" #TODO: make env variable
         self.base_url = "https://accounts.spotify.com/authorize"
         self.token_endpoint = "https://login.microsoftonline.com/consumer/oauth2/v2.0/token"
-        self.redirect_url = "https://127.0.0.1:8000/api/redirect"
-        self.scope = {}
+        self.redirect_url = "http://127.0.0.1:8000/api/redirect"
+        self.scope = "user-top-read user-read-recently-played user-read-playback-position user-read-playback-state user-library-read user-modify-playback-state user-read-currently-playing app-remote-control streaming"
 
 
 class RedditAPIInfo(ApiInfo):
