@@ -371,19 +371,14 @@ class RedditApi(Api):
         reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri, user_agent="techstart")
         auth_url = reddit.auth.url(["identity"], "permanent")
         webbrowser.open(auth_url)
-        code = input("Enter url plz: ")
-        if code.startswith(r"http://localhost:8000/?state=permanent&code="):
-            code = code.replace(r"http://localhost:8000/?state=permanent&code=", "")
-
-        if code.endswith("#_"):
-            code = code.replace(r"#_", "")
+        code = local_code_flow()
         refresh_token =  reddit.auth.authorize(code)
         self.current_user.refresh_token = refresh_token
         self.current_user.save()
         return reddit, reddit.user.me()
 
     
-    def contact_api(self, reddit:praw.Reddit, user:praw.models.Redditor) -> dict:
+    def contact_api(self) -> dict:
         """Contacts the API and gets the user data
 
         References
@@ -431,24 +426,41 @@ class RedditApi(Api):
         user_data = red.contact_api(reddit, reddit_user)
         """
         data = {}
+        refresh_file = "./reddit_refresh.txt"
+        try:
+            refresh_token = self.current_user.refresh_token
+            with open(refresh_file, "w") as fp:
+                fp.write(refresh_token)
+            refresh_token_manager = FileTokenManager(refresh_file)
+            reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret, token_manager=refresh_token_manager, user_agent="techstart")  
+            user = reddit.user.me()
+            data["messages"] = reddit.inbox.messages(limit=5)
+            data["replies"] = reddit.inbox.comment_replies()
+            data["mentions"] = reddit.inbox.mentions(limit=25)
+            data["all_unread"] = reddit.inbox.unread(limit=None)
+            data["top_day"] =user.top("day")
+            data["top_week"] =user.top("week")
+            data["top_year"] =user.top("year")
+            with open(refresh_file, "r") as fp:
+                refresh = fp.readline()
+                print(f"old token {self.current_user.refresh_token}")
+                if (str(refresh) != refresh_token): #if token has changed 
+                    self.current_user.refresh_token = refresh
+                    self.current_user.save()
+                print(f"new token {self.current_user.refresh_token}")
 
-        data["messages"] = reddit.inbox.messages(limit=5)
-        data["replies"] = reddit.inbox.comment_replies()
-        data["mentions"] = reddit.inbox.mentions(limit=25)
-        data["all_unread"] = reddit.inbox.unread(limit=None)
-        data["top_day"] =user.top("day")
-        data["top_week"] =user.top("week")
-        data["top_year"] =user.top("year")
-        print(data)
+        except Exception as e:
+            print(e)
+            pass
+        finally:
+            if os.path.isfile(refresh_file):
+                os.remove(refresh_file)
         return data
-    
-    def contact_api():
-        pass
-        #Kieran
 
-    def get_new_token():
-        pass
-        #Hrithvik 
+
+    def get_new_token(self): #hanlded in contact_api as praw annoyingly loves to self refresh tokens
+        pass 
+
 
 
 class DiscordApi(Api):
@@ -542,7 +554,7 @@ class RedditAPIInfo(ApiInfo):
         self.secret = "4-KNQ9Z9SsKRvpJzVMs2TGP9V2u-hA" #TODO: make env variable
         self.base_url = "https://www.reddit.com/api/v1/authorize"
         self.token_endpoint = "https://www.reddit.com/api/v1/access_token"
-        self.redirect_url = "http://localhost:8000"
+        self.redirect_url = "http://127.0.0.1:8000/api/redirect"
         self.scope = {} #TODO: Determine scope settings; possibly {'edit':True}
         # self.scope 
 
