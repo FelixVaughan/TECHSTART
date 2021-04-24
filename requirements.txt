@@ -3,3 +3,4 @@ requests-oauthlib
 jsonfield
 tekore
 praw 
+pyOutlook

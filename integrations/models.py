@@ -14,6 +14,7 @@ import praw  # reddit api
 from time import sleep
 from tempfile import NamedTemporaryFile
 from praw.util.token_manager import FileTokenManager
+from pyOutlook import OutlookAccount
 
 #possibly make part of a general handler
 def local_code_flow():
@@ -473,8 +474,10 @@ class DiscordApi(Api):
         auth_url = 'https://discord.com/api/oauth2/authorize?client_id=829140725307932733&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fapi%2Fredirect&response_type=code&scope=email%20connections%20rpc%20rpc.notifications.read%20rpc.activities.write%20messages.read'
         webbrowser.open(auth_url)
         code = local_code_flow()
-        token_json = self.obtain_token(code); 
+        token_json = self.obtain_token(code) 
         print(token_json)
+        self.token = token_json["access_token"]
+        self.refresh_token = token_json["refresh_token"]
 
     def obtain_token(self,code):
         data = {
@@ -510,10 +513,11 @@ class OutlookApi(Api):
     
     def init_contact(self):
         auth_url = f"https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?client_id={self.client_id}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fredirect&response_mode=query&scope=https://graph.microsoft.com/.default"
-        webbrowser.open(auth_url);
+        webbrowser.open(auth_url)
         code = local_code_flow()
         token = self.obtain_token(code)
         print(token)
+        self.token = token
         
     def obtain_token(self, code):
         headers = {
@@ -528,10 +532,55 @@ class OutlookApi(Api):
         return token
 
     def contact_api(self):
-        pass
+        """Contacts the API and gets the user data
+
+        References
+        ----------
+        - Message objects: https://pyoutlook.readthedocs.io/en/latest/pyOutlook.html#message
+
+        Returns
+        -------
+        dict
+            A dictionary with 1 key:
+                1. 'inbox'; a list of Message objects
+
+        Examples
+        --------
+        ### Creating a user in django shell and initializing API
+        ```
+        import random
+        import string
+        from integrations.models import *
+        from django.contrib.auth.models import User
+
+        # Create user
+        ran_name = lambda n: ''.join([random.choice(string.ascii_lowercase) for i in range(n)])
+        user=User.objects.create_user(ran_name(random.randint(0, 10)), password='bar')
+        user.save()
+
+        # Add user to Outlook_User_Info table
+        entry = Outlook_User_Info(user_id=user.id, account_name="yeet")
+        entry.save()
+        user.outlook_user_info_set.add(entry)
+        user.save()
+
+        # Initialize and access the reddit api
+        outlook_User = OutlookApi(user.id)
+        outlook_User.init_contact()
+        ... # need to wait to paste url and finalize initialization 
+        
+        # Contact API to get data
+        user_data = outlook_User.contact_api()
+
+        """
+        data = {}
+        acc = OutlookAccount(self.token)
+        data["inbox"] = acc.inbox()
+        return data
 
     def get_new_token(self):
         pass
+
 #anay
 class SpotifyAPIInfo(ApiInfo):
     """The spotify specific ApiInfo subclass"""
