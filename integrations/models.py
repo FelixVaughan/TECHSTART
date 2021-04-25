@@ -478,6 +478,9 @@ class DiscordApi(Api):
         print(token_json)
         self.token = token_json["access_token"]
         self.refresh_token = token_json["refresh_token"]
+        self.current_user.token = token_json["access_token"]
+        self.current_user.refresh_token = token_json["refresh_token"]
+        self.current_user.save()
 
     def obtain_token(self,code):
         data = {
@@ -491,7 +494,7 @@ class DiscordApi(Api):
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
-        r = requests.post('https://discord.com/api/oauth2/token', data=data, headers=headers)
+        r = requests.post(self.token_endpoint, data=data, headers=headers)
         r.raise_for_status()
         print(json.dumps(r.json()))
         return r.json()
@@ -500,9 +503,24 @@ class DiscordApi(Api):
         pass
         #Kieran
 
-    def get_new_token():
-        pass
-        #Hrithvik 
+    def get_new_token(self):
+        data = {
+        'client_id': self.client_id,
+        'client_secret': self.client_secret,
+        'grant_type': 'refresh_token',
+        'refresh_token': self.refresh_token
+        }
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+        r = requests.post(self.token_endpoint, data=data, headers=headers)
+        r.raise_for_status()
+        response = r.json()
+        self.current_user.token = response['access_token']
+        self.current_user.refresh_token = response['refresh_token']
+        self.current_user.save()
+
+        
 
 class OutlookApi(Api):
     def __init__(self, user_id, api_name="discord"):
@@ -517,6 +535,8 @@ class OutlookApi(Api):
         code = local_code_flow()
         token = self.obtain_token(code)
         print(token)
+        self.current_user.token = token
+        self.current_user.save()
         self.token = token
         
     def obtain_token(self, code):
@@ -576,6 +596,7 @@ class OutlookApi(Api):
         data = {}
         acc = OutlookAccount(self.token)
         data["inbox"] = acc.inbox()
+        print(data)
         return data
 
     def get_new_token(self):
