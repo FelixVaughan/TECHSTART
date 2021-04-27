@@ -190,55 +190,26 @@ class News_User_Info(User_Account_Info):
     
 
 class SpotifyApi(Api):
-    """The specific implementation for the spotify api
-
-    Notes
-    -----
-    - See SpotifyApi.init_contact() and SpotifyApi.contact_api() for details 
-        about class usage
-    """
     def __init__(self, user_id, api_name="spotify"):
         super().__init__(user_id, api_name, SpotifyAPIInfo)
         self.current_user = Spotify_User_Info.objects.get(user_id=user_id)
         self.token = self.current_user.token
         self.refresh_token = self.current_user.refresh_token
         self.conf = (self.client_id, self.client_secret, self.redirect_uri)
+        self.spotify = tekore.RefreshingCredentials(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
 
     def init_contact(self):
-        """Initializes contact with the API
-
-        Examples
-        --------
-        ### Creating a user in django shell and initializing API
-        ```
-        import random
-        import string
-        from integrations.models import *
-        from django.contrib.auth.models import User
-
-        # Create user
-        ran_name = lambda n: ''.join([random.choice(string.ascii_lowercase) for i in range(n)])
-        user=User.objects.create_user(ran_name(random.randint(0, 10)), password='bar')
-        user.save()
-        
-        # Add user to Spotify_User_Info table
-        entry = Spotify_User_Info(user_id=user.id, account_name="yeet")
-        entry.save()
-        user.spotify_user_info_set.add(entry)
-        user.save()
-
-        # Initialize and access the spotify api
-        spot = SpotifyApi(user.id)
-        spot.init_contact()
-
-        ... # need to wait to paste url and finalize initialization 
-        """
         try:
-            spotify = tekore.RefreshingCredentials(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
-            auth_url = spotify.user_authorisation_url(scope=self.scope)
+            auth_url = self.spotify.user_authorisation_url(scope=self.scope)
             webbrowser.open(auth_url)
-            code = local_code_flow()
-            access_token = spotify.request_user_token(code)
+        except KeyError as e:
+            print("Authentication with spotify API could NOT be completed as no code was found. Access token NOT set!")
+        except Exception as e:
+            print(e)
+    
+    def obtain_token(self, code):
+        try:
+            access_token = self.spotify.request_user_token(code)
             self.current_user.token = access_token
             self.current_user.refresh_token = access_token.refresh_token
             self.current_user.save()
@@ -347,7 +318,8 @@ class RedditApi(Api):
         self.current_user = Reddit_User_Info.objects.get(user_id=user_id)
         self.token = self.current_user.token
         self.refresh_token = self.current_user.refresh_token
-
+        self.reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri, user_agent="techstart")
+        
     def init_contact(self):
         """Initializes contact with the API
 
@@ -375,14 +347,14 @@ class RedditApi(Api):
         red = RedditApi(user.id)
         reddit, reddit_user = red.init_contact()
         """
-        reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri, user_agent="techstart")
-        auth_url = reddit.auth.url(["*"], "permanent")
+        auth_url = self.reddit.auth.url(["*"], "permanent")
         webbrowser.open(auth_url)
-        code = local_code_flow()
-        refresh_token =  reddit.auth.authorize(code)
+        
+    def obtain_token(self, code):
+        refresh_token =  self.reddit.auth.authorize(code)
         self.current_user.refresh_token = refresh_token
         self.current_user.save()
-
+        print(f"Token set: {refresh_token}")
     
     def contact_api(self):
         """Contacts the API and gets the user data
@@ -479,14 +451,13 @@ class DiscordApi(Api):
     def init_contact(self):
         auth_url = self.base_url
         webbrowser.open(auth_url)
-        request.session['api'] = 'discord'
-        code = local_code_flow()
-        token_json = self.obtain_token(code) 
-        self.token = token_json["access_token"]
-        self.refresh_token = token_json["refresh_token"]
-        self.current_user.token = token_json["access_token"]
-        self.current_user.refresh_token = token_json["refresh_token"]
-        self.current_user.save()
+        # code = local_code_flow()
+        # token_json = self.obtain_token(code) 
+        # self.token = token_json["access_token"]
+        # self.refresh_token = token_json["refresh_token"]
+        # self.current_user.token = token_json["access_token"]
+        # self.current_user.refresh_token = token_json["refresh_token"]
+        # self.current_user.save()
 
     def obtain_token(self,code):
         data = {
@@ -536,17 +507,8 @@ class OutlookApi(Api):
         self.refresh_token = self.current_user.refresh_token #set to blank in parent class. Has to be set here
     
     def init_contact(self):
-        try:
-            auth_url = self.base_url
-            webbrowser.open(auth_url)
-            code = local_code_flow()
-            response = self.obtain_token(code)
-            self.current_user.token = response['access_token']
-            self.current_user.refresh_token = response['refresh_token']
-            self.current_user.save()
-            self.token = response['access_token']
-        except Exception as e:
-            self.get_new_token(True)
+        auth_url = self.base_url
+        webbrowser.open(auth_url)
             
     def obtain_token(self, code):
         headers = {
@@ -561,8 +523,12 @@ class OutlookApi(Api):
             "client_secret": self.client_secret  
         }
         r = requests.post(self.token_endpoint, headers=headers, data=payload)
-        return  r.json()
-        
+        token_response  =  r.json()
+        self.current_user.token = token_response['access_token']
+        self.current_user.refresh_token = token_response['refresh_token']
+        self.current_user.save()
+        self.token = token_response['access_token']
+        print(f"Token set: {self.token}")
 
     def contact_api(self):
         """Contacts the API and gets the user data
