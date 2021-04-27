@@ -7,6 +7,7 @@ import os
 import django
 import json
 import urllib
+from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 import requests
 import tekore  # spotiy api
@@ -15,8 +16,9 @@ from time import sleep
 from tempfile import NamedTemporaryFile
 from praw.util.token_manager import FileTokenManager
 from pyOutlook import OutlookAccount
+from O365 import Account
+from urllib.parse import urlencode
 
-#possibly make part of a general handler
 def local_code_flow():
     waittime = 0
     code = ""
@@ -121,7 +123,7 @@ class Api:
         self.base_url = info_class().base_url
         self.token_endpoint = info_class().token_endpoint
         self.scope = info_class().scope
-        
+
 
     def init_contact(self):  # for first authentication
         api = OAuth2Session(self.client_id, scope=self.scope, redirect_uri=self.redirect_uri)
@@ -163,25 +165,28 @@ class Api:
 
 
 class Spotify_User_Info(User_Account_Info):
-    """Creates a Spotify specific User_Account_Info class to store a user's info
-    into a table"""
     account_name = models.CharField(
         max_length=7, default="spotify", editable=False)
 
 
 class Reddit_User_Info(User_Account_Info):
-    """Creates a Reddit specific User_Account_Info class to store a user's info
-    into a table"""
     account_name = models.CharField(
         max_length=6, default="reddit", editable=False)
 
 
 class Discord_User_Info(User_Account_Info):
-    """Creates a Discord specific User_Account_Info class to store a user's info
-    into a table"""
     account_name = models.CharField(
         max_length=7, default="discord", editable=False)
 
+class Outlook_User_Info(User_Account_Info):
+    account_name = models.CharField(
+        max_length=7, default="outlook", editable=False)
+
+class News_User_Info(User_Account_Info):
+    account_name = models.CharField(
+        max_length=7, default="newsapi", editable=False)
+    preferences = models.CharField(max_length=100, default="")
+    
 
 class SpotifyApi(Api):
     """The specific implementation for the spotify api
@@ -471,11 +476,10 @@ class DiscordApi(Api):
         self.refresh_token = self.current_user.refresh_token #set to blank in parent class. Has to be set here
 
     def init_contact(self):
-        auth_url = 'https://discord.com/api/oauth2/authorize?client_id=829140725307932733&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fapi%2Fredirect&response_type=code&scope=email%20connections%20rpc%20rpc.notifications.read%20rpc.activities.write%20messages.read'
+        auth_url = self.base_url
         webbrowser.open(auth_url)
         code = local_code_flow()
         token_json = self.obtain_token(code) 
-        print(token_json)
         self.token = token_json["access_token"]
         self.refresh_token = token_json["refresh_token"]
         self.current_user.token = token_json["access_token"]
@@ -489,7 +493,7 @@ class DiscordApi(Api):
             'grant_type': 'authorization_code',
             'code': code,
             'redirect_uri': self.redirect_uri,
-            'scope': 'email connections rpc rpc.notifications.read rpc.activities.write messages.read'
+            'scope': self.scope
         }
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -523,33 +527,40 @@ class DiscordApi(Api):
         
 
 class OutlookApi(Api):
-    def __init__(self, user_id, api_name="discord"):
+    def __init__(self, user_id, api_name="outlook"):
         super().__init__(user_id, api_name, OutlookAPIInfo)
-        self.current_user = Discord_User_Info.objects.get(user_id=user_id)
+        self.current_user = Outlook_User_Info.objects.get(user_id=user_id)
         self.token = self.current_user.token #set to blank in parent class. Has to be set here
         self.refresh_token = self.current_user.refresh_token #set to blank in parent class. Has to be set here
     
     def init_contact(self):
-        auth_url = f"https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?client_id={self.client_id}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fredirect&response_mode=query&scope=https://graph.microsoft.com/.default"
-        webbrowser.open(auth_url)
-        code = local_code_flow()
-        token = self.obtain_token(code)
-        print(token)
-        self.current_user.token = token
-        self.current_user.save()
-        self.token = token
-        
+        try:
+            auth_url = self.base_url
+            webbrowser.open(auth_url)
+            code = local_code_flow()
+            response = self.obtain_token(code)
+            self.current_user.token = response['access_token']
+            self.current_user.refresh_token = response['refresh_token']
+            self.current_user.save()
+            self.token = response['access_token']
+        except Exception as e:
+            self.get_new_token(True)
+            
     def obtain_token(self, code):
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
-        url = self.token_endpoint
-        payload = f'client_id={self.client_id}&scope=https://graph.microsoft.com/.default&code={code}&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fredirect&grant_type=authorization_code&client_secret={self.client_secret}'
-        r = requests.post(url, headers=headers, data=payload)
-        print('request sent')
-        print(r.text)
-        token = r.json().get('access_token')
-        return token
+        payload = {
+            "grant_type": "authorization_code",
+            "client_id": self.client_id,
+            "scope": self.scope,
+            "code": code,
+            "redirect_uri": self.redirect_uri,
+            "client_secret": self.client_secret  
+        }
+        r = requests.post(self.token_endpoint, headers=headers, data=payload)
+        return  r.json()
+        
 
     def contact_api(self):
         """Contacts the API and gets the user data
@@ -599,10 +610,99 @@ class OutlookApi(Api):
         print(data)
         return data
 
-    def get_new_token(self):
-        pass
+    def get_new_token(self, retry):
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+        payload = {
+            "grant_type": "refresh_token",
+            "client_id": self.client_id,
+            "scope": self.scope,
+            "refresh_token": self.refresh_token,
+            "redirect_uri": self.redirect_uri,
+            "client_secret": self.client_secret  
+        }
+        r = requests.post(self.token_endpoint, headers=headers, data=payload)
+        response = r.json()
+        if ('access_token' in response):
+            self.current_user.token = response['access_token']
+            self.current_user.refresh_token = response['refresh_token']
+            self.current_user.save()
+        else:
+            print("could not retrieve new token")
+    
+        if(retry):
+            self.contact_api()
 
-#anay
+
+class NewsApi(Api):
+    news_endpoint = "https://newsapi.org/v2/everything"
+    apiKey = "cce67af05ae04866ad9820f0edbdf363"
+    def __init__(self, user_id, api_name="newsapi"):
+        super().__init__(user_id, api_name, NewsApiInfo)
+        self.current_user = News_User_Info.objects.get(user_id=user_id)
+
+    def get_user_articles(self,article):
+        now = datetime.now()
+        day_past = now - timedelta(hours = 24)
+        now = now.isoformat()
+        day_past = day_past.isoformat()
+        params = {
+            'q': article,
+            'from': str(day_past),
+            'to': str(now),
+            'sortBy': 'popularity',
+            'apiKey': self.apiKey 
+        }
+
+        r = requests.get(self.news_endpoint, params=params)
+        result = r.json()
+        if (result['status'] == 'ok'):
+            return result
+        else:
+            return ""
+
+    def contact_api(self):
+        preferences = self.current_user.preferences.split("  ")
+        urls = {}
+        for pref in preferences:
+            result = self.get_user_articles(pref)
+            articles = result.get('articles')
+            for article in articles:
+                if pref in urls:
+                    urls[pref].append(article['url'])
+                else:
+                     urls[pref] = [article['url']]
+        print(urls)
+        return urls #returns dict of form {preference: url}
+
+    def search_news(self, keywords, sources):
+        params = {
+            'q': urllib.parse.urlencode(keywords),
+            'from': '2021-04-25',
+            'to': '2021-04-25',
+            'sortBy': 'popularity',
+            'apiKey': self.apiKey,
+            'sources': sources, #comma separated
+        }
+        r = requests.get(self.news_endpoint, params=params)
+        result = r.json()
+        if result['status'] == 'ok':
+            return result
+        else:
+            return "search couldn't be performed as specified"
+
+        
+
+
+    def add_prefs(self,str): #this should be moved to a form
+        if (self.current_user.preferences):
+            self.current_user.preferences = self.current_user.preferences + "  " + str.strip()
+        else:
+             self.current_user.preferences = str.strip()
+        self.current_user.save()
+
+
 class SpotifyAPIInfo(ApiInfo):
     """The spotify specific ApiInfo subclass"""
     def __init__(self):
@@ -624,7 +724,7 @@ class RedditAPIInfo(ApiInfo):
         self.base_url = "https://www.reddit.com/api/v1/authorize"
         self.token_endpoint = "https://www.reddit.com/api/v1/access_token"
         self.redirect_url = "http://127.0.0.1:8000/api/redirect"
-        self.scope = {} #TODO: Determine scope settings; possibly {'edit':True}
+        self.scope = {} #TODO: 
         # self.scope 
 
         
@@ -634,10 +734,10 @@ class DiscordAPIInfo(ApiInfo):
         self.api_name = "discord"
         self.client_id = '829140725307932733'
         self.secret = "FNAo1rbbdhLD9pda2SyaIdRl2wC2_ATn" #TODO: 
-        self.base_url = 'https://discord.com/api/oauth2/authorize'
+        self.base_url = 'https://discord.com/api/oauth2/authorize?client_id=829140725307932733&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fapi%2Fredirect&response_type=code&scope=email%20connections%20rpc%20rpc.notifications.read%20rpc.activities.write%20messages.read'
         self.token_endpoint = 'https://discord.com/api/oauth2/token'
         self.redirect_url = 'http://127.0.0.1:8000/api/redirect'
-        self.scope = {} 
+        self.scope = 'email connections rpc rpc.notifications.read rpc.activities.write messages.read'
         # self.scope 
 
 class OutlookAPIInfo(ApiInfo):
@@ -646,9 +746,19 @@ class OutlookAPIInfo(ApiInfo):
         self.api_name = "outlook"
         self.client_id = "9bb0ebfa-b59b-4717-af05-506e0188c0bb"
         self.secret = "w.0ywb5.VL3VxQ~cCkEs~G6p-c8i_~-Q9~" 
-        self.base_url = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize"
+        self.base_url = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?client_id=9bb0ebfa-b59b-4717-af05-506e0188c0bb&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fredirect&response_mode=query&scope=https://graph.microsoft.com/.default"
         self.token_endpoint = 'https://login.microsoftonline.com/consumers/oauth2/v2.0/token'
         self.redirect_url = 'http://localhost:8000/api/redirect' 
-        self.scope = {} 
+        self.scope = "https://outlook.office.com/mail.send https://outlook.office.com/mail.readwrite offline_access"
         # self.scope 
 
+class NewsApiInfo(ApiInfo):
+    def __init___(self):
+        self.api_name = "newsapi"
+        self.secret = "N/A"
+        self.client_id = "N/A"
+        self.base_url = "N/A"
+        self.token_endpoint = "N/A""N/A"
+        self.redirect_url = "N/A"
+        self.scope = "N/A"
+        # self.scope 
