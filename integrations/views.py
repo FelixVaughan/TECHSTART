@@ -1,6 +1,8 @@
 from django.shortcuts import render
+from django.contrib.sessions.models import Session
 from django.http import *
 from tempfile import NamedTemporaryFile
+from integrations.models import *
 import errno
 import os
 #extracts the code from a url
@@ -18,8 +20,14 @@ def obtain_url_code(url):
     except Exception as e:
         print(f"could not find code in string {str(url)}")
         return -1
-    
-def redirect(request): #used to extrapolate code info from redirect uris
+
+def send_request(request):
+    discord = DiscordApi(request.user.id)
+    request.session['api'] = 'discord'
+    discord.init_contact()
+    return "<h1>poop</h1>"
+
+def redirect(request):
     try: 
         url = str(request.build_absolute_uri)
         code = obtain_url_code(url)
@@ -28,12 +36,14 @@ def redirect(request): #used to extrapolate code info from redirect uris
             print(msg)
             return(msg)
         if os.path.exists("code.txt"):
-            os.remove("code.txt") 
+            os.remove("code.txt")
+        if request.session['api'] == 'discord':
+            print("CODE IS: "+code)
         f = open("code.txt","w")
         f.write(code)
         f.close()
     except Exception as e:
-        pass
+        print(e)
     finally:
         return render(request, 'users/redirect.html')
 

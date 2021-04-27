@@ -18,6 +18,7 @@ from praw.util.token_manager import FileTokenManager
 from pyOutlook import OutlookAccount
 from O365 import Account
 from urllib.parse import urlencode
+from django.contrib.sessions.models import Session
 
 def local_code_flow():
     waittime = 0
@@ -324,7 +325,7 @@ class SpotifyApi(Api):
         except tekore.ServiceUnavailable as err:
             print("It looks like you are currently not logged into spotify...")
         except Exception as e:
-            self.get_new_token(true)
+            self.get_new_token(True)
 
     def get_new_token(self,retry): #retry is used to try a failed api contact
         spotify = tekore.RefreshingCredentials(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
@@ -478,6 +479,7 @@ class DiscordApi(Api):
     def init_contact(self):
         auth_url = self.base_url
         webbrowser.open(auth_url)
+        request.session['api'] = 'discord'
         code = local_code_flow()
         token_json = self.obtain_token(code) 
         self.token = token_json["access_token"]
