@@ -705,12 +705,29 @@ class NewsApi(Api):
         self.current_user.save()
 
 
+###########################
+newFile = open("ApiInfo.txt", "r")
+
+apiArr = []   #each element is a class secret
+
+while(True):
+    line = newFile.readline()
+    if not line:
+        break
+    apiArr.append(line.rstrip("\n"))
+
+for i in len(apiArr):
+    apiArr[i] = bytes.fromhex(apiArr[i]).decode()
+    
+
+##############################
+
 class SpotifyAPIInfo(ApiInfo):
     """The spotify specific ApiInfo subclass"""
     def __init__(self):
         self.api_name = "spotify"
         self.client_id = "eab08f62731b44c4a49010295cd3776f"
-        self.secret = "5e4dcc7236ba4cc4b38ca3dbc7f03217" #TODO: make env variable
+        self.secret = apiArr[0] #TODO: make env variable
         self.base_url = "https://accounts.spotify.com/authorize"
         self.token_endpoint = "https://login.microsoftonline.com/consumer/oauth2/v2.0/token"
         self.redirect_url = "http://127.0.0.1:8000/api/redirect"
@@ -722,7 +739,7 @@ class RedditAPIInfo(ApiInfo):
     def __init__(self):
         self.api_name = "reddit"
         self.client_id = "RouUl0Nxn9pysw"
-        self.secret = "4-KNQ9Z9SsKRvpJzVMs2TGP9V2u-hA" #TODO: make env variable
+        self.secret = apiArr[1] #TODO: make env variable
         self.base_url = "https://www.reddit.com/api/v1/authorize"
         self.token_endpoint = "https://www.reddit.com/api/v1/access_token"
         self.redirect_url = "http://127.0.0.1:8000/api/redirect"
@@ -735,7 +752,7 @@ class DiscordAPIInfo(ApiInfo):
     def __init__(self):
         self.api_name = "discord"
         self.client_id = '829140725307932733'
-        self.secret = "FNAo1rbbdhLD9pda2SyaIdRl2wC2_ATn" #TODO: 
+        self.secret = apiArr[2] #TODO: 
         self.base_url = 'https://discord.com/api/oauth2/authorize?client_id=829140725307932733&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fapi%2Fredirect&response_type=code&scope=email%20connections%20rpc%20rpc.notifications.read%20rpc.activities.write%20messages.read'
         self.token_endpoint = 'https://discord.com/api/oauth2/token'
         self.redirect_url = 'http://127.0.0.1:8000/api/redirect'
@@ -747,7 +764,7 @@ class OutlookAPIInfo(ApiInfo):
     def __init__(self):
         self.api_name = "outlook"
         self.client_id = "9bb0ebfa-b59b-4717-af05-506e0188c0bb"
-        self.secret = "w.0ywb5.VL3VxQ~cCkEs~G6p-c8i_~-Q9~" 
+        self.secret = apiArr[3]
         self.base_url = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?client_id=9bb0ebfa-b59b-4717-af05-506e0188c0bb&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fredirect&response_mode=query&scope=https://graph.microsoft.com/.default"
         self.token_endpoint = 'https://login.microsoftonline.com/consumers/oauth2/v2.0/token'
         self.redirect_url = 'http://localhost:8000/api/redirect' 
