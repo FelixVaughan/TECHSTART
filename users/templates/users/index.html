@@ -8,7 +8,17 @@
   <!-- CONTAINER TO HOLD APP INFORMATION -->
     <h1 class="index">OneApp</h1>
     <div class ="box">
-    <div class="container index p-3 my-3 border">
+    <div id= "Spotify" style="display:none" class="container index p-3 my-3 border">
+        <p> Spotify </p>
+        <p>Top Tracks: <a href="{{ user_info.top_tracks.href }}">{{ user_info.top_tracks.href }}</a></p>
+        <p>Top Artist: {{ user_info.top_artist.name }}</p>
+    </div>
+    <div id= "Reddit" style="display:none" class="container index p-3 my-3 border">
+        <p> Spotify </p>
+        <p>Top Tracks: <a href="{{ user_info.top_tracks.href }}">{{ user_info.top_tracks.href }}</a></p>
+        <p>Top Artist: {{ user_info.top_artist.name }}</p>
+    </div>
+    <div id= "Discord" style="display:none" class="container index p-3 my-3 border">
         <p> Spotify </p>
         <p>Top Tracks: <a href="{{ user_info.top_tracks.href }}">{{ user_info.top_tracks.href }}</a></p>
         <p>Top Artist: {{ user_info.top_artist.name }}</p>
@@ -19,9 +29,9 @@
   <div class="loginPopup">
     <div class="formPopup" id="popupForm">
       <form class="formContainer">
-        <button type="submit" class="btn" onclick="spotifyOpen()">Spotify</button>
-        <button type="submit" class="btn" onclick="redditOpen()">Reddit</button>
-        <button type="submit" class="btn" onclick="discordOpen()">Discord</button>
+        <button type="button" class="btn" onclick="spotifyOpen()">Spotify</button>
+        <button type="button" class="btn" onclick="redditOpen()">Reddit</button>
+        <button type="button" class="btn" onclick="discordOpen()">Discord</button>
         <button type="button" class="btn cancel" onclick="closeForm()">Cancel</button>
       </form>
     </div>
