@@ -708,7 +708,7 @@ class NewsApi(Api):
 ###########################
 newFile = open("ApiInfo.txt", "r")
 
-apiArr = []   #each element is a class secret
+apiArr = []   
 
 while(True):
     line = newFile.readline()
@@ -725,50 +725,49 @@ for i in len(apiArr):
 class SpotifyAPIInfo(ApiInfo):
     """The spotify specific ApiInfo subclass"""
     def __init__(self):
-        self.api_name = "spotify"
-        self.client_id = "eab08f62731b44c4a49010295cd3776f"
-        self.secret = apiArr[0] #TODO: make env variable
-        self.base_url = "https://accounts.spotify.com/authorize"
-        self.token_endpoint = "https://login.microsoftonline.com/consumer/oauth2/v2.0/token"
-        self.redirect_url = "http://127.0.0.1:8000/api/redirect"
-        self.scope = "user-top-read user-read-recently-played user-read-playback-position user-read-playback-state user-library-read user-modify-playback-state user-read-currently-playing app-remote-control streaming"
-
+        self.api_name = apiArr[0]
+        self.client_id = apiArr[1]
+        self.secret = apiArr[2] #TODO: make env variable
+        self.base_url = apiArr[3]
+        self.token_endpoint = apiArr[4]
+        self.redirect_url = apiArr[5]
+        self.scope = apiArr[6]
 
 class RedditAPIInfo(ApiInfo):
     """The reddit specific ApiInfo subclass"""
     def __init__(self):
-        self.api_name = "reddit"
-        self.client_id = "RouUl0Nxn9pysw"
-        self.secret = apiArr[1] #TODO: make env variable
-        self.base_url = "https://www.reddit.com/api/v1/authorize"
-        self.token_endpoint = "https://www.reddit.com/api/v1/access_token"
-        self.redirect_url = "http://127.0.0.1:8000/api/redirect"
-        self.scope = {} #TODO: 
+        self.api_name = apiArr[7]
+        self.client_id = apiArr[8]
+        self.secret = apiArr[9] #TODO: make env variable
+        self.base_url =apiArr[10]
+        self.token_endpoint = apiArr[11]
+        self.redirect_url = apiArr[12]
+        self.scope = {} #TODO:   #apiArr[13]
         # self.scope 
 
         
 class DiscordAPIInfo(ApiInfo):
     """The discord specific ApiInfo subclass"""
     def __init__(self):
-        self.api_name = "discord"
-        self.client_id = '829140725307932733'
-        self.secret = apiArr[2] #TODO: 
-        self.base_url = 'https://discord.com/api/oauth2/authorize?client_id=829140725307932733&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fapi%2Fredirect&response_type=code&scope=email%20connections%20rpc%20rpc.notifications.read%20rpc.activities.write%20messages.read'
-        self.token_endpoint = 'https://discord.com/api/oauth2/token'
-        self.redirect_url = 'http://127.0.0.1:8000/api/redirect'
-        self.scope = 'email connections rpc rpc.notifications.read rpc.activities.write messages.read'
+        self.api_name = apiArr[14]
+        self.client_id = apiArr[15]
+        self.secret = apiArr[16] #TODO: 
+        self.base_url = apiArr[17]
+        self.token_endpoint = apiArr[18]
+        self.redirect_url = apiArr[19]
+        self.scope = apiArr[20]
         # self.scope 
 
 class OutlookAPIInfo(ApiInfo):
     """The outlook specific ApiInfo subclass"""
     def __init__(self):
-        self.api_name = "outlook"
-        self.client_id = "9bb0ebfa-b59b-4717-af05-506e0188c0bb"
-        self.secret = apiArr[3]
-        self.base_url = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?client_id=9bb0ebfa-b59b-4717-af05-506e0188c0bb&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fredirect&response_mode=query&scope=https://graph.microsoft.com/.default"
-        self.token_endpoint = 'https://login.microsoftonline.com/consumers/oauth2/v2.0/token'
-        self.redirect_url = 'http://localhost:8000/api/redirect' 
-        self.scope = "https://outlook.office.com/mail.send https://outlook.office.com/mail.readwrite offline_access"
+        self.api_name = apiArr[21]
+        self.client_id = apiArr[22]
+        self.secret = apiArr[23]
+        self.base_url = apiArr[24]
+        self.token_endpoint = apiArr[25]
+        self.redirect_url = apiArr[26]
+        self.scope = apiArr[27]
         # self.scope 
 
 class NewsApiInfo(ApiInfo):
