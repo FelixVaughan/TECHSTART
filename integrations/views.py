@@ -56,14 +56,8 @@ def authenticate_outlook(request):
 #          Methods used for apis that reqire user output             # 
 ######################################################################
 def play_spotify(request):
-    data = None 
-    if request.method == 'POST':
-        form = UserForm(request.POST or None)
-        if form.is_valid():
-            data =  form.cleaned_data.get("data")
-            data = str(data)
-    if (data):
-        pass
+    spotify = SpotifyApi(request.user.id)
+    spotify.play()
     return HttpResponse('')
 
 def change_spotify_volume(request):
@@ -71,6 +65,63 @@ def change_spotify_volume(request):
     spotify = SpotifyApi(request.user.id)
     spotify.change_volume(30)
     return HttpResponse('')
+
+def shuffle(request):
+    spotify = SpotifyApi(request.user.id)
+    spotify.shuffle()
+    return HttpResponse('')
+    
+def play_next(request):
+    spotify = SpotifyApi(request.user.id)
+    spotify.next()
+    return HttpResponse('')
+
+def play_prev(request):
+    spotify = SpotifyApi(request.user.id)
+    spotify.prev()
+    return HttpResponse('')
+
+def pause_play(request):
+    spotify = SpotifyApi(request.user.id)
+    spotify.pause()
+    return HttpResponse('')
+
+######################################################################
+#                                End                                 # 
+######################################################################
+
+    # headers = {
+    #     'Authorization': f'Bearer {self.token}',
+    #     'Accept': 'application/json',
+    #     'Content-Type': 'application/json'
+    # }
+    # dir = "next"
+    # if(prev):
+    #     dir = "previous"
+    # requests.post("https://api.spotify.com/v1/me/player/{dir}", headers=headers, params=params)
+
+def pause(request):
+    spotify = SpotifyApi(request.user.id)
+    spotify.pause()
+    return HttpResponse('')
+
+    # headers = {
+    #     'Authorization': f'Bearer {self.token}',
+    #     'Accept': 'application/json',
+    #     'Content-Type': 'application/json'
+    # }
+    # requests.put("https://api.spotify.com/v1/me/player/pause")
+
+def play(request):
+    spotify = SpotifyApi(request.user.id)
+    spotify.play()
+    return HttpResponse('')
+    # headers = {
+    #     'Authorization': f'Bearer {self.token}',
+    #     'Accept': 'application/json',
+    #     'Content-Type': 'application/json'
+    # }
+    # requests.put("https://api.spotify.com/v1/me/player/play")
 
 
 
