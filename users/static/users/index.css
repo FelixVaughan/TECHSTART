@@ -1,0 +1,159 @@
+
+ul {
+    font-family: 'Roboto';
+}
+
+li {
+    list-style: circle;
+  }
+
+  .list {
+    list-style: square;
+    font-family: 'Roboto'; font-size: 22px;
+  }
+
+  :root {
+    --green: #fafcfa;
+    --white: #ffffff;
+    --black: #000000;
+    --oac1: #bfc3cc;
+    --oac2: #303133;
+  }
+
+  .dark-theme {
+    --bg: var(--oac1);
+    --fontColor: var(--oac2);
+    --btnBg: var(--oac1);
+    --btnFontColor: var(--oac2);
+  }
+
+  * {
+    color: var(--fontColor);
+    font-family: 'Roboto';
+    box-sizing: border-box;
+  }
+/*
+  body.index {
+    background: var(--bg);
+    font-family: 'Roboto';font-size: 22px;
+}
+*/
+h1 {
+  text-align: center;
+  font-family: 'Roboto';font-size: 40px;
+}
+
+h2.index {
+  text-align: left;
+  font-family: 'Roboto';font-size: 30px;
+   --fontColor: var(--oac2);
+}
+
+  h4.index {
+    margin: 2rem 0rem 1rem;
+  }
+
+  p.index {
+    --fontColor: var(--oac2);
+    font-family: 'Roboto';font-size: 20px;
+  }
+
+   h5.index {
+    --fontColor: var(--oac2);
+    font-family: 'Roboto';font-size: 40px;
+  }
+
+    h6.index {
+    --fontColor: var(--oac2);
+    font-family: 'Roboto';font-size: 20px;
+  }
+/*
+  .row {
+    background-color: var(--oac2);
+    color: white;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: 45%;
+    margin-right: 45%;
+    text-align: center;
+  }
+ */
+  .append {
+    margin-top:20px;
+  }
+
+  .block {
+    display: block;
+    border: none;
+    background-color: var(--oac2);
+    color: white;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: 45%;
+    margin-right: 45%;
+    text-align: center;
+  }
+
+
+.block:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.container.index  {
+  display: block;
+  background-color: var(--oac1);
+}
+
+.openBtn {
+  display: flex;
+  justify-content: left;
+}
+.openButton {
+  border: none;
+  border-radius: 5px;
+  background-color: var(--oac2);
+  color: var(--oac1);;
+  padding: 14px 20px;
+  cursor: pointer;
+  position: fixed;
+}
+.loginPopup {
+  position: relative;
+  text-align: center;
+  width: 100%;
+}
+.formPopup {
+  display: none;
+  position: fixed;
+  left: 50%;
+  top: 35%;
+  transform: translate(-50%, 5%);
+  border: 3px solid #999999;
+  z-index: 9;
+}
+.formContainer {
+  max-width: 300px;
+  padding: 20px;
+  background-color: var(--oac1);
+}
+
+.formContainer .btn {
+  padding: 12px 20px;
+  border: none;
+  background-color: var(--oac2);
+  color: #fff;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 15px;
+  opacity: 0.8;
+}
+.formContainer .cancel {
+  background-color: #cc0000;
+}
+.formContainer .btn:hover,
+.openButton:hover {
+  opacity: 1;
+}
