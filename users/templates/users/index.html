@@ -6,22 +6,23 @@
 {% block content %}
 
   <!-- CONTAINER TO HOLD APP INFORMATION -->
-    <h1 class="index">OneApp</h1>
-    <div class ="box">
+    <div class ="index">
     <div id= "Spotify" style="display:none" class="container index p-3 my-3 border">
-        <p> Spotify </p>
-        <p>Top Tracks: <a href="{{ user_info.top_tracks.href }}">{{ user_info.top_tracks.href }}</a></p>
-        <p>Top Artist: {{ user_info.top_artist.name }}</p>
+        <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png" alt="Spotify logo" height="100" />
+        <p class = "index"><strong>Top Tracks:</strong> <a href="{{ user_info.top_tracks.href }}">{{ user_info.top_tracks.href }}</a></p>
+        <p class = "index"><strong>Top Artist:</strong> {{ user_info.top_artist.name }}</p>
     </div>
     <div id= "Reddit" style="display:none" class="container index p-3 my-3 border">
-        <p> Spotify </p>
-        <p>Top Tracks: <a href="{{ user_info.top_tracks.href }}">{{ user_info.top_tracks.href }}</a></p>
-        <p>Top Artist: {{ user_info.top_artist.name }}</p>
+        <img src="https://www.redditinc.com/assets/images/site/reddit-logo.png"  alt="Reddit Text Logo PNG icon" height="100"/>
+
     </div>
-    <div id= "Discord" style="display:none" class="container index p-3 my-3 border">
-        <p> Spotify </p>
-        <p>Top Tracks: <a href="{{ user_info.top_tracks.href }}">{{ user_info.top_tracks.href }}</a></p>
-        <p>Top Artist: {{ user_info.top_artist.name }}</p>
+    <div id= "Outlook" style="display:none" class="container index p-3 my-3 border">
+        <p class = "index"> Outlook </p>
+
+    </div>
+        <div id= "News" style="display:none" class="container index p-3 my-3 border">
+        <p class = "index"> World News </p>
+
     </div>
   </div>
 
@@ -31,7 +32,8 @@
       <form class="formContainer">
         <button type="button" class="btn" onclick="spotifyOpen()">Spotify</button>
         <button type="button" class="btn" onclick="redditOpen()">Reddit</button>
-        <button type="button" class="btn" onclick="discordOpen()">Discord</button>
+        <button type="button" class="btn" onclick="outlookOpen()">Outlook</button>
+         <button type="button" class="btn" onclick="newsOpen()">News</button>
         <button type="button" class="btn cancel" onclick="closeForm()">Cancel</button>
       </form>
     </div>
