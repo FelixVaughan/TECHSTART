@@ -86,6 +86,22 @@ def pause_play(request):
     spotify.pause()
     return HttpResponse('')
 
+def play_album(request):
+    temp = SpotifyApi(request.user.id)
+    spotify = tekore.Spotify(temp.current_user.token)
+    albums = spotify.saved_albums(limit=15).items
+    a = 0
+    print("your albums are:")
+    for album in albums:
+        print("{a}. {album.album.name}")
+
+    ########implement front end choice to choose which album#########
+
+    alb = tekore.to_uri('album', albums[0].album.id) #is zero rn but should be changed to index chosen by user
+    spotify.playback_start_context(alb)
+
+
+
 ######################################################################
 #                                End                                 # 
 ######################################################################

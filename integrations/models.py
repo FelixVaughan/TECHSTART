@@ -224,7 +224,6 @@ class SpotifyApi(Api):
         except Exception as e:
             print(e)
 
-
     def contact_api(self, album_uri:str = "") -> dict:  # will def need parameters in the future
         """Contacts Spotify API and returns a dictionary of values
 
@@ -321,18 +320,8 @@ class SpotifyApi(Api):
             return -1  
 
     def change_volume(self,amount):
-        spotify.playback_volume(amount)
-        # headers = {
-        #     'Authorization': f'Bearer {self.token}'
-        # }
+        self.spotify.playback_volume(amount)
 
-        # params = {
-        #     "volume_percent": amount
-        # }
-        # req = requests.put("https://api.spotify.com/v1/me/player/volume", headers=headers, params=params)
-        # print(req.text)
-
-        
     def next(self):
         self.spotify.playback_next()
 
@@ -341,33 +330,16 @@ class SpotifyApi(Api):
 
     def prev(self):
         self.spotify.playback_previous()
-        # headers = {
-        #     'Authorization': f'Bearer {self.token}',
-        #     'Accept': 'application/json',
-        #     'Content-Type': 'application/json'
-        # }
-        # dir = "next"
-        # if(prev):
-        #     dir = "previous"
-        # requests.post("https://api.spotify.com/v1/me/player/{dir}", headers=headers, params=params)
 
     def pause(self):
         self.spotify.playback_pause()
-        # headers = {
-        #     'Authorization': f'Bearer {self.token}',
-        #     'Accept': 'application/json',
-        #     'Content-Type': 'application/json'
-        # }
-        # requests.put("https://api.spotify.com/v1/me/player/pause")
 
     def play(self):
         self.spotify.playback_resume()
-        # headers = {
-        #     'Authorization': f'Bearer {self.token}',
-        #     'Accept': 'application/json',
-        #     'Content-Type': 'application/json'
-        # }
-        # requests.put("https://api.spotify.com/v1/me/player/play")
+
+    
+        
+
 
 class RedditApi(Api):
     def __init__(self, user_id, api_name="reddit"):
