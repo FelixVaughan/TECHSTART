@@ -198,11 +198,14 @@ class SpotifyApi(Api):
         self.token = self.current_user.token
         self.refresh_token = self.current_user.refresh_token
         self.conf = (self.client_id, self.client_secret, self.redirect_uri)
-        self.spotify = tekore.RefreshingCredentials(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
+        self.spotify_auth = tekore.RefreshingCredentials(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
+        self.spotify = None
+        if(self.current_user.token):
+            self.spotify = tekore.Spotify(self.current_user.token)
 
     def init_contact(self):
         try:
-            auth_url = self.spotify.user_authorisation_url(scope=self.scope)
+            auth_url = self.spotify_auth.user_authorisation_url(scope=self.scope)
             webbrowser.open(auth_url)
         except KeyError as e:
             print("Authentication with spotify API could NOT be completed as no code was found. Access token NOT set!")
@@ -211,7 +214,7 @@ class SpotifyApi(Api):
     
     def obtain_token(self, code):
         try:
-            access_token = self.spotify.request_user_token(code)
+            access_token = self.spotify_auth.request_user_token(code)
             self.current_user.token = access_token
             self.current_user.refresh_token = access_token.refresh_token
             self.current_user.save()
@@ -318,28 +321,53 @@ class SpotifyApi(Api):
             return -1  
 
     def change_volume(self,amount):
-        headers = {
-            'Authorization': f'Bearer {self.token}'
-        }
+        spotify.playback_volume(amount)
+        # headers = {
+        #     'Authorization': f'Bearer {self.token}'
+        # }
 
-        params = {
-            "volume_percent": amount
-        }
-        req = requests.put("https://api.spotify.com/v1/me/player/volume", headers=headers, params=params)
-        print(req.text)
+        # params = {
+        #     "volume_percent": amount
+        # }
+        # req = requests.put("https://api.spotify.com/v1/me/player/volume", headers=headers, params=params)
+        # print(req.text)
 
-    def play_album(self, album):
-        pass
-
-    def play_song(self, song):
-        pass
-    
+        
     def next(self):
-        pass
+        self.spotify.playback_next()
+
+    def shuffle(self):
+        self.spotify.playback_shuffle()
 
     def prev(self):
-        pass
+        self.spotify.playback_previous()
+        # headers = {
+        #     'Authorization': f'Bearer {self.token}',
+        #     'Accept': 'application/json',
+        #     'Content-Type': 'application/json'
+        # }
+        # dir = "next"
+        # if(prev):
+        #     dir = "previous"
+        # requests.post("https://api.spotify.com/v1/me/player/{dir}", headers=headers, params=params)
 
+    def pause(self):
+        self.spotify.playback_pause()
+        # headers = {
+        #     'Authorization': f'Bearer {self.token}',
+        #     'Accept': 'application/json',
+        #     'Content-Type': 'application/json'
+        # }
+        # requests.put("https://api.spotify.com/v1/me/player/pause")
+
+    def play(self):
+        self.spotify.playback_resume()
+        # headers = {
+        #     'Authorization': f'Bearer {self.token}',
+        #     'Accept': 'application/json',
+        #     'Content-Type': 'application/json'
+        # }
+        # requests.put("https://api.spotify.com/v1/me/player/play")
 
 class RedditApi(Api):
     def __init__(self, user_id, api_name="reddit"):
