@@ -1,16 +1,49 @@
 {% extends "users/base.html"%}
-  {% block content %}
-  <main role="main" class="container">
-    <div class="row">
-      <div class="col-md-8">
-        {% if messages %}
-          {% for message in messages %}
-              <div class="alert alert-{{ message.tags }}">
-                  {{ message }}
-              </div>
-          {% endfor %}
-        {% endif %}
-      </div>
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'users/index.css' %}">
+{% endblock %}
+{% block content %}
+
+  <!-- CONTAINER TO HOLD APP INFORMATION -->
+    <h1 class="index">OneApp</h1>
+    <div class ="box">
+    <div id= "Spotify" style="display:none" class="container index p-3 my-3 border">
+        <p> Spotify </p>
+        <p>Top Tracks: <a href="{{ user_info.top_tracks.href }}">{{ user_info.top_tracks.href }}</a></p>
+        <p>Top Artist: {{ user_info.top_artist.name }}</p>
     </div>
-  </main>
+    <div id= "Reddit" style="display:none" class="container index p-3 my-3 border">
+        <p> Spotify </p>
+        <p>Top Tracks: <a href="{{ user_info.top_tracks.href }}">{{ user_info.top_tracks.href }}</a></p>
+        <p>Top Artist: {{ user_info.top_artist.name }}</p>
+    </div>
+    <div id= "Discord" style="display:none" class="container index p-3 my-3 border">
+        <p> Spotify </p>
+        <p>Top Tracks: <a href="{{ user_info.top_tracks.href }}">{{ user_info.top_tracks.href }}</a></p>
+        <p>Top Artist: {{ user_info.top_artist.name }}</p>
+    </div>
+  </div>
+
+  <!-- POPUP FORM TO SELECT APP -->
+  <div class="loginPopup">
+    <div class="formPopup" id="popupForm">
+      <form class="formContainer">
+        <button type="button" class="btn" onclick="spotifyOpen()">Spotify</button>
+        <button type="button" class="btn" onclick="redditOpen()">Reddit</button>
+        <button type="button" class="btn" onclick="discordOpen()">Discord</button>
+        <button type="button" class="btn cancel" onclick="closeForm()">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+<!-- BUTTON TO INITIATE APP SELECTING FORM -->
+<br>
+<button type="button" class="block" onclick="openForm()"><strong>Select Application</strong></button>
+<!-- JS and COLOUR THEME SEL -->
+<script src="{% static 'users/app.js' %}"></script>
+</div>
+
+
+
 {% endblock content %}

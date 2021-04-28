@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UserRegistrationForm
+from integrations.models import *
 # Create your views here.
 def index(request):
     """Renders the homepage"""
-    return render(request, "users/index.html")
+    spot = SpotifyApi(1)
+    user_info = spot.contact_api()
+    return render(request, "users/index.html", {'user_info': user_info})
 
 
 # renders register page
