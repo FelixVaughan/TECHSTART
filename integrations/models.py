@@ -45,7 +45,7 @@ def local_code_flow():
 class User_Account_Info(models.Model):
     account_name = models.CharField(max_length=20)  # spotify, facebook, etc. Set by default in subclass implementation constructors
     account_user_name = models.CharField(max_length=30, default="")
-    users = models.ForeignKey(User, on_delete=models.CASCADE, default='1')
+    # users = models.ForeignKey(User, on_delete=models.CASCADE, default='1')
     user_id = models.CharField(max_length=10)
     token = models.CharField(max_length=2048, default="")
     refresh_token = models.CharField(max_length=512, blank=True)
@@ -168,11 +168,12 @@ class Api:
 class Spotify_User_Info(User_Account_Info):
     account_name = models.CharField(
         max_length=7, default="spotify", editable=False)
-
+    users = models.OneToOneField(User, on_delete=models.CASCADE, default='1')
 
 class Reddit_User_Info(User_Account_Info):
     account_name = models.CharField(
         max_length=6, default="reddit", editable=False)
+    users = models.OneToOneField(User, on_delete=models.CASCADE, default='1')
 
 
 class Discord_User_Info(User_Account_Info):
@@ -182,6 +183,7 @@ class Discord_User_Info(User_Account_Info):
 class Outlook_User_Info(User_Account_Info):
     account_name = models.CharField(
         max_length=7, default="outlook", editable=False)
+    users = models.OneToOneField(User, on_delete=models.CASCADE, default='1')
 
 class News_User_Info(User_Account_Info):
     account_name = models.CharField(
@@ -213,6 +215,7 @@ class SpotifyApi(Api):
             self.current_user.token = access_token
             self.current_user.refresh_token = access_token.refresh_token
             self.current_user.save()
+            print(f"spotify token set to {token}")
         except KeyError as e:
             print("Authentication with spotify API could NOT be completed as no code was found. Access token NOT set!")
         except Exception as e:
@@ -292,6 +295,7 @@ class SpotifyApi(Api):
             # Set object attributes
             user_values["top_artist"] = spotify.current_user_top_artists(limit=1).items[0]
             #here
+            print(user_values)
             return user_values
         except tekore.ServiceUnavailable as err:
             print("It looks like you are currently not logged into spotify...")
@@ -300,16 +304,41 @@ class SpotifyApi(Api):
 
     def get_new_token(self,retry): #retry is used to try a failed api contact
         spotify = tekore.RefreshingCredentials(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
-        new_access_token = spotify.refresh_user_token(self.current_user.refresh_token)
-        self.current_user.token = new_access_token
-        self.current_user.refresh_token = new_access_token.refresh_token
-        self.current_user.save()
-        if(retry):
-            try:
-                self.contact_api()
-            except Exception as e:
-                print(e)
-        
+        if(self.current_user.refresh_token):
+            new_access_token = spotify.refresh_user_token(self.current_user.refresh_token)
+            self.current_user.token = new_access_token.access_token
+            self.current_user.refresh_token = new_access_token.refresh_token
+            self.current_user.save()
+            if(retry):
+                try:
+                    self.contact_api()
+                except Exception as e:
+                    print(e)
+        else:
+            return -1  
+
+    def change_volume(self,amount):
+        headers = {
+            'Authorization': f'Bearer {self.token}'
+        }
+
+        params = {
+            "volume_percent": amount
+        }
+        req = requests.put("https://api.spotify.com/v1/me/player/volume", headers=headers, params=params)
+        print(req.text)
+
+    def play_album(self, album):
+        pass
+
+    def play_song(self, song):
+        pass
+    
+    def next(self):
+        pass
+
+    def prev(self):
+        pass
 
 
 class RedditApi(Api):
@@ -354,7 +383,7 @@ class RedditApi(Api):
         refresh_token =  self.reddit.auth.authorize(code)
         self.current_user.refresh_token = refresh_token
         self.current_user.save()
-        print(f"Token set: {refresh_token}")
+        print(f"reddit Token set: {refresh_token}")
     
     def contact_api(self):
         """Contacts the API and gets the user data
@@ -502,9 +531,12 @@ class DiscordApi(Api):
 class OutlookApi(Api):
     def __init__(self, user_id, api_name="outlook"):
         super().__init__(user_id, api_name, OutlookAPIInfo)
-        self.current_user = Outlook_User_Info.objects.get(user_id=user_id)
-        self.token = self.current_user.token #set to blank in parent class. Has to be set here
-        self.refresh_token = self.current_user.refresh_token #set to blank in parent class. Has to be set here
+        try:
+            self.current_user = Outlook_User_Info.objects.get(user_id=user_id)
+            self.token = self.current_user.token #set to blank in parent class. Has to be set here
+            self.refresh_token = self.current_user.refresh_token #set to blank in parent class. Has to be set here
+        except Exception as e:
+            print("Exception: {e}")
     
     def init_contact(self):
         auth_url = self.base_url
@@ -524,11 +556,12 @@ class OutlookApi(Api):
         }
         r = requests.post(self.token_endpoint, headers=headers, data=payload)
         token_response  =  r.json()
+        print(r.json())
         self.current_user.token = token_response['access_token']
         self.current_user.refresh_token = token_response['refresh_token']
         self.current_user.save()
         self.token = token_response['access_token']
-        print(f"Token set: {self.token}")
+        print(f"outlook oken set: {self.token}")
 
     def contact_api(self):
         """Contacts the API and gets the user data
@@ -645,10 +678,12 @@ class NewsApi(Api):
         return urls #returns dict of form {preference: url}
 
     def search_news(self, keywords, sources):
+        now = datetime.now()
+        day_past = now - timedelta(hours = 24)
         params = {
             'q': urllib.parse.urlencode(keywords),
-            'from': '2021-04-25',
-            'to': '2021-04-25',
+            'from': now,
+            'to': day_past,
             'sortBy': 'popularity',
             'apiKey': self.apiKey,
             'sources': sources, #comma separated
