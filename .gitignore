@@ -105,3 +105,4 @@ venv.bak/
 
 # Real Secret Key
 secretkey.txt
+/.metadata/
