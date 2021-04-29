@@ -4,3 +4,4 @@ jsonfield
 tekore
 praw 
 O365
+psycopg2

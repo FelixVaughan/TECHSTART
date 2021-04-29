@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="cf463b05-f91f-4f97-bcba-e335f7d1d867" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/users/templates/users/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integrations/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/integrations/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/techstart/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/techstart/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/templates/404.html" beforeDir="false" afterPath="$PROJECT_DIR$/users/templates/users/404.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/templates/500.html" beforeDir="false" afterPath="$PROJECT_DIR$/users/templates/users/500.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/templates/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/views.py" afterDir="false" />
+    <list default="true" id="cf463b05-f91f-4f97-bcba-e335f7d1d867" name="Default Changelist" comment="added logos and changed">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/static/users/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/users/static/users/main.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/templates/users/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/users/templates/users/base.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +54,30 @@
       <recent name="$PROJECT_DIR$/users/templates/users" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Django Server.OneApp2">
+    <configuration name="OneApp2" type="Python.DjangoServer" factoryName="Django server">
+      <module name="OneApp2" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <option name="port" value="8000" />
+      <option name="host" value="" />
+      <option name="additionalOptions" value="" />
+      <option name="browserUrl" value="" />
+      <option name="runTestServer" value="false" />
+      <option name="runNoReload" value="false" />
+      <option name="useCustomRunCommand" value="false" />
+      <option name="customRunCommand" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="TECHSTART" type="Python.DjangoServer" factoryName="Django server">
       <module name="TECHSTART" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -94,7 +112,31 @@
       <option name="presentableId" value="Default" />
       <updated>1616436046958</updated>
       <workItem from="1616436051995" duration="5745000" />
+      <workItem from="1619568821782" duration="7000" />
+      <workItem from="1619568850942" duration="15149000" />
     </task>
+    <task id="LOCAL-00001" summary="Extended Nav Bar, Homepage showing SpotifyAPI info (WITH HARDCODED USER in views)">
+      <created>1619578393831</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1619578393831</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Added very basic JS for containers to hide/show">
+      <created>1619582603244</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1619582603244</updated>
+    </task>
+    <task id="LOCAL-00003" summary="added logos and changed">
+      <created>1619586886455</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1619586886456</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -110,5 +152,12 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Extended Nav Bar, Homepage showing SpotifyAPI info (WITH HARDCODED USER in views)" />
+    <MESSAGE value="Added very basic JS for containers to hide/show" />
+    <MESSAGE value="added logos and changed" />
+    <option name="LAST_COMMIT_MESSAGE" value="added logos and changed" />
   </component>
 </project>
