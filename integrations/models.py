@@ -1,4 +1,6 @@
 from typing import Tuple
+import O365
+from O365.connection import MSGraphProtocol
 from django.db import models
 from requests_oauthlib import OAuth2Session
 from jsonfield import JSONField
@@ -14,7 +16,7 @@ import praw  # reddit api
 from time import sleep
 from tempfile import NamedTemporaryFile
 from praw.util.token_manager import FileTokenManager
-from pyOutlook import OutlookAccount
+from O365 import Account
 
 #possibly make part of a general handler
 def local_code_flow():
@@ -182,6 +184,12 @@ class Discord_User_Info(User_Account_Info):
     account_name = models.CharField(
         max_length=7, default="discord", editable=False)
 
+
+class Outlook_User_Info(User_Account_Info):
+    """Creates a Outlook specific User_Account_Info class to store a user's info
+    into a table"""
+    account_name = models.CharField(
+        max_length=7, default="outlook", editable=False)
 
 class SpotifyApi(Api):
     """The specific implementation for the spotify api
@@ -507,36 +515,44 @@ class DiscordApi(Api):
 class OutlookApi(Api):
     def __init__(self, user_id, api_name="discord"):
         super().__init__(user_id, api_name, OutlookAPIInfo)
-        self.current_user = Discord_User_Info.objects.get(user_id=user_id)
+        self.current_user = Outlook_User_Info.objects.get(user_id=user_id)
         self.token = self.current_user.token #set to blank in parent class. Has to be set here
         self.refresh_token = self.current_user.refresh_token #set to blank in parent class. Has to be set here
     
     def init_contact(self):
-        auth_url = f"https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?client_id={self.client_id}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fredirect&response_mode=query&scope=https://graph.microsoft.com/.default"
-        webbrowser.open(auth_url)
-        code = local_code_flow()
-        token = self.obtain_token(code)
-        print(token)
-        self.token = token
+        # auth_url = f"https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?client_id={self.client_id}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fredirect&response_mode=query&scope=offline_access+https%3A%2F%2Fgraph.microsoft.com%2FUser.Read+https%3A%2F%2Fgraph.microsoft.com%2FMail.ReadWrite+https%3A%2F%2Fgraph.microsoft.com%2FMail.Send&state=X9oJVZgNga4mtAIhRdwfYA33FHzJgE&access_type=offline"
         
+        # print(auth_url) # TODO: remove
+        # webbrowser.open(auth_url)
+        # code = local_code_flow()
+        # token = self.obtain_token(code)
+        # print(token)
+        # self.token = token
+        ...
+
+
     def obtain_token(self, code):
-        headers = {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-        url = self.token_endpoint
-        payload = f'client_id={self.client_id}&scope=https://graph.microsoft.com/.default&code={code}&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fredirect&grant_type=authorization_code&client_secret={self.client_secret}'
-        r = requests.post(url, headers=headers, data=payload)
-        print('request sent')
-        print(r.text)
-        token = r.json().get('access_token')
-        return token
+        # headers = {
+        #     'Content-Type': 'application/x-www-form-urlencoded'
+        # }
+        # url = self.token_endpoint
+        # payload = f'client_id={self.client_id}&scope=offline_access+https%3A%2F%2Fgraph.microsoft.com%2FUser.Read+https%3A%2F%2Fgraph.microsoft.com%2FMail.ReadWrite+https%3A%2F%2Fgraph.microsoft.com%2FMail.Send&state=X9oJVZgNga4mtAIhRdwfYA33FHzJgE&code={code}&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fredirect&grant_type=authorization_code&client_secret={self.client_secret}'
+        # print(payload)
+        # r = requests.post(url, headers=headers, data=payload)
+        # print('request sent')
+        # print(r.text)
+        # token = r.json().get('access_token')
+        # return token
+        ...
+
 
     def contact_api(self):
         """Contacts the API and gets the user data
 
         References
         ----------
-        - Message objects: https://pyoutlook.readthedocs.io/en/latest/pyOutlook.html#message
+        - To get the body of a message use ```Message.body```
+        - Full list of Message object attributes here: https://github.com/O365/python-o365/blob/master/O365/message.py#L348-L1081
 
         Returns
         -------
@@ -564,18 +580,25 @@ class OutlookApi(Api):
         user.outlook_user_info_set.add(entry)
         user.save()
 
-        # Initialize and access the reddit api
+        # Initialize and access the Outlook api
         outlook_User = OutlookApi(user.id)
-        outlook_User.init_contact()
-        ... # need to wait to paste url and finalize initialization 
-        
+
         # Contact API to get data
         user_data = outlook_User.contact_api()
 
         """
         data = {}
-        acc = OutlookAccount(self.token)
-        data["inbox"] = acc.inbox()
+
+        
+        oinfo = OutlookAPIInfo()
+        credentials = (oinfo.client_id, oinfo.secret)
+        scopes = ['offline_access', 'https://graph.microsoft.com/User.Read', 'https://graph.microsoft.com/Mail.ReadWrite', 'https://graph.microsoft.com/Mail.Send']
+        account = Account(credentials, scopes=scopes)
+
+        account.authenticate(requested_scopes=scopes, redirect_uri = oinfo.redirect_url)
+
+        inbox = account.mailbox().inbox_folder()
+        data["inbox"] = [email for email in inbox.get_messages()] # Pulls first 25 emails from inbox into list
         return data
 
     def get_new_token(self):
@@ -627,7 +650,7 @@ class OutlookAPIInfo(ApiInfo):
         self.secret = "w.0ywb5.VL3VxQ~cCkEs~G6p-c8i_~-Q9~" 
         self.base_url = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize"
         self.token_endpoint = 'https://login.microsoftonline.com/consumers/oauth2/v2.0/token'
-        self.redirect_url = 'http://localhost:8000/api/redirect' 
+        self.redirect_url = '"https://login.microsoftonline.com/common/oauth2/nativeclient"' 
         self.scope = {} 
         # self.scope 
 

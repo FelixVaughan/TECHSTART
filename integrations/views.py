@@ -23,7 +23,7 @@ def redirect(request): #used to extrapolate code info from redirect uris
     try: 
         url = str(request.build_absolute_uri)
         code = obtain_url_code(url)
-        if(code is -1):
+        if(code == -1):
             msg = "Code not set as it was not found in redirect. Url probably malformed..."
             print(msg)
             return(msg)

@@ -3,4 +3,4 @@ requests-oauthlib
 jsonfield
 tekore
 praw 
-pyOutlook
+O365
