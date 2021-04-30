@@ -137,20 +137,12 @@ class Api:
         user_account_table.users.add(user)
         self.populate_user_table(user_account_table, token)
 
-<<<<<<< HEAD
+
     #Whole method could probably be implemented in a more efficient manner with a for loop but we'd need a way to access all field attributes.
     def populate_user_table(self, user_table_ref, given_dict): #should take in a model that is a child of User_Account_Info
-        #print(f"Populated {user_table_ref.account_name} table with row data: ")
-=======
     # Whole method could probably be implemented in a more efficient manner with a for loop but we'd need a way to access all field attributes.
     # should take in a model that is a child of User_Account_Info
-    def populate_user_table(self, user_table_ref, given_dict):
-<<<<<<< HEAD
         print(f"Populated {user_table_ref.account_name} table with row data: ")
->>>>>>> 286b38e9a6a08aa480ebfaaea4d04b0c71c369e2
-=======
-        print(f"Populating {user_table_ref.account_name} table with row data: ")
->>>>>>> b8854909fae6e970c778e31509fbfa9de4dc59d6
         if "access_token" in given_dict.keys():
             user_table_ref.token = given_dict['access_token']
             #print(f"token: {user_table_ref.token}")
@@ -438,7 +430,7 @@ class RedditApi(Api):
         red = RedditApi(user.id)
         reddit, reddit_user = red.init_contact()
         ... # need to wait to paste url and finalize initialization 
-        
+
         # Contact API to get data
         user_data = red.contact_api(reddit, reddit_user)
 
@@ -482,7 +474,6 @@ class RedditApi(Api):
 
 class DiscordApi(Api):
     def __init__(self, user_id, api_name="discord"):
-<<<<<<< HEAD
         super().__init__(user_id, api_name)
         self.user_to_serve = Discord_User_Info.objects.get(user_id=user_id) 
         self.token = self.user_to_serve.token #set to blank in parent class. Has to be set here
@@ -491,7 +482,6 @@ class DiscordApi(Api):
     def init_contact(self):
         selfDirectUri = "http://127.0.0.1:8000/api/redirect?code=osXs6cZSKLd4SaeEXo65Qt3DEz7Bpd"
         webbrowser.open(selfDirectUri)
-=======
         super().__init__(user_id, api_name, DiscordAPIInfo)
         self.current_user = Discord_User_Info.objects.get(user_id=user_id)
         self.token = self.current_user.token #set to blank in parent class. Has to be set here
@@ -588,7 +578,8 @@ class OutlookApi(Api):
 
         References
         ----------
-        - Message objects: https://pyoutlook.readthedocs.io/en/latest/pyOutlook.html#message
+        - To get the body of a message use ```Message.body```
+        - Full list of Message object attributes here: https://github.com/O365/python-o365/blob/master/O365/message.py#L348-L1081
 
         Returns
         -------
@@ -600,35 +591,51 @@ class OutlookApi(Api):
         --------
         ### Creating a user in django shell and initializing API
         ```
-        import random
-        import string
-        from integrations.models import *
-        from django.contrib.auth.models import User
+import random
+import string
+from integrations.models import *
+from django.contrib.auth.models import User
 
-        # Create user
-        ran_name = lambda n: ''.join([random.choice(string.ascii_lowercase) for i in range(n)])
-        user=User.objects.create_user(ran_name(random.randint(0, 10)), password='bar')
-        user.save()
+# Create user
+ran_name = lambda n: ''.join([random.choice(string.ascii_lowercase) for i in range(n)])
+user=User.objects.create_user(ran_name(random.randint(0, 10)), password='bar')
+user.save()
 
-        # Add user to Outlook_User_Info table
-        entry = Outlook_User_Info(user_id=user.id, account_name="yeet")
-        entry.save()
-        user.outlook_user_info_set.add(entry)
-        user.save()
+# Initialize and access the Outlook api
+outlook_User = OutlookApi(user.id)
 
-        # Initialize and access the reddit api
-        outlook_User = OutlookApi(user.id)
-        outlook_User.init_contact()
-        ... # need to wait to paste url and finalize initialization 
-        
-        # Contact API to get data
-        user_data = outlook_User.contact_api()
+# Contact API to get data
+user_data = outlook_User.contact_api()
 
         """
         data = {}
-        acc = OutlookAccount(self.token)
-        data["inbox"] = acc.inbox()
-        print(data)
+
+        
+        oinfo = OutlookAPIInfo()
+        credentials = (oinfo.client_id, oinfo.secret)
+        scopes = ['offline_access', 'https://graph.microsoft.com/User.Read', 'https://graph.microsoft.com/Mail.ReadWrite', 'https://graph.microsoft.com/Mail.Send']
+        account = Account(credentials, scopes=scopes)
+
+        url, state = account.con.get_authorization_url(requested_scopes=scopes, redirect_uri=oinfo.redirect_url)
+
+        print(url)
+
+        result = account.con.request_token(url, state=state, redirect_uri=oinfo.redirect_url)
+
+        token = account.con.token_backend.token
+
+        if result:
+            print("yeet")
+        else:
+            print("asdflkjhasdlfkjhasldkfgjhasdlkjfhasglkjhjaksdl")
+            return
+
+        # account.authenticate(requested_scopes=scopes, redirect_uri = oinfo.redirect_url)
+
+        inbox = account.mailbox().inbox_folder()
+        data["inbox"] = [email for email in inbox.get_messages()] # Pulls first 25 emails from inbox into list
+
+        data["token"] = token
         return data
 
     def get_new_token(self, retry):
@@ -775,9 +782,6 @@ class OutlookAPIInfo(ApiInfo):
         self.scope = "https://outlook.office.com/mail.send https://outlook.office.com/mail.readwrite offline_access"
         # self.scope 
 
-<<<<<<< HEAD
->>>>>>> 286b38e9a6a08aa480ebfaaea4d04b0c71c369e2
-=======
 class NewsApiInfo(ApiInfo):
     def __init___(self):
         self.api_name = "newsapi"
@@ -788,4 +792,3 @@ class NewsApiInfo(ApiInfo):
         self.redirect_url = "N/A"
         self.scope = "N/A"
         # self.scope 
->>>>>>> b8854909fae6e970c778e31509fbfa9de4dc59d6
