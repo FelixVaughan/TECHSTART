@@ -5,9 +5,7 @@ from integrations.models import *
 # Create your views here.
 def index(request):
     """Renders the homepage"""
-    spot = SpotifyApi(1)
-    user_info = spot.contact_api()
-    return render(request, "users/index.html", {'user_info': user_info})
+    return render(request, "users/index.html")
 
 
 # renders register page

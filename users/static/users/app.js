@@ -20,12 +20,22 @@ function spotifyOpen() {
     closeForm();
     }
 
+function spotifyClose() {
+    document.getElementById("Spotify").style.display = "none";
+    }
 
 function redditOpen() {
     document.getElementById("Reddit").style.display = "block";
     closeForm();
     }
 
+function redditClose() {
+    document.getElementById("Reddit").style.display = "none";
+    }
+
+function outlookClose() {
+    document.getElementById("Outlook").style.display = "none";
+    }
 
 function outlookOpen() {
     document.getElementById("Outlook").style.display = "block";
@@ -35,4 +45,8 @@ function outlookOpen() {
 function newsOpen() {
     document.getElementById("News").style.display = "block";
     closeForm();
+    }
+
+function newsClose() {
+    document.getElementById("News").style.display = "none";
     }

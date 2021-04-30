@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cf463b05-f91f-4f97-bcba-e335f7d1d867" name="Default Changelist" comment="added logos and changed">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/static/users/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/users/static/users/main.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/templates/users/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/users/templates/users/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/static/users/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/users/static/users/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/templates/users/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/users/templates/users/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,6 +114,8 @@
       <workItem from="1616436051995" duration="5745000" />
       <workItem from="1619568821782" duration="7000" />
       <workItem from="1619568850942" duration="15149000" />
+      <workItem from="1619744919854" duration="12000" />
+      <workItem from="1619744939162" duration="2788000" />
     </task>
     <task id="LOCAL-00001" summary="Extended Nav Bar, Homepage showing SpotifyAPI info (WITH HARDCODED USER in views)">
       <created>1619578393831</created>
