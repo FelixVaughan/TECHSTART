@@ -1,6 +1,7 @@
 {% extends "users/base.html"%}
 {% load static %}
 {% block css %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'users/index.css' %}">
 {% endblock %}
 {% block content %}
@@ -10,27 +11,41 @@
     <div class ="index">
     <div id= "Spotify" style="display:none" class="container index p-3 my-3 border">
         <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png" alt="Spotify logo" height="75" />
-         <button type="button" class="btn.index" onclick="spotifyClose()">Close</button>
-        <p class = "index"><strong>Top Tracks:</strong> <a href="{{ user_info.top_tracks.href }}">{{ user_info.top_tracks.href }}</a></p>
-        <p class = "index"><strong>Top Artist:</strong> {{ user_info.top_artist.name }}</p>
+         <button type="button" class="innerbtn" onclick="spotifyClose()">Close</button>
+        <br>
+          <!-- WILL DISPLAY TOP ARTISTS AND TRACKS -->
+        <button type="button" class="innerbtn" onclick="spotifyTop()">Click for Top Artists and Tracks</button>
+        <div id="ajax_spotify"></div>
+
+        <button type="button" class="innerbtn" onclick="spotifyPlayer()">Click for Player</button>
+        <!--PLAYER OPTIONS -->
+        <div id= "SpotifyPlayer" style="display:none">
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary" onclick="spotifyPlay()">Play</button>
+          <button type="button" class="btn btn-primary">Pause</button>
+          <button type="button" class="btn btn-primary">Shuffle</button>
+          <button type="button" class="btn btn-primary">Prev</button>
+          <button type="button" class="btn btn-primary">Next</button>
+        </div>
+        </div>
     </div>
 
         <!-- REDDIT -->
     <div id= "Reddit" style="display:none" class="container index p-3 my-3 border">
         <img src="https://www.redditinc.com/assets/images/site/reddit-logo.png"  alt="Reddit Text Logo PNG icon" height="75"/>
-         <button type="button" class="btn.index" onclick="redditClose()">Close</button>
+         <button type="button" class="innerbtn" onclick="redditClose()">Close</button>
     </div>
 
          <!-- OUTLOOK -->
     <div id= "Outlook" style="display:none" class="container index p-3 my-3 border">
          <img src="https://download.logo.wine/logo/Microsoft_Outlook/Microsoft_Outlook-Logo.wine.png"  alt="Outlook Logo PNG icon" height="100"/>
-         <button type="button" class="btn.index" onclick="outlookClose()">Close</button>
+         <button type="button" class="innerbtn" onclick="outlookClose()">Close</button>
     </div>
 
            <!-- NEWS -->
     <div id= "News" style="display:none" class="container index p-3 my-3 border">
             <p class = "index"> World News </p>
-            <button type="button" class="btn.index" onclick="newsClose()">Close</button>
+            <button type="button" class="innerbtn" onclick="newsClose()">Close</button>
     </div>
 
 

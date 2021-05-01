@@ -55,7 +55,7 @@ h2.index {
 
   p.index {
     --fontColor: var(--oac2);
-    font-family: 'Roboto';font-size: 20px;
+    font-family: 'Roboto';font-size: 16px;
   }
 
    h5.index {
@@ -67,6 +67,7 @@ h2.index {
     --fontColor: var(--oac2);
     font-family: 'Roboto';font-size: 20px;
   }
+
 /*
   .row {
     background-color: var(--oac2);
@@ -128,7 +129,7 @@ h2.index {
 .formPopup {
   display: none;
   position: fixed;
-  left: 50%;
+  left: 52%;
   top: 35%;
   transform: translate(-50%, 5%);
   border: 3px solid #999999;
@@ -156,4 +157,10 @@ h2.index {
 .formContainer .btn:hover,
 .openButton:hover {
   opacity: 1;
+}
+
+.innerbtn{
+  background-color: var(--oac2);
+  border: none;
+  color:#fff;
 }
