@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="cf463b05-f91f-4f97-bcba-e335f7d1d867" name="Default Changelist" comment="added logos and changed">
+    <list default="true" id="cf463b05-f91f-4f97-bcba-e335f7d1d867" name="Default Changelist" comment="Removed spotify rendering as it was causing issues">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/users/static/users/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/users/static/users/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/static/users/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/users/static/users/index.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/users/templates/users/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/users/templates/users/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/templates/users/redirect.html" beforeDir="false" afterPath="$PROJECT_DIR$/users/templates/users/redirect.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/users/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -25,6 +28,14 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="ProjectId" id="1q7gStyuV5XnkS7srjX6xGB4xMQ" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -115,7 +126,7 @@
       <workItem from="1619568821782" duration="7000" />
       <workItem from="1619568850942" duration="15149000" />
       <workItem from="1619744919854" duration="12000" />
-      <workItem from="1619744939162" duration="2788000" />
+      <workItem from="1619744939162" duration="11249000" />
     </task>
     <task id="LOCAL-00001" summary="Extended Nav Bar, Homepage showing SpotifyAPI info (WITH HARDCODED USER in views)">
       <created>1619578393831</created>
@@ -138,7 +149,14 @@
       <option name="project" value="LOCAL" />
       <updated>1619586886456</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Removed spotify rendering as it was causing issues">
+      <created>1619748256841</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1619748256841</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -160,6 +178,7 @@
     <MESSAGE value="Extended Nav Bar, Homepage showing SpotifyAPI info (WITH HARDCODED USER in views)" />
     <MESSAGE value="Added very basic JS for containers to hide/show" />
     <MESSAGE value="added logos and changed" />
-    <option name="LAST_COMMIT_MESSAGE" value="added logos and changed" />
+    <MESSAGE value="Removed spotify rendering as it was causing issues" />
+    <option name="LAST_COMMIT_MESSAGE" value="Removed spotify rendering as it was causing issues" />
   </component>
 </project>
