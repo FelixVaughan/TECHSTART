@@ -21,5 +21,5 @@ urlpatterns = [
     path("", include('users.urls')), # Where index.html is stored
     path('admin/', admin.site.urls),
     path('api/redirect', integrations.views.redirect, name='api-redirect'),
-    path('test', integrations.views.play_album, name="test")
+    path('test', integrations.views.authenticate_outlook, name="test")
 ]

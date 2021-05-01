@@ -546,7 +546,7 @@ class OutlookApi(Api):
             self.token = self.current_user.token #set to blank in parent class. Has to be set here
             self.refresh_token = self.current_user.refresh_token #set to blank in parent class. Has to be set here
         except Exception as e:
-            print("Exception: {e}")
+            print(f"Exception: {e}")
     
     def init_contact(self):
         auth_url = self.base_url
