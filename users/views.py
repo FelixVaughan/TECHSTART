@@ -20,8 +20,8 @@ def ajax(request):
         return render(request, 'users/ajax.html', {'user_info':user_info})
     if request.GET.get('social') == 'spotify_play':
         spot = SpotifyApi(request.user.id)
-        #user_info = spot.play() **Need the right return type for the play function
-        #return render(request, 'users/ajax.html', {'user_info':user_info})
+        user_info = spot.play() #Need the right return type for the play function
+    return render(request, 'users/ajax.html', {'user_info':user_info})
 
 # renders register page
 def register(request):

@@ -21,7 +21,7 @@ from urllib.parse import urlencode
 from django.contrib.sessions.models import Session
 
 ###########################
-newFile = open("./ApiInfo.txt", "r")
+newFile = open("integrations/ApiInfo.txt", "r")
 apiArr = []   
 while(True):
     line = newFile.readline()
@@ -234,13 +234,14 @@ class Outlook_User_Info(User_Account_Info):
 class News_User_Info(User_Account_Info):
     account_name = models.CharField(
         max_length=7, default="newsapi", editable=False)
+    users = models.OneToOneField(User, on_delete=models.CASCADE, default=None)
     preferences = models.CharField(max_length=100, default="")
 
 
 class SpotifyApi(Api):
     def __init__(self, user_id, api_name="spotify"):
         super().__init__(user_id, api_name, SpotifyAPIInfo)
-        self.current_user = Spotify_User_Info.objects.get(user_id=user_id)
+        self.current_user = Spotify_User_Info.objects.get(pk=user_id)
         self.token = self.current_user.token
         self.refresh_token = self.current_user.refresh_token
         self.conf = (self.client_id, self.client_secret, self.redirect_uri)
@@ -727,7 +728,7 @@ class NewsApi(Api):
 
     def __init__(self, user_id, api_name="newsapi"):
         super().__init__(user_id, api_name, NewsApiInfo)
-        self.current_user = News_User_Info.objects.get(user_id=user_id)
+        self.current_user = News_User_Info.objects.get(pk=user_id)
 
     def get_user_articles(self, article):
         now = datetime.now()
@@ -757,9 +758,10 @@ class NewsApi(Api):
             articles = result.get('articles')
             for article in articles:
                 if pref in urls:
-                    urls[pref].append(article['url'])
+                    print(article)
+                    urls[pref].append((article['title'], article['url']))
                 else:
-                    urls[pref] = [article['url']]
+                    urls[pref] = [(article['title'], article['url'])]
         print(urls)
         return urls  # returns dict of form {preference: url}
 
@@ -767,7 +769,7 @@ class NewsApi(Api):
         now = datetime.now()
         day_past = now - timedelta(hours=24)
         params = {
-            'q': urllib.parse.urlencode(keywords),
+            'q': urllib.parse.quote(keywords),
             'from': now,
             'to': day_past,
             'sortBy': 'popularity',
@@ -776,8 +778,15 @@ class NewsApi(Api):
         }
         r = requests.get(self.news_endpoint, params=params)
         result = r.json()
+        urls = {}
         if result['status'] == 'ok':
-            return result
+            articles = result.get('articles')
+            for article in articles:
+                if pref in urls:
+                    urls[pref].append((article['title'], article['url']))
+                else:
+                    urls[pref] = [(article['title'], article['url'])]
+            return urls
         else:
             return "search couldn't be performed as specified"
 

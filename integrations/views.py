@@ -147,6 +147,7 @@ def play(request):
 
 
 def redirect(request):
+    request.session['api'] = 'spotify'
     print(f"AUTHENTICATION IN PROGRESS FOR {request.session['api']}")
     try:
         url = str(request.build_absolute_uri)
