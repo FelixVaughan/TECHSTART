@@ -9,6 +9,8 @@ import tekore
 import praw  
 import traceback
 import requests
+from django.views.decorators.cache import cache_page
+
 
 def obtain_url_code(url):
     print(f"code request {url}")
@@ -145,9 +147,10 @@ def play(request):
 #                                End                                 # 
 ######################################################################
 
-
+def test(request):
+    print("API IS: {request.session['api']}")
+    
 def redirect(request):
-    request.session['api'] = 'spotify'
     print(f"AUTHENTICATION IN PROGRESS FOR {request.session['api']}")
     try:
         url = str(request.build_absolute_uri)
@@ -161,32 +164,20 @@ def redirect(request):
             red = RedditApi(user.id)
             red.obtain_token(code)
             token_recv = True
-        elif oauth_session == 'spotify':
-            spotify = SpotifyApi(user.id)
-            spotify.obtain_token(code)
-            token_recv = True
         elif oauth_session == 'outlook':
             outlook = OutlookApi(user.id)
             outlook.obtain_token(code)
             token_recv = True
+        elif oauth_session == 'spotify':
+            spotify = SpotifyApi(user.id)
+            spotify.obtain_token(code)
+            token_recv = True
+        
 
         if(token_recv):
             print(f"Token Obtained for {request.session['api']} api under user {user}!")
         else:
              print(f"Expected response from {request.session['api']} token set: {token_recv}")
-        # url = str(request.build_absolute_uri)
-        # code = obtain_url_code(url)
-        # if(code is -1):
-        #     msg = "Code not set as it was not found in redirect. Url probably malformed..."
-        #     print(msg)
-        #     return(msg)
-        # if os.path.exists("code.txt"):
-        #     os.remove("code.txt")
-        # if (request.session['api'] == 'discord'):
-        #     print(f"CODE IS: {code}")
-        # f = open("code.txt","w")
-        # f.write(code)
-        # f.close()
     except Exception as e:
         print(e) 
     finally:

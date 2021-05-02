@@ -256,7 +256,7 @@ class SpotifyApi(Api):
             auth_url = self.spotify_auth.user_authorisation_url(
                 scope=self.scope)
             webbrowser.open(auth_url)
-        except KeyError as e:
+        except KeyError:
             print("Authentication with spotify API could NOT be completed as no code was found. Access token NOT set!")
         except Exception as e:
             print(e)
@@ -375,21 +375,28 @@ class SpotifyApi(Api):
 
     def change_volume(self, amount):
         self.spotify.playback_volume(amount)
+        return self.spotify.playback()
 
     def next(self):
         self.spotify.playback_next()
+        return self.spotify.playback()
 
     def shuffle(self):
         self.spotify.playback_shuffle()
+        return self.spotify.playback()
 
     def prev(self):
         self.spotify.playback_previous()
+        return self.spotify.playback()
 
     def pause(self):
         self.spotify.playback_pause()
+        return self.spotify.playback()
 
     def play(self):
         self.spotify.playback_resume()
+        return self.spotify.playback()
+
 
 
 class RedditApi(Api):
@@ -545,13 +552,6 @@ class DiscordApi(Api):
     def init_contact(self):
         auth_url = self.base_url
         webbrowser.open(auth_url)
-        # code = local_code_flow()
-        # token_json = self.obtain_token(code)
-        # self.token = token_json["access_token"]
-        # self.refresh_token = token_json["refresh_token"]
-        # self.current_user.token = token_json["access_token"]
-        # self.current_user.refresh_token = token_json["refresh_token"]
-        # self.current_user.save()
 
     def obtain_token(self, code):
         data = {
