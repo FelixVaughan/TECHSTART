@@ -172,16 +172,21 @@ def redirect(request):
         if oauth_session == 'reddit':
             red = RedditApi(user.id)
             red.obtain_token(code)
+            red.current_user.authenticated = True
+            red.save()
             token_recv = True
         elif oauth_session == 'outlook':
             outlook = OutlookApi(user.id)
             outlook.obtain_token(code)
+            outlook.current_user.authenticated = True
+            outlook.save()
             token_recv = True
         elif oauth_session == 'spotify':
             spotify = SpotifyApi(user.id)
             spotify.obtain_token(code)
+            spotify.current_user.authenticated = True
+            spotify.save()
             token_recv = True
-
         if(token_recv):
             print(
                 f"Token Obtained for {request.session['api']} api under user {user}!")

@@ -194,8 +194,8 @@ class Spotify_User_Info(User_Account_Info):
     account_name = models.CharField(
         max_length=7, default="spotify", editable=False)
     users = models.OneToOneField(User, on_delete=models.CASCADE, default=None)
-    connected = models.BooleanField(default=False)
-
+    connected = models.BooleanField(default=False) 
+    authenticated = models.BooleanField(default=False)
     # returns username to identify the object in table
     def __str__(self):
         return self.users.username
@@ -206,6 +206,7 @@ class Reddit_User_Info(User_Account_Info):
         max_length=6, default="reddit", editable=False)
     users = models.OneToOneField(User, on_delete=models.CASCADE, default=None)
     connected = models.BooleanField(default=False)
+    authenticated = models.BooleanField(default=False)
 
     def __str__(self):
         return self.users.username
@@ -226,6 +227,7 @@ class Outlook_User_Info(User_Account_Info):
         max_length=7, default="outlook", editable=False)
     users = models.OneToOneField(User, on_delete=models.CASCADE, default=None)
     connected = models.BooleanField(default=False)
+    authenticated = models.BooleanField(default=False)
 
     def __str__(self):
         return self.users.username
@@ -236,7 +238,7 @@ class News_User_Info(User_Account_Info):
         max_length=7, default="newsapi", editable=False)
     users = models.OneToOneField(User, on_delete=models.CASCADE, default=None)
     preferences = models.CharField(max_length=100, default="")
-
+    
 
 class SpotifyApi(Api):
     def __init__(self, user_id, api_name="spotify"):
@@ -252,6 +254,9 @@ class SpotifyApi(Api):
             self.spotify = tekore.Spotify(self.current_user.token)
 
     def init_contact(self):
+        if(self.current_user.authenticated):
+            self.get_new_token(False)
+            return
         try:
             auth_url = self.spotify_auth.user_authorisation_url(
                 scope=self.scope)
@@ -378,24 +383,39 @@ class SpotifyApi(Api):
         self.spotify.playback_currently_playing().item
 
     def next(self):
-        self.spotify.playback_next()
-        return self.get_song_info()
+        try:
+            self.spotify.playback_next()
+            return self.get_song_info()
+        except tekore.Unauthorised:
+            self.get_new_token(False)
 
     def shuffle(self):
-        self.spotify.playback_shuffle()
-        return self.get_song_info()
+        try:
+            self.spotify.playback_shuffle()
+            return self.get_song_info()
+        except tekore.Unauthorised:
+            self.get_new_token(False)
 
     def prev(self):
-        self.spotify.playback_previous()
-        return self.spotify.playback_currently_playing().item
+        try:
+            self.spotify.playback_previous()
+            return self.spotify.playback_currently_playing().item
+        except tekore.Unauthorised:
+            self.get_new_token(False)
 
     def pause(self):
-        self.spotify.playback_pause()
-        return self.get_song_info()
+        try:
+            self.spotify.playback_pause()
+            return self.get_song_info()
+        except tekore.Unauthorised:
+            self.get_new_token(False)
 
     def play(self):
-        self.spotify.playback_resume()
-        return self.get_song_info()
+        try:
+            self.spotify.playback_resume()
+            return self.get_song_info()
+        except tekore.Unauthorised:
+            self.get_new_token(False)
 
     def get_song_info(self):
         info = {}
@@ -410,7 +430,6 @@ class SpotifyApi(Api):
         info["album_url"] = data.album.href
         info["album_name"] = data.album.name
         info["artists"] = []
-        print("ooof")
         for artist in data.artists:
             info["artists"].append(artist.name)
         return info
@@ -452,6 +471,8 @@ class RedditApi(Api):
         red = RedditApi(user.id)
         reddit, reddit_user = red.init_contact()
         """
+        if(self.current_user.authenticated):
+            return
         auth_url = self.reddit.auth.url(["*"], "permanent")
         webbrowser.open(auth_url)
 
