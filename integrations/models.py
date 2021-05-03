@@ -419,7 +419,7 @@ class SpotifyApi(Api):
 class RedditApi(Api):
     def __init__(self, user_id, api_name="reddit"):
         super().__init__(user_id, api_name, RedditAPIInfo)
-        self.current_user = Reddit_User_Info.objects.get(user_id=user_id)
+        self.current_user = Reddit_User_Info.objects.get(pk=user_id)
         self.token = self.current_user.token
         self.refresh_token = self.current_user.refresh_token
         self.reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret,
@@ -813,6 +813,18 @@ class NewsApi(Api):
         else:
             self.current_user.preferences = str.strip()
         self.current_user.save()
+
+    def del_pref(self, str2del):
+        if (!self.current_user.preferences):
+            return
+        else:
+            preferences = self.current_user.preferences
+            preference.replace(str2del,"",1)
+            preference.replace("    ", "  ",1)
+            self.current_user.preferences = preference;
+            self.current_user.save()
+
+
 
 
 
