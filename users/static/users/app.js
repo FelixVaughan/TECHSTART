@@ -29,6 +29,34 @@ function spotifyPlay(){
     })
 }
 
+function spotifyPause(){
+    console.log('spotify_pause')
+    $.get('ajax/?social=spotify_pause', function (data) {
+        $("#ajax_spotify").append(data);
+    })
+}
+
+function spotifyShuffle(){
+    console.log('spotify_shuffle')
+    $.get('ajax/?social=spotify_shuffle', function (data) {
+        $("#ajax_spotify").append(data);
+    })
+}
+
+function spotifyNext(){
+    console.log('spotify_next')
+    $.get('ajax/?social=spotify_next', function (data) {
+        $("#ajax_spotify").append(data);
+    })
+}
+
+function spotifyPrev(){
+    console.log('spotify_prev')
+    $.get('ajax/?social=spotify_prev', function (data) {
+        $("#ajax_spotify").append(data);
+    })
+}
+
 function spotifyPlayer(){
     document.getElementById("SpotifyPlayer").style.display = "block";
 }

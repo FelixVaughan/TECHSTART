@@ -19,11 +19,22 @@ def ajax(request):
     if request.GET.get('social') == 'spotify_top':
         spot = SpotifyApi(request.user.id)
         user_info = spot.contact_api()
-        return render(request, 'users/ajax.html', {'user_info':user_info})
+        return render(request, 'users/ajax.html', {'user_info': user_info})
     if request.GET.get('social') == 'spotify_play':
         spot = SpotifyApi(request.user.id)
-        user_info = spot.play() #Need the right return type for the play function
-    return render(request, 'users/ajax.html', {'user_info':user_info})
+        spot.play()
+    if request.GET.get('social') == 'spotify_pause':
+        spot = SpotifyApi(request.user.id)
+        spot.pause()
+    if request.GET.get('social') == 'spotify_shuffle':
+        spot = SpotifyApi(request.user.id)
+        spot.shuffle()
+    if request.GET.get('social') == 'spotify_next':
+        spot = SpotifyApi(request.user.id)
+        spot.next()
+    if request.GET.get('social') == 'spotify_prev':
+        spot = SpotifyApi(request.user.id)
+        spot.prev()
 
 # renders register page
 def register(request):
