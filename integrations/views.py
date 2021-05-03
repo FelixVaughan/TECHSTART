@@ -6,7 +6,7 @@ from integrations.models import *
 import errno
 import os
 import tekore
-import praw  
+import praw
 import traceback
 import requests
 from django.views.decorators.cache import cache_page
@@ -15,8 +15,8 @@ from django.views.decorators.cache import cache_page
 def obtain_url_code(url):
     print(f"code request {url}")
     try:
-        index = url.index("code=") 
-        amp_separator = url.find("&", index) 
+        index = url.index("code=")
+        amp_separator = url.find("&", index)
         code = ""
         if (amp_separator != -1):
             code = url[index+5:amp_separator]
@@ -29,7 +29,7 @@ def obtain_url_code(url):
 
 
 ######################################################################
-#Authenication Methods used for applications that reqire user consent# 
+#Authenication Methods used for applications that reqire user consent#
 ######################################################################
 def authenticate_spotify(request):
     request.session['api'] = 'spotify'
@@ -37,11 +37,13 @@ def authenticate_spotify(request):
     spot.init_contact()
     return HttpResponse('')
 
+
 def authenticate_reddit(request):
     request.session['api'] = 'reddit'
     reddit = RedditApi(request.user.id)
     reddit.init_contact()
     return HttpResponse('')
+
 
 def authenticate_outlook(request):
     request.session['api'] = 'outlook'
@@ -50,43 +52,49 @@ def authenticate_outlook(request):
     return HttpResponse('')
 
 ######################################################################
-#                                End                                 # 
+#                                End                                 #
 ######################################################################
 
 
 ######################################################################
-#          Methods used for apis that reqire user output             # 
+#          Methods used for apis that reqire user output             #
 ######################################################################
 def play_spotify(request):
     spotify = SpotifyApi(request.user.id)
     spotify.play()
     return HttpResponse('')
 
+
 def change_spotify_volume(request):
-    #FRONT END : 30 IS JUST A PLACE HOLDER. EXTRACT VALUE FROM FORM AND USE IT AS INPUT PARAMTER FOR CHANGE_VOLUME
+    # FRONT END : 30 IS JUST A PLACE HOLDER. EXTRACT VALUE FROM FORM AND USE IT AS INPUT PARAMTER FOR CHANGE_VOLUME
     spotify = SpotifyApi(request.user.id)
     spotify.change_volume(30)
     return HttpResponse('')
+
 
 def shuffle(request):
     spotify = SpotifyApi(request.user.id)
     spotify.shuffle()
     return HttpResponse('')
-    
+
+
 def play_next(request):
     spotify = SpotifyApi(request.user.id)
     spotify.next()
     return HttpResponse('')
+
 
 def play_prev(request):
     spotify = SpotifyApi(request.user.id)
     spotify.prev()
     return HttpResponse('')
 
+
 def pause_play(request):
     spotify = SpotifyApi(request.user.id)
     spotify.pause()
     return HttpResponse('')
+
 
 def play_album(request):
     temp = SpotifyApi(request.user.id)
@@ -99,13 +107,13 @@ def play_album(request):
 
     ########implement front end choice to choose which album#########
 
-    alb = tekore.to_uri('album', albums[0].album.id) #is zero rn but should be changed to index chosen by user
+    # is zero rn but should be changed to index chosen by user
+    alb = tekore.to_uri('album', albums[0].album.id)
     spotify.playback_start_context(alb)
 
 
-
 ######################################################################
-#                                End                                 # 
+#                                End                                 #
 ######################################################################
 
     # headers = {
@@ -130,6 +138,7 @@ def pause(request):
     # }
     # requests.put("https://api.spotify.com/v1/me/player/pause")
 
+
 def play(request):
     spotify = SpotifyApi(request.user.id)
     spotify.play()
@@ -142,14 +151,14 @@ def play(request):
     # requests.put("https://api.spotify.com/v1/me/player/play")
 
 
-
 ######################################################################
-#                                End                                 # 
+#                                End                                 #
 ######################################################################
 
 def test(request):
     print("API IS: {request.session['api']}")
-    
+
+
 def redirect(request):
     print(f"AUTHENTICATION IN PROGRESS FOR {request.session['api']}")
     try:
@@ -158,7 +167,7 @@ def redirect(request):
         token_recv = False
         user = request.user
         oauth_session = request.session['api']
-        if(code is -1):
+        if(code == -1):
             msg = "Code not found in redirect Url. Probably malformed..."
         if oauth_session == 'reddit':
             red = RedditApi(user.id)
@@ -172,19 +181,21 @@ def redirect(request):
             spotify = SpotifyApi(user.id)
             spotify.obtain_token(code)
             token_recv = True
-        
 
         if(token_recv):
-            print(f"Token Obtained for {request.session['api']} api under user {user}!")
+            print(
+                f"Token Obtained for {request.session['api']} api under user {user}!")
         else:
-             print(f"Expected response from {request.session['api']} token set: {token_recv}")
+            print(
+                f"Expected response from {request.session['api']} token set: {token_recv}")
     except Exception as e:
-        print(e) 
+        print(e)
     finally:
         return render(request, 'users/redirect.html')
+
 
 def index(request):
     userinfo = {'current_user': 'bingo',
                 'top_tracks': 'Some Music',
                 'top_artists': 'Celine Dion'}
-    return render(request, 'integrations/index.html', {'userinfo':userinfo})
+    return render(request, 'integrations/index.html', {'userinfo': userinfo})

@@ -7,11 +7,15 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_page
 from django.http import *
 # Create your views here.
+
+
 def index(request):
     """Renders the homepage"""
     return render(request, "users/index.html")
 
-#@login_required
+# @login_required
+
+
 def ajax(request):
     user_info = {}
     if request.GET.get('social') == 'spotify_init':
@@ -36,19 +40,23 @@ def ajax(request):
         spot = SpotifyApi(request.user.id)
         spot.prev()
 
-    if requests.Get.get("social") == 'redditData':
-        red = RedditApi(requests.user.id)
+    if request.GET.get("social") == 'redditData':
+        red = RedditApi(request.user.id)
         red.init_contact()
         user_data = red.contact_api()
 
         reddit_data = {}
         reddit_data["messages"] = [message for message in user_data["message"]]
-        reddit_data["top_year"] = [message for message in user_data["top_year"]]
-        reddit_data["all_unread"] = [message for message in user_data["all_unread"]]
+        reddit_data["top_year"] = [
+            message for message in user_data["top_year"]]
+        reddit_data["all_unread"] = [
+            message for message in user_data["all_unread"]]
         return render(request, "users/reddit_data.html", {'reddit_data': reddit_data})
     return HttpResponse('')
 
 # renders register page
+
+
 def register(request):
     if request.method == "POST":    # if form is submitted
         form = UserRegistrationForm(request.POST)
@@ -58,5 +66,6 @@ def register(request):
             messages.success(request, f'Sign Up successful for {username}')
             return redirect('login')
     else:
-        form = UserRegistrationForm() # else use form
-    return render(request, 'users/register.html', {'form':form}) # pass form as context
+        form = UserRegistrationForm()  # else use form
+    # pass form as context
+    return render(request, 'users/register.html', {'form': form})

@@ -22,7 +22,7 @@ from django.contrib.sessions.models import Session
 
 ###########################
 newFile = open("integrations/ApiInfo.txt", "r")
-apiArr = []   
+apiArr = []
 while(True):
     line = newFile.readline()
     if not line:
@@ -241,7 +241,7 @@ class News_User_Info(User_Account_Info):
 class SpotifyApi(Api):
     def __init__(self, user_id, api_name="spotify"):
         super().__init__(user_id, api_name, SpotifyAPIInfo)
-        self.current_user = Spotify_User_Info.objects.get(pk=user_id)
+        self.current_user = Spotify_User_Info.objects.get(users=user_id)
         self.token = self.current_user.token
         self.refresh_token = self.current_user.refresh_token
         self.conf = (self.client_id, self.client_secret, self.redirect_uri)
@@ -419,7 +419,7 @@ class SpotifyApi(Api):
 class RedditApi(Api):
     def __init__(self, user_id, api_name="reddit"):
         super().__init__(user_id, api_name, RedditAPIInfo)
-        self.current_user = Reddit_User_Info.objects.get(pk=user_id)
+        self.current_user = Reddit_User_Info.objects.get(users=user_id)
         self.token = self.current_user.token
         self.refresh_token = self.current_user.refresh_token
         self.reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret,
@@ -550,7 +550,7 @@ class RedditApi(Api):
 class DiscordApi(Api):
     def __init__(self, user_id, api_name="discord"):
         super().__init__(user_id, api_name)
-        self.user_to_serve = Discord_User_Info.objects.get(user_id=user_id)
+        self.user_to_serve = Discord_User_Info.objects.get(users=user_id)
         # set to blank in parent class. Has to be set here
         self.token = self.user_to_serve.token
         # set to blank in parent class. Has to be set here
@@ -613,7 +613,7 @@ class OutlookApi(Api):
     def __init__(self, user_id, api_name="outlook"):
         super().__init__(user_id, api_name, OutlookAPIInfo)
         try:
-            self.current_user = Outlook_User_Info.objects.get(user_id=user_id)
+            self.current_user = Outlook_User_Info.objects.get(users=user_id)
             # set to blank in parent class. Has to be set here
             self.token = self.current_user.token
             # set to blank in parent class. Has to be set here
@@ -815,17 +815,14 @@ class NewsApi(Api):
         self.current_user.save()
 
     def del_pref(self, str2del):
-        if (!self.current_user.preferences):
+        if (len(self.current_user.preferences) == 0):
             return
         else:
             preferences = self.current_user.preferences
-            preference.replace(str2del,"",1)
-            preference.replace("    ", "  ",1)
-            self.current_user.preferences = preference;
+            preference.replace(str2del, "", 1)
+            preference.replace("    ", "  ", 1)
+            self.current_user.preferences = preference
             self.current_user.save()
-
-
-
 
 
 class SpotifyAPIInfo(ApiInfo):
@@ -834,11 +831,12 @@ class SpotifyAPIInfo(ApiInfo):
     def __init__(self):
         self.api_name = apiArr[0]
         self.client_id = apiArr[1]
-        self.secret = apiArr[2] #TODO: make env variable
+        self.secret = apiArr[2]  # TODO: make env variable
         self.base_url = apiArr[3]
         self.token_endpoint = apiArr[4]
         self.redirect_url = apiArr[5]
         self.scope = apiArr[6]
+
 
 class RedditAPIInfo(ApiInfo):
     """The reddit specific ApiInfo subclass"""
@@ -846,12 +844,13 @@ class RedditAPIInfo(ApiInfo):
     def __init__(self):
         self.api_name = apiArr[7]
         self.client_id = apiArr[8]
-        self.secret = apiArr[9] #TODO: make env variable
-        self.base_url =apiArr[10]
+        self.secret = apiArr[9]  # TODO: make env variable
+        self.base_url = apiArr[10]
         self.token_endpoint = apiArr[11]
         self.redirect_url = apiArr[12]
-        self.scope = {} #TODO:   #apiArr[13]
-        # self.scope 
+        self.scope = {}  # TODO:   #apiArr[13]
+        # self.scope
+
 
 class DiscordAPIInfo(ApiInfo):
     """The discord specific ApiInfo subclass"""
@@ -859,12 +858,13 @@ class DiscordAPIInfo(ApiInfo):
     def __init__(self):
         self.api_name = apiArr[14]
         self.client_id = apiArr[15]
-        self.secret = apiArr[16] #TODO: 
+        self.secret = apiArr[16]  # TODO:
         self.base_url = apiArr[17]
         self.token_endpoint = apiArr[18]
         self.redirect_url = apiArr[19]
         self.scope = apiArr[20]
-        # self.scope 
+        # self.scope
+
 
 class OutlookAPIInfo(ApiInfo):
     """The outlook specific ApiInfo subclass"""
@@ -877,7 +877,8 @@ class OutlookAPIInfo(ApiInfo):
         self.token_endpoint = apiArr[25]
         self.redirect_url = apiArr[26]
         self.scope = apiArr[27]
-        # self.scope 
+        # self.scope
+
 
 class NewsApiInfo(ApiInfo):
     def __init___(self):
