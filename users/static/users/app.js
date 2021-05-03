@@ -75,6 +75,8 @@ function spotifyClose() {
 function redditOpen() {
     document.getElementById("Reddit").style.display = "block";
     closeForm();
+    console.log('reddit')
+    $.get('ajax/?social=reddit')
     }
 
 function redditClose() {

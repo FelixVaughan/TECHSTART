@@ -1,3 +1,4 @@
+from integrations.views import authenticate_spotify
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UserRegistrationForm
@@ -15,10 +16,8 @@ def ajax(request):
     user_info = {}
     if request.GET.get('social') == 'spotify_init':
         spot = SpotifyApi(request.user.id)
-        spot.init_contact()
     if request.GET.get('social') == 'spotify_top':
         spot = SpotifyApi(request.user.id)
-        user_info = spot.contact_api()
         return render(request, 'users/ajax.html', {'user_info': user_info})
     if request.GET.get('social') == 'spotify_play':
         spot = SpotifyApi(request.user.id)
@@ -36,6 +35,17 @@ def ajax(request):
     if request.GET.get('social') == 'spotify_prev':
         spot = SpotifyApi(request.user.id)
         spot.prev()
+
+    if requests.Get.get("social") == 'reddit':
+        red = RedditApi(requests.user.id)
+        red.init_contact()
+        user_data = red.contact_api()
+
+        reddit_data = {}
+        reddit_data["messages"] = [message for message in user_data["message"]]
+        reddit_data["top_year"] = [message for message in user_data["top_year"]]
+        reddit_data["all_unread"] = [message for message in user_data["all_unread"]]
+        request.session['reddit_data'] = reddit_data
     return HttpResponse('')
 
 # renders register page

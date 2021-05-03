@@ -36,7 +36,8 @@
         <!-- REDDIT -->
     <div id= "Reddit" style="display:none" class="container index p-3 my-3 border">
         <img src="https://www.redditinc.com/assets/images/site/reddit-logo.png"  alt="Reddit Text Logo PNG icon" height="75"/>
-         <button type="button" class="innerbtn" onclick="redditClose()">Close</button>
+          <p>{% if request.session.get("reddit_data", False) %} {{request.session["reddit_data"]}} {% endif %}</p>
+          <button type="button" class="innerbtn" onclick="redditClose()">Close</button>
     </div>
 
          <!-- OUTLOOK -->
