@@ -46,6 +46,7 @@ def ajax(request):
         reddit_data["top_year"] = [message for message in user_data["top_year"]]
         reddit_data["all_unread"] = [message for message in user_data["all_unread"]]
         request.session['reddit_data'] = reddit_data
+        return render(request, "/")
     return HttpResponse('')
 
 # renders register page
