@@ -375,28 +375,45 @@ class SpotifyApi(Api):
 
     def change_volume(self, amount):
         self.spotify.playback_volume(amount)
-        return self.spotify.playback()
+        self.spotify.playback_currently_playing().item
 
     def next(self):
         self.spotify.playback_next()
-        return self.spotify.playback()
+        return self.get_song_info()
 
     def shuffle(self):
         self.spotify.playback_shuffle()
-        return self.spotify.playback()
+        return self.get_song_info()
 
     def prev(self):
         self.spotify.playback_previous()
-        return self.spotify.playback()
+        return self.spotify.playback_currently_playing().item
 
     def pause(self):
         self.spotify.playback_pause()
-        return self.spotify.playback()
+        return self.get_song_info()
 
     def play(self):
         self.spotify.playback_resume()
-        return self.spotify.playback()
+        return self.get_song_info()
 
+    def get_song_info(self):
+        info = {}
+        data = self.spotify.playback_currently_playing().item
+        info["id"] = data.id
+        info["disc #"] = data.disc_number
+        info["name"] = data.name
+        info["popularity"] = data.popularity
+        info["type"] = data.type
+        info["url"] = data.href
+        info["track #"] = data.track_number
+        info["album_url"] = data.album.href
+        info["album_name"] = data.album.name
+        info["artists"] = []
+        print("ooof")
+        for artist in data.artists:
+            info["artists"].append(artist.name)
+        return info
 
 
 class RedditApi(Api):

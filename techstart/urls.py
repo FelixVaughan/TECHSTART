@@ -21,5 +21,5 @@ urlpatterns = [
     path("", include('users.urls')), # Where index.html is stored
     path('admin/', admin.site.urls),
     path('api/redirect', integrations.views.redirect, name='api-redirect'),
-    path('test', integrations.views.authenticate_spotify, name="test")
+    path('test', integrations.views.play_spotify, name="test")
 ]

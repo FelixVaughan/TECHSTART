@@ -4,7 +4,7 @@ from .forms import UserRegistrationForm
 from integrations.models import *
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_page
-
+from django.http import *
 # Create your views here.
 def index(request):
     """Renders the homepage"""
@@ -22,7 +22,8 @@ def ajax(request):
         return render(request, 'users/ajax.html', {'user_info': user_info})
     if request.GET.get('social') == 'spotify_play':
         spot = SpotifyApi(request.user.id)
-        spot.play()
+        x = spot.play()
+        print(x)
     if request.GET.get('social') == 'spotify_pause':
         spot = SpotifyApi(request.user.id)
         spot.pause()
@@ -35,6 +36,7 @@ def ajax(request):
     if request.GET.get('social') == 'spotify_prev':
         spot = SpotifyApi(request.user.id)
         spot.prev()
+    return HttpResponse('')
 
 # renders register page
 def register(request):
