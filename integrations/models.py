@@ -22,7 +22,7 @@ from django.contrib.sessions.models import Session
 
 ###########################
 newFile = open("integrations/ApiInfo.txt", "r")
-apiArr = []
+apiArr = []   
 while(True):
     line = newFile.readline()
     if not line:
@@ -550,7 +550,7 @@ class RedditApi(Api):
 class DiscordApi(Api):
     def __init__(self, user_id, api_name="discord"):
         super().__init__(user_id, api_name)
-        self.user_to_serve = Discord_User_Info.objects.get(users=user_id)
+        self.user_to_serve = Discord_User_Info.objects.get(user_id=user_id)
         # set to blank in parent class. Has to be set here
         self.token = self.user_to_serve.token
         # set to blank in parent class. Has to be set here
@@ -741,11 +741,11 @@ user_data = outlook_User.contact_api()
 
 class NewsApi(Api):
     news_endpoint = "https://newsapi.org/v2/everything"
-    apiKey = "cce67af05ae04866ad9820f0edbdf363"
+    apiKey = "9fe64c8447a8406d9e8038c3da825c94"
 
     def __init__(self, user_id, api_name="newsapi"):
         super().__init__(user_id, api_name, NewsApiInfo)
-        self.current_user = News_User_Info.objects.get(pk=user_id)
+        self.current_user = News_User_Info.objects.get(users=user_id)
 
     def get_user_articles(self, article):
         now = datetime.now()
@@ -765,17 +765,17 @@ class NewsApi(Api):
         if (result['status'] == 'ok'):
             return result
         else:
-            return ""
+            print(result)
+            return "could not complete request"
 
     def contact_api(self):
         preferences = self.current_user.preferences.split("  ")
         urls = {}
         for pref in preferences:
             result = self.get_user_articles(pref)
-            articles = result.get('articles')
+            articles = result['articles']
             for article in articles:
                 if pref in urls:
-                    print(article)
                     urls[pref].append((article['title'], article['url']))
                 else:
                     urls[pref] = [(article['title'], article['url'])]
@@ -797,7 +797,7 @@ class NewsApi(Api):
         result = r.json()
         urls = {}
         if result['status'] == 'ok':
-            articles = result.get('articles')
+            articles = result['articles']
             for article in articles:
                 if pref in urls:
                     urls[pref].append((article['title'], article['url']))
@@ -814,15 +814,28 @@ class NewsApi(Api):
             self.current_user.preferences = str.strip()
         self.current_user.save()
 
-    def del_pref(self, str2del):
-        if (len(self.current_user.preferences) == 0):
-            return
+    def get_prefs(self):
+        if(self.current_user.preferences):
+            prefs = self.current_user.preferences.split("  ")
+            return prefs
         else:
+            return []
+
+    def del_prefs(self, str2del):
+        if(self.current_user.preferences):
             preferences = self.current_user.preferences
-            preference.replace(str2del, "", 1)
-            preference.replace("    ", "  ", 1)
-            self.current_user.preferences = preference
-            self.current_user.save()
+            try:
+                preferences = preferences.replace(str2del,"",1)
+                if "    " in preferences:
+                    preferences = preferences.replace("    ", "  ",1)
+                    preferences = preferences.replace("   ", "  ",1)
+                self.current_user.preferences = preferences
+                self.current_user.save()
+                return self.get_prefs()
+            except Exception as e:
+                print(f"string parsing exception {e}")
+
+
 
 
 class SpotifyAPIInfo(ApiInfo):
@@ -831,12 +844,11 @@ class SpotifyAPIInfo(ApiInfo):
     def __init__(self):
         self.api_name = apiArr[0]
         self.client_id = apiArr[1]
-        self.secret = apiArr[2]  # TODO: make env variable
+        self.secret = apiArr[2] #TODO: make env variable
         self.base_url = apiArr[3]
         self.token_endpoint = apiArr[4]
         self.redirect_url = apiArr[5]
         self.scope = apiArr[6]
-
 
 class RedditAPIInfo(ApiInfo):
     """The reddit specific ApiInfo subclass"""
@@ -844,13 +856,12 @@ class RedditAPIInfo(ApiInfo):
     def __init__(self):
         self.api_name = apiArr[7]
         self.client_id = apiArr[8]
-        self.secret = apiArr[9]  # TODO: make env variable
-        self.base_url = apiArr[10]
+        self.secret = apiArr[9] #TODO: make env variable
+        self.base_url =apiArr[10]
         self.token_endpoint = apiArr[11]
         self.redirect_url = apiArr[12]
-        self.scope = {}  # TODO:   #apiArr[13]
-        # self.scope
-
+        self.scope = {} #TODO:   #apiArr[13]
+        # self.scope 
 
 class DiscordAPIInfo(ApiInfo):
     """The discord specific ApiInfo subclass"""
@@ -858,13 +869,12 @@ class DiscordAPIInfo(ApiInfo):
     def __init__(self):
         self.api_name = apiArr[14]
         self.client_id = apiArr[15]
-        self.secret = apiArr[16]  # TODO:
+        self.secret = apiArr[16] #TODO: 
         self.base_url = apiArr[17]
         self.token_endpoint = apiArr[18]
         self.redirect_url = apiArr[19]
         self.scope = apiArr[20]
-        # self.scope
-
+        # self.scope 
 
 class OutlookAPIInfo(ApiInfo):
     """The outlook specific ApiInfo subclass"""
@@ -877,8 +887,7 @@ class OutlookAPIInfo(ApiInfo):
         self.token_endpoint = apiArr[25]
         self.redirect_url = apiArr[26]
         self.scope = apiArr[27]
-        # self.scope
-
+        # self.scope 
 
 class NewsApiInfo(ApiInfo):
     def __init___(self):
@@ -890,3 +899,16 @@ class NewsApiInfo(ApiInfo):
         self.redirect_url = "N/A"
         self.scope = "N/A"
         # self.scope
+
+
+# def del_prefs(self):
+#     if(self.current_user.preferences):
+#         preferences = self.current_user.preferences
+#         try:
+#             preferences = preference.replace(str2del,"",1)
+#             if "    " in preferences:
+#                 preferences = preferences.replace("    ", "  ",1)
+#             self.current_user.preferences = preferences
+#             self.current_user.save()
+#         except Exception as e:
+#             print(f"string parsing exception {e}")
