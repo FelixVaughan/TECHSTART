@@ -36,7 +36,7 @@ def ajax(request):
         spot = SpotifyApi(request.user.id)
         spot.prev()
 
-    if requests.Get.get("social") == 'reddit':
+    if requests.Get.get("social") == 'redditData':
         red = RedditApi(requests.user.id)
         red.init_contact()
         user_data = red.contact_api()
@@ -45,8 +45,7 @@ def ajax(request):
         reddit_data["messages"] = [message for message in user_data["message"]]
         reddit_data["top_year"] = [message for message in user_data["top_year"]]
         reddit_data["all_unread"] = [message for message in user_data["all_unread"]]
-        request.session['reddit_data'] = reddit_data
-        return render(request, "/")
+        return render(request, "users/reddit_data.html", {'reddit_data': reddit_data})
     return HttpResponse('')
 
 # renders register page

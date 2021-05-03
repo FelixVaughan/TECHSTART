@@ -72,11 +72,18 @@ function spotifyClose() {
     document.getElementById("Spotify").style.display = "none";
     }
 
+    
+function redditData() {
+        document.getElementById("Reddit").style.display = "block";
+        closeForm();
+        console.log('reddit data')
+        $.get('ajax/?social=redditData')
+        }
+
 function redditOpen() {
     document.getElementById("Reddit").style.display = "block";
     closeForm();
-    console.log('reddit')
-    $.get('ajax/?social=reddit')
+    console.log('reddit open')
     }
 
 function redditClose() {
