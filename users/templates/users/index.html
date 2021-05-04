@@ -49,6 +49,11 @@
            <!-- NEWS -->
     <div id= "News" style="display:none" class="container index p-3 my-3 border">
             <p class = "index"> World News </p>
+            <form method="POST" action="{% url 'article' %}" style="margin: 0">
+              {% csrf_token %}
+              <input type="search" placeholder="Search for something.." name="searched">
+              <button class="search-button" type="submit">Submit</button>
+            </form>
             <button type="button" class="innerbtn" onclick="newsClose()">Close</button>
     </div>
 

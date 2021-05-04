@@ -16,7 +16,7 @@ li {
     --green: #fafcfa;
     --white: #ffffff;
     --black: #000000;
-    --oac1: #bfc3cc;
+    --oac1: #242526;
     --oac2: #303133;
   }
 
@@ -54,7 +54,7 @@ h2.index {
   }
 
   p.index {
-    --fontColor: var(--oac2);
+    --fontColor: var(--white);
     font-family: 'Roboto';font-size: 16px;
   }
 
@@ -163,4 +163,8 @@ h2.index {
   background-color: var(--oac2);
   border: none;
   color:#fff;
+}
+
+.border {
+  border: 1px solid #242526!important;
 }

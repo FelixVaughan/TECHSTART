@@ -1,0 +1,24 @@
+{% extends "users/base.html"%}
+{% block title %}
+    <title>News</title>
+{% endblock %}
+{% block content %}
+    {% if searched %}
+        <h4>Top results for {{ searched }}:</h4>
+        <br/>
+        {% for title, urls in articles %}
+        <article class="media content-section">
+            <div class="media-body">
+              <div class="article-metadata">
+                <a class="mr-2" href="#">Me</a>
+                <small class="text-muted">Today</small>
+              </div>
+              <h5><a class="article-title" href="#">{{ title }}</a></h5>
+              <center>
+              <a class="btn btn-primary" href="{{ urls }}">Click here to view</a>
+            </center>
+            </div>
+          </article>
+        {% endfor %}
+    {% endif %}
+{% endblock content %}
