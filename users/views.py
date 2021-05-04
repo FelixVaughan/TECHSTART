@@ -65,15 +65,16 @@ def article_overview(request):
     if request.method == "POST":
         searched = request.POST['searched']
         news = NewsApi(request.user.id)
-        if searched in news.get_prefs():
-            user_info = news.contact_api()
-            print(news.get_prefs())
-        else:
+        if searched not in news.get_prefs():
             news.add_prefs(searched)
-            user_info = news.contact_api()
+        user_info = news.contact_api()
+        print(news.get_prefs())
+        if(searched not in user_info):
             print(news.get_prefs())
-        articles = user_info[searched]
-        return render(request, 'users/article.html', {'searched':searched,'articles': articles})
+            return HttpResponse('Error: no results found.')
+        else:
+            articles = user_info[searched]
+            return render(request, 'users/article.html', {'searched':searched,'articles': articles})
     else:
         return render(request, 'users/article.html', {})
 
