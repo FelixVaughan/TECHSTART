@@ -15,6 +15,7 @@ def index(request):
 
 # @login_required
 
+
 #@login_required
 def ajax(request):
     user_info = {}
@@ -30,7 +31,7 @@ def song(request):
     user_info = {}
     if request.GET.get('state') == 'spotify_play':
         spot = SpotifyApi(request.user.id)
-        #user_info = spot.play()
+        user_info = spot.play()
         return render(request, 'users/song.html', {'user_info': user_info})
     if request.GET.get('state') == 'spotify_pause':
         spot = SpotifyApi(request.user.id)
@@ -49,17 +50,18 @@ def song(request):
         user_info = spot.prev()
         return render(request, 'users/song.html', {'user_info': user_info})
 
-    #  if request.GET.get("social") == 'redditData':
-    #      red = RedditApi(request.user.id)
-    #      red.init_contact()
-    #      user_data = red.contact_api()
     #
-    #      reddit_data = {}
-    #      reddit_data["messages"] = [message for message in user_data["message"]]
-    #      reddit_data["top_year"] = [
-    #          message for message in user_data["top_year"]]
-    #      reddit_data["all_unread"] = [
-    #          message for message in user_data["all_unread"]]
+    # if request.GET.get("social") == 'redditData':
+    #     red = RedditApi(request.user.id)
+    #     red.init_contact()
+    #     user_data = red.contact_api()
+    #
+    #     reddit_data = {}
+    #     reddit_data["messages"] = [message for message in user_data["message"]]
+    #     reddit_data["top_year"] = [
+    #         message for message in user_data["top_year"]]
+    #     reddit_data["all_unread"] = [
+    #         message for message in user_data["all_unread"]]
     #     return render(request, "users/reddit_data.html", {'reddit_data': reddit_data})
     # return HttpResponse('')
 
