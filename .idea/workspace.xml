@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="cf463b05-f91f-4f97-bcba-e335f7d1d867" name="Default Changelist" comment="Removed spotify rendering as it was causing issues">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/static/users/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/users/static/users/app.js" afterDir="false" />
+    <list default="true" id="cf463b05-f91f-4f97-bcba-e335f7d1d867" name="Default Changelist" comment="Updated js method to html instead of append, added a separate html for song display">
       <change beforePath="$PROJECT_DIR$/users/static/users/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/users/static/users/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/templates/users/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/users/templates/users/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/templates/users/redirect.html" beforeDir="false" afterPath="$PROJECT_DIR$/users/templates/users/redirect.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/static/users/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/users/static/users/main.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,7 +53,7 @@
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -127,6 +122,7 @@
       <workItem from="1619568850942" duration="15149000" />
       <workItem from="1619744919854" duration="12000" />
       <workItem from="1619744939162" duration="11249000" />
+      <workItem from="1620094775380" duration="4274000" />
     </task>
     <task id="LOCAL-00001" summary="Extended Nav Bar, Homepage showing SpotifyAPI info (WITH HARDCODED USER in views)">
       <created>1619578393831</created>
@@ -156,7 +152,14 @@
       <option name="project" value="LOCAL" />
       <updated>1619748256841</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Updated js method to html instead of append, added a separate html for song display">
+      <created>1620099874703</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1620099874703</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -179,6 +182,7 @@
     <MESSAGE value="Added very basic JS for containers to hide/show" />
     <MESSAGE value="added logos and changed" />
     <MESSAGE value="Removed spotify rendering as it was causing issues" />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed spotify rendering as it was causing issues" />
+    <MESSAGE value="Updated js method to html instead of append, added a separate html for song display" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated js method to html instead of append, added a separate html for song display" />
   </component>
 </project>

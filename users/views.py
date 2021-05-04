@@ -15,44 +15,53 @@ def index(request):
 
 # @login_required
 
-
+#@login_required
 def ajax(request):
     user_info = {}
     if request.GET.get('social') == 'spotify_init':
         spot = SpotifyApi(request.user.id)
+        spot.init_contact()
     if request.GET.get('social') == 'spotify_top':
         spot = SpotifyApi(request.user.id)
+        user_info = spot.contact_api()
         return render(request, 'users/ajax.html', {'user_info': user_info})
-    if request.GET.get('social') == 'spotify_play':
-        spot = SpotifyApi(request.user.id)
-        x = spot.play()
-        print(x)
-    if request.GET.get('social') == 'spotify_pause':
-        spot = SpotifyApi(request.user.id)
-        spot.pause()
-    if request.GET.get('social') == 'spotify_shuffle':
-        spot = SpotifyApi(request.user.id)
-        spot.shuffle()
-    if request.GET.get('social') == 'spotify_next':
-        spot = SpotifyApi(request.user.id)
-        spot.next()
-    if request.GET.get('social') == 'spotify_prev':
-        spot = SpotifyApi(request.user.id)
-        spot.prev()
 
-    if request.GET.get("social") == 'redditData':
-        red = RedditApi(request.user.id)
-        red.init_contact()
-        user_data = red.contact_api()
+def song(request):
+    user_info = {}
+    if request.GET.get('state') == 'spotify_play':
+        spot = SpotifyApi(request.user.id)
+        #user_info = spot.play()
+        return render(request, 'users/song.html', {'user_info': user_info})
+    if request.GET.get('state') == 'spotify_pause':
+        spot = SpotifyApi(request.user.id)
+        user_info = spot.pause()
+        return render(request, 'users/song.html', {'user_info': user_info})
+    if request.GET.get('state') == 'spotify_shuffle':
+        spot = SpotifyApi(request.user.id)
+        user_info = spot.shuffle()
+        return render(request, 'users/song.html', {'user_info': user_info})
+    if request.GET.get('state') == 'spotify_next':
+        spot = SpotifyApi(request.user.id)
+        user_info = spot.next()
+        return render(request, 'users/song.html', {'user_info': user_info})
+    if request.GET.get('state') == 'spotify_prev':
+        spot = SpotifyApi(request.user.id)
+        user_info = spot.prev()
+        return render(request, 'users/song.html', {'user_info': user_info})
 
-        reddit_data = {}
-        reddit_data["messages"] = [message for message in user_data["message"]]
-        reddit_data["top_year"] = [
-            message for message in user_data["top_year"]]
-        reddit_data["all_unread"] = [
-            message for message in user_data["all_unread"]]
-        return render(request, "users/reddit_data.html", {'reddit_data': reddit_data})
-    return HttpResponse('')
+    #  if request.GET.get("social") == 'redditData':
+    #      red = RedditApi(request.user.id)
+    #      red.init_contact()
+    #      user_data = red.contact_api()
+    #
+    #      reddit_data = {}
+    #      reddit_data["messages"] = [message for message in user_data["message"]]
+    #      reddit_data["top_year"] = [
+    #          message for message in user_data["top_year"]]
+    #      reddit_data["all_unread"] = [
+    #          message for message in user_data["all_unread"]]
+    #     return render(request, "users/reddit_data.html", {'reddit_data': reddit_data})
+    # return HttpResponse('')
 
 # renders articles page
 
