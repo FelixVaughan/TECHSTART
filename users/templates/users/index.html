@@ -23,6 +23,7 @@
         <button type="button" class="innerbtn" onclick="spotifyPlayer()">Click for Player</button>
         <!--PLAYER OPTIONS -->
         <div id= "SpotifyPlayer" style="display:none">
+        <div id="ajax_spotify_song"></div>
         <div class="btn-group">
           <button type="button" class="btn btn-primary" onclick="spotifyPlay()">Play</button>
           <button type="button" class="btn btn-primary" onclick="spotifyPause()">Pause</button>
@@ -30,6 +31,10 @@
           <button type="button" class="btn btn-primary" onclick="spotifyPrev()">Prev</button>
           <button type="button" class="btn btn-primary" onclick="spotifyNext()">Next</button>
         </div>
+            <div class="slidecontainer">
+              <p> <strong>Volume: </strong></p>
+              <input type="range" min="1" max="100" value="50">
+            </div>
         </div>
     </div>
 

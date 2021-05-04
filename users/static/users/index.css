@@ -1,17 +1,4 @@
 
-ul {
-    font-family: 'Roboto';
-}
-
-li {
-    list-style: circle;
-  }
-
-  .list {
-    list-style: square;
-    font-family: 'Roboto'; font-size: 22px;
-  }
-
   :root {
     --green: #fafcfa;
     --white: #ffffff;

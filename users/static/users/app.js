@@ -1,13 +1,8 @@
 'use strict'
 
-/*
-const switcher = document.querySelector('.block');
-const appInit = document.querySelector('.btn');
-appInit.addEventListener('click', function() {
-    document.getElementById("container").style.display = "block";
-    $('.box').append('<div class="container p-3 my-3 border"></div>'); //append container
-    });
-*/
+const slider = document.getElementById("myRange");
+const output = document.getElementById("demo");
+
 function openForm() {
         document.getElementById("popupForm").style.display = "block";
     }
@@ -18,47 +13,54 @@ function closeForm() {
 function spotifyTop(){
     console.log('spotify_top')
     $.get('ajax/?social=spotify_top', function (data) {
-        $("#ajax_spotify").append(data);
+        $("#ajax_spotify").html(data);
     })
 }
 
 function spotifyPlay(){
     console.log('spotify_play')
-    $.get('ajax/?social=spotify_play', function (data) {
-        $("#ajax_spotify").append(data);
+    $.get('song/?state=spotify_play', function (data) {
+        $("#ajax_spotify_song").html(data);
     })
 }
 
 function spotifyPause(){
     console.log('spotify_pause')
-    $.get('ajax/?social=spotify_pause', function (data) {
-        $("#ajax_spotify").append(data);
+    $.get('song/?state=spotify_pause', function (data) {
+        $("#ajax_spotify_song").html(data);
     })
 }
 
 function spotifyShuffle(){
     console.log('spotify_shuffle')
-    $.get('ajax/?social=spotify_shuffle', function (data) {
-        $("#ajax_spotify").append(data);
+    $.get('song/?state=spotify_shuffle', function (data) {
+        $("#ajax_spotify_song").html(data);
     })
 }
 
 function spotifyNext(){
     console.log('spotify_next')
-    $.get('ajax/?social=spotify_next', function (data) {
-        $("#ajax_spotify").append(data);
+    $.get('song/?state=spotify_next', function (data) {
+        $("#ajax_spotify_song").html(data);
     })
 }
 
 function spotifyPrev(){
     console.log('spotify_prev')
-    $.get('ajax/?social=spotify_prev', function (data) {
-        $("#ajax_spotify").append(data);
+    $.get('song/?state=spotify_prev', function (data) {
+        $("#ajax_spotify_song").html(data);
     })
 }
 
 function spotifyPlayer(){
     document.getElementById("SpotifyPlayer").style.display = "block";
+}
+
+output.innerHTML = slider.value; // Display the default slider value
+
+// Update the current slider value (each time you drag the slider handle)
+slider.oninput = function() {
+  output.innerHTML = this.value;
 }
 
 function spotifyOpen() {
