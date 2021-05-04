@@ -28,6 +28,18 @@ def ajax(request):
         user_info = spot.contact_api()
         return render(request, 'users/ajax.html', {'user_info': user_info})
 
+def reddit_data(request):
+    if request.GET.get('state') == 'redditData':    
+        red = RedditApi(request.user.id)
+        red.init_contact()
+        user_data = red.contact_api()
+        messages = [message.body for message in user_data["message"]]
+        top_year = [
+            message.body for message in user_data["top_year"]]
+        unread = [
+            message.body for message in user_data["all_unread"]]
+        return render(request, "users/reddit_data.html", {'messages': messages,'top_year': top_year, 'unread':unread })
+
 def song(request):
     user_info = {}
     if request.GET.get('state') == 'spotify_play':
@@ -50,17 +62,6 @@ def song(request):
         spot = SpotifyApi(request.user.id)
         user_info = spot.prev()
         return render(request, 'users/song.html', {'user_info': user_info})
-    if request.GET.get('state') == 'redditData':    
-
-        red = RedditApi(request.user.id)
-        red.init_contact()
-        user_data = red.contact_api()
-        messages = [message.body for message in user_data["message"]]
-        top_year = [
-            message.body for message in user_data["top_year"]]
-        unread = [
-            message.body for message in user_data["all_unread"]]
-        return render(request, "users/reddit_data.html", {'messages': messages,'top_year': top_year, 'unread':unread })
     return HttpResponse('')
 
 # renders articles page
