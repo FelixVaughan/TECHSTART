@@ -1,3 +1,4 @@
+from praw.reddit import Reddit
 from integrations.views import authenticate_spotify
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -49,7 +50,11 @@ def song(request):
         spot = SpotifyApi(request.user.id)
         user_info = spot.prev()
         return render(request, 'users/song.html', {'user_info': user_info})
-        
+    if request.GET.get('state') == 'redditData':    
+
+        red = RedditApi(request.user.id)
+        red.init_contact()
+        user_data = red.contact_api()
         messages = [message.body for message in user_data["message"]]
         top_year = [
             message.body for message in user_data["top_year"]]
