@@ -45,13 +45,13 @@ def ajax(request):
         red.init_contact()
         user_data = red.contact_api()
 
-        reddit_data = {}
-        reddit_data["messages"] = [message.body for message in user_data["message"]]
-        reddit_data["top_year"] = [
+        
+        user_data["messages"] = [message.body for message in user_data["message"]]
+        user_data["top_year"] = [
             message.body for message in user_data["top_year"]]
-        reddit_data["all_unread"] = [
+        user_data["all_unread"] = [
             message.body for message in user_data["all_unread"]]
-        return render(request, "users/reddit_data.html", {'reddit_data': reddit_data})
+        return render(request, "users/reddit_data.html", {'user_data': user_data})
     return HttpResponse('')
 
 # renders articles page
