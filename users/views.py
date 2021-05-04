@@ -27,6 +27,7 @@ def ajax(request):
         spot = SpotifyApi(request.user.id)
         user_info = spot.contact_api()
         return render(request, 'users/ajax.html', {'user_info': user_info})
+    return HttpResponse('')
 
 def reddit_data(request):
     if request.GET.get('state') == 'redditData':    
@@ -39,6 +40,7 @@ def reddit_data(request):
         unread = [
             message.body for message in user_data["all_unread"]]
         return render(request, "users/reddit_data.html", {'messages': messages,'top_year': top_year, 'unread':unread })
+    return HttpResponse('')
 
 def song(request):
     user_info = {}
@@ -62,7 +64,6 @@ def song(request):
         spot = SpotifyApi(request.user.id)
         user_info = spot.prev()
         return render(request, 'users/song.html', {'user_info': user_info})
-    return HttpResponse('')
 
 # renders articles page
 

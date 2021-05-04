@@ -7,7 +7,7 @@ from . import views
 urlpatterns = [
     url(r"^$", views.index, name = "index"), # site hompage
     path('ajax/', views.ajax, name = 'ajax'),
-    path('reddit/', views.views.reddit_data, name="reddit"),
+    path('reddit/', views.reddit_data, name="reddit"),
     path('song/', views.song, name = 'song'),
     path('article/', views.article_overview, name = 'article'),
     path('register/', views.register, name = 'register'),   # register page path

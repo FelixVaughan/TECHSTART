@@ -32,21 +32,18 @@ def obtain_url_code(url):
 #Authenication Methods used for applications that reqire user consent#
 ######################################################################
 def authenticate_spotify(request):
-    request.session['api'] = 'spotify'
     spot = SpotifyApi(request.user.id)
     spot.init_contact()
     return HttpResponse('')
 
 
 def authenticate_reddit(request):
-    request.session['api'] = 'reddit'
     reddit = RedditApi(request.user.id)
     reddit.init_contact()
     return HttpResponse('')
 
 
 def authenticate_outlook(request):
-    request.session['api'] = 'outlook'
     outlook = OutlookApi(request.user.id)
     outlook.init_contact()
     return HttpResponse('')
@@ -155,44 +152,41 @@ def play(request):
 #                                End                                 #
 ######################################################################
 
-def test(request):
-    print("API IS: {request.session['api']}")
-
 
 def redirect(request):
-    print(f"AUTHENTICATION IN PROGRESS FOR {request.session['api']}")
+    print(f"AUTHENTICATION IN PROGRESS FOR {request.user.email}")
     try:
         url = str(request.build_absolute_uri)
         code = obtain_url_code(url)
         token_recv = False
         user = request.user
-        oauth_session = request.session['api']
+        oauth_session = request.user.email
         if(code == -1):
             msg = "Code not found in redirect Url. Probably malformed..."
         if oauth_session == 'reddit':
             red = RedditApi(user.id)
             red.obtain_token(code)
             red.current_user.authenticated = True
-            red.save()
+            red.current_user.save()
             token_recv = True
         elif oauth_session == 'outlook':
             outlook = OutlookApi(user.id)
             outlook.obtain_token(code)
             outlook.current_user.authenticated = True
-            outlook.save()
+            outlook.current_user.save()
             token_recv = True
         elif oauth_session == 'spotify':
             spotify = SpotifyApi(user.id)
             spotify.obtain_token(code)
             spotify.current_user.authenticated = True
-            spotify.save()
+            spotify.current_user.save()
             token_recv = True
         if(token_recv):
             print(
-                f"Token Obtained for {request.session['api']} api under user {user}!")
+                f"Token Obtained for {request.user.email} api under user {user}!")
         else:
             print(
-                f"Expected response from {request.session['api']} token set: {token_recv}")
+                f"Expected response from {request.user.email} token set: {token_recv}")
     except Exception as e:
         print(e)
     finally:

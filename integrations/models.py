@@ -250,6 +250,7 @@ class SpotifyApi(Api):
         self.spotify_auth = tekore.RefreshingCredentials(
             client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
         self.spotify = None
+        self.user_id = user_id
         if(self.current_user.token):
             self.spotify = tekore.Spotify(self.current_user.token)
 
@@ -258,8 +259,12 @@ class SpotifyApi(Api):
             self.get_new_token(False)
             return
         try:
-            auth_url = self.spotify_auth.user_authorisation_url(
-                scope=self.scope)
+            user = User.objects.get(pk=self.user_id)
+            user.email = "spotify"
+            user.save()
+            sleep(0.1)
+            print(f"CHENGED USER {user.username}'S EMAIL TO {user.email}")
+            auth_url = self.spotify_auth.user_authorisation_url(scope=self.scope)
             webbrowser.open(auth_url)
         except KeyError:
             print("Authentication with spotify API could NOT be completed as no code was found. Access token NOT set!")
@@ -443,7 +448,7 @@ class RedditApi(Api):
         self.refresh_token = self.current_user.refresh_token
         self.reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret,
                                   redirect_uri=self.redirect_uri, user_agent="techstart")
-
+        self.user_id = user_id
     def init_contact(self):
         """Initializes contact with the API
 
@@ -474,6 +479,9 @@ class RedditApi(Api):
         if(self.current_user.authenticated):
             return
         auth_url = self.reddit.auth.url(["*"], "permanent")
+        user = User.objects.get(pk=self.user_id)
+        user.email = "reddit" #even though we are setting email, this can be seen as the state variable
+        user.save()
         webbrowser.open(auth_url)
 
     def obtain_token(self, code):
