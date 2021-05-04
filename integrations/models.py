@@ -243,6 +243,8 @@ class News_User_Info(User_Account_Info):
 class SpotifyApi(Api):
     def __init__(self, user_id, api_name="spotify"):
         super().__init__(user_id, api_name, SpotifyAPIInfo)
+        self.user_id = user_id
+        self.check_for_entry_existence()
         self.current_user = Spotify_User_Info.objects.get(users=user_id)
         self.token = self.current_user.token
         self.refresh_token = self.current_user.refresh_token
@@ -250,20 +252,16 @@ class SpotifyApi(Api):
         self.spotify_auth = tekore.RefreshingCredentials(
             client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
         self.spotify = None
-        self.user_id = user_id
         if(self.current_user.token):
             self.spotify = tekore.Spotify(self.current_user.token)
 
     def init_contact(self):
         if(self.current_user.authenticated):
-            self.get_new_token(False)
             return
         try:
             user = User.objects.get(pk=self.user_id)
-            user.email = "spotify"
+            user.email = "spotify" #lol
             user.save()
-            sleep(0.1)
-            print(f"CHENGED USER {user.username}'S EMAIL TO {user.email}")
             auth_url = self.spotify_auth.user_authorisation_url(scope=self.scope)
             webbrowser.open(auth_url)
         except KeyError:
@@ -282,6 +280,15 @@ class SpotifyApi(Api):
             print("Authentication with spotify API could NOT be completed as no code was found. Access token NOT set!")
         except Exception as e:
             print(e)
+
+    def check_for_entry_existence(self):
+        try:
+            Spotify_User_Info.objects.get(users=self.user_id)
+        except:
+            user = User.objects.get(pk=self.user_id)
+            s = Spotify_User_Info.objects.create(users=user)
+            s.save()
+
 
     # will def need parameters in the future
     def contact_api(self, album_uri: str = "") -> dict:
@@ -443,12 +450,13 @@ class SpotifyApi(Api):
 class RedditApi(Api):
     def __init__(self, user_id, api_name="reddit"):
         super().__init__(user_id, api_name, RedditAPIInfo)
+        self.user_id = user_id
+        self.check_for_entry_existence()
         self.current_user = Reddit_User_Info.objects.get(users=user_id)
         self.token = self.current_user.token
         self.refresh_token = self.current_user.refresh_token
-        self.reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret,
-                                  redirect_uri=self.redirect_uri, user_agent="techstart")
-        self.user_id = user_id
+        self.reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri, user_agent="techstart")
+
     def init_contact(self):
         """Initializes contact with the API
 
@@ -489,6 +497,14 @@ class RedditApi(Api):
         self.current_user.refresh_token = refresh_token
         self.current_user.save()
         print(f"reddit Token set: {refresh_token}")
+
+    def check_for_entry_existence(self):
+        try:
+            Reddit_User_Info.objects.get(users=self.user_id)
+        except:
+            user = User.objects.get(pk=self.user_id)
+            s = Reddit_User_Info.objects.create(users=user)
+            s.save()
 
     def contact_api(self):
         """Contacts the API and gets the user data

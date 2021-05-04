@@ -30,11 +30,12 @@ def ajax(request):
     return HttpResponse('')
 
 def reddit_data(request):
-    if request.GET.get('state') == 'redditData':    
+    print("OOOOOOPH")
+    if request.GET.get('state') != 'redditData':
         red = RedditApi(request.user.id)
         red.init_contact()
         user_data = red.contact_api()
-        messages = [message.body for message in user_data["message"]]
+        messages = [message.body for message in user_data["messages"]]
         top_year = [
             message.body for message in user_data["top_year"]]
         unread = [
