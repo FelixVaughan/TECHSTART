@@ -10,16 +10,14 @@ from django.http import *
 # Create your views here.
 
 
+@login_required
 def index(request):
     """Renders the homepage"""
     news = NewsApi(request.user.id)
     prefs = news.get_prefs()
     return render(request, "users/index.html", {'prefs': prefs})
 
-# @login_required
 
-
-#@login_required
 def ajax(request):
     user_info = {}
     if request.GET.get('social') == 'spotify_init':
@@ -75,6 +73,7 @@ def song(request):
         return render(request, 'users/song.html')
     return HttpResponse('')
 # renders articles page
+
 
 def article_overview(request):
     user_info = {}

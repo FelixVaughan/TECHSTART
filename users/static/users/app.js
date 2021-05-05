@@ -74,6 +74,7 @@ function spotifyOpen() {
 
 function spotifyClose() {
     document.getElementById("Spotify").style.display = "none";
+    $.get('song/?state=spotify_pause')
     }
 
     
@@ -106,6 +107,7 @@ function outlookOpen() {
 function newsOpen() {
     document.getElementById("News").style.display = "block";
     closeForm();
+    $.get('article/')
     }
 
 function newsClose() {
