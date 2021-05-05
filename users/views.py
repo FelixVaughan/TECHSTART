@@ -1,4 +1,4 @@
-from praw.reddit import Reddit
+from praw.reddit import Reddit, Submission
 from integrations.views import authenticate_spotify
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -37,7 +37,9 @@ def reddit_data(request):
         user_data = red.contact_api()
         messages = [[message.body_html, message.subject, message.author] for message in user_data["messages"]]
         top_year = [
-            [post.body_html, post.subject, post.author] for post in user_data["top_year"]]
+            [post.body_html, post.title, post.author] if type(post) == praw.models.Submission
+            else [type(post), type(post), type(post)]
+            for post in user_data["top_year"]]
         unread = [
             [message.body_html, message.subject, message.author] for message in user_data["all_unread"]]
         return render(request, "users/reddit_data.html", {'messages': messages,'top_year': top_year, 'unread':unread })
