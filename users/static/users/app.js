@@ -82,7 +82,7 @@ function redditData() {
         document.getElementById("Reddit").style.display = "block";
         closeForm();
         console.log('reddit data')
-        $.get('reddit')
+        $.get('reddit/?state=redditData')
         }
 
 function redditOpen() {
