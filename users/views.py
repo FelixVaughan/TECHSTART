@@ -12,7 +12,9 @@ from django.http import *
 
 def index(request):
     """Renders the homepage"""
-    return render(request, "users/index.html")
+    news = NewsApi(request.user.id)
+    prefs = news.get_prefs()
+    return render(request, "users/index.html", {'prefs': prefs})
 
 # @login_required
 

@@ -3,19 +3,23 @@
     --green: #fafcfa;
     --white: #ffffff;
     --black: #000000;
-    --oac1: #242526;
+    --oac1: #7dc7bb;
     --oac2: #303133;
+    --oac3: #ffe599;
+    --font-color: var(--font);
   }
 
-  .dark-theme {
-    --bg: var(--oac1);
-    --fontColor: var(--oac2);
-    --btnBg: var(--oac1);
-    --btnFontColor: var(--oac2);
+  [light-mode=dark] {
+    --green: #1b1f1b;
+    --white: #ffffff;
+    --black: #000000;
+    --oac1: #242526;
+    --oac2: #303133;
+    --oac3: #bfc3cc;
+    --font-color: var(--font);
   }
 
   * {
-    color: var(--fontColor);
     font-family: 'Roboto';
     box-sizing: border-box;
   }
@@ -33,7 +37,7 @@ h1 {
 h2.index {
   text-align: left;
   font-family: 'Roboto';font-size: 30px;
-   --fontColor: var(--oac2);
+   --fontColor: var(--font-color);
 }
 
   h4.index {
@@ -41,17 +45,18 @@ h2.index {
   }
 
   p.index {
-    --fontColor: var(--white);
+    --fontColor: var(--font-color);
     font-family: 'Roboto';font-size: 16px;
+    margin-bottom: 0.3rem;
   }
 
    h5.index {
-    --fontColor: var(--oac2);
+    --fontColor: var(--font-color);
     font-family: 'Roboto';font-size: 40px;
   }
 
     h6.index {
-    --fontColor: var(--oac2);
+    --fontColor: var(--font-color);
     font-family: 'Roboto';font-size: 20px;
   }
 
@@ -74,8 +79,8 @@ h2.index {
   .block {
     display: block;
     border: none;
-    background-color: var(--oac2);
-    color: white;
+    background-color: var(--oac3);
+    color: var(--bg);
     padding: 14px 28px;
     font-size: 16px;
     cursor: pointer;
@@ -94,6 +99,7 @@ h2.index {
   display: block;
   background-color: var(--oac1);
 }
+
 
 .openBtn {
   display: flex;
@@ -119,27 +125,28 @@ h2.index {
   left: 52%;
   top: 35%;
   transform: translate(-50%, 5%);
-  border: 3px solid #999999;
+  /*border: 3px solid #999999;*/
   z-index: 9;
 }
 .formContainer {
   max-width: 300px;
   padding: 20px;
   background-color: var(--oac1);
+  border: 3px solid var(--nav);
 }
 
 .formContainer .btn {
   padding: 12px 20px;
   border: none;
-  background-color: var(--oac2);
-  color: #fff;
+  background-color: var(--oac3);
+  color: var(--bg);
   cursor: pointer;
   width: 100%;
   margin-bottom: 15px;
   opacity: 0.8;
 }
 .formContainer .cancel {
-  background-color: #cc0000;
+  background-color: var(--oac3);
 }
 .formContainer .btn:hover,
 .openButton:hover {
@@ -153,5 +160,5 @@ h2.index {
 }
 
 .border {
-  border: 1px solid #242526!important;
+  border: 0px solid var(--nav)!important;
 }
