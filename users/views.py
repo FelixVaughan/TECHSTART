@@ -16,7 +16,7 @@ def index(request):
     news = NewsApi(request.user.id)
     prefs = news.get_prefs()
     return render(request, "users/index.html", {'prefs': prefs})
-
+praw.m
 
 def ajax(request):
     user_info = {}
@@ -30,20 +30,17 @@ def ajax(request):
     return HttpResponse('')
 
 def reddit_data(request):
-    print("OOOOOOPH")
-    if request.GET.get('state') != 'redditData':
-        red = RedditApi(request.user.id)
-        red.init_contact()
-        user_data = red.contact_api()
-        messages = [[message.body_html, message.subject, message.author] for message in user_data["messages"]]
-        top_year = [
-            [post.body_html, post.title, post.author] if type(post) == praw.models.Submission
-            else [type(post), type(post), type(post)]
-            for post in user_data["top_year"]]
-        unread = [
-            [message.body_html, message.subject, message.author] for message in user_data["all_unread"]]
-        return render(request, "users/reddit_data.html", {'messages': messages,'top_year': top_year, 'unread':unread })
-    return HttpResponse('')
+    red = RedditApi(request.user.id)
+    red.init_contact()
+    user_data = red.contact_api()
+    messages = [[message.body_html, message.subject, message.author] for message in user_data["messages"]]
+    top_year = [
+        [post.body_html, post.title, post.author] if type(post) == praw.models.Submission
+        else [type(post), type(post), type(post)]
+        for post in user_data["top_year"]]
+    unread = [
+        [message.body_html, message.subject, message.author] for message in user_data["all_unread"]]
+    return render(request, "users/reddit_data.html", {'messages': messages,'top_year': top_year, 'unread':unread })
 
 def song(request):
     user_info = {}
