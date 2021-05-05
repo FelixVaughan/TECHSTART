@@ -1,3 +1,5 @@
+from praw.models import Message
+from praw.models import Submission as ModelSubmission
 from praw.reddit import Reddit, Submission
 from integrations.views import authenticate_spotify
 from django.shortcuts import render, redirect
@@ -33,13 +35,24 @@ def reddit_data(request):
     red = RedditApi(request.user.id)
     red.init_contact()
     user_data = red.contact_api()
-    messages = [[message.body_html, message.subject, message.author] for message in user_data["messages"]]
-    top_year = [
-        [post.body_html, post.title, post.author] if type(post) == praw.models.Submission
-        else [type(post), type(post), type(post)]
-        for post in user_data["top_year"]]
-    unread = [
-        [message.body_html, message.subject, message.author] for message in user_data["all_unread"]]
+
+    messages = []
+    for message in user_data["messages"]:
+        if type(message) == Message:
+            messages.append([message.body_html, message.subject, message.author])
+
+    top_year = []
+    for post in user_data["top_year"]:
+        if type(post) == ModelSubmission:
+            top_year.append([post.body_html, post.title, post.author])
+        else:
+            top_year.append([type(post), type(post), type(post)])
+        
+
+    unread = []
+    for message in user_data["all_unread"]:
+        if type(message) == Message:
+            unread.append([message.body_html, message.subject, message.author])
     return render(request, "users/reddit_data.html", {'messages': messages,'top_year': top_year, 'unread':unread })
 
 def song(request):
