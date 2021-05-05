@@ -8,6 +8,9 @@
   --tag: #ffffff;
   --content: #7dc7bb;
   --hover: #678987;
+  --legend: #ffffff;
+  --label: #ffffff;
+  --form: #ffe599;
 }
 
 [light-mode=dark] {
@@ -20,6 +23,9 @@
   --tag: #bfc3cc;
   --content: #242526;
   --hover: #ffffff;
+  --legend: #bfc3cc;
+  --label: #bfc3cc;
+  --form: #17a2b8;
 }
 
 body {
@@ -65,7 +71,7 @@ body {
  .content-section {
    background: var(--content);
    padding: 10px 20px;
-   border: 1px solid #242526;
+   border: 0px solid #242526;
    border-radius: 3px;
    margin-bottom: 20px;
  }
@@ -116,12 +122,12 @@ body {
    vertical-align: middle;
  }
 
- legend {
-  color: #bfc3cc;
+legend {
+  color: var(--legend)
 }
 
 label {
-  color: #bfc3cc;
+  color: var(--label);
 }
 
 span {
@@ -129,6 +135,11 @@ span {
  font-size: 1.2rem;
  margin-right:5px;
  margin-bottom: 0.5rem;
+}
+
+.helptext {
+  font-size:initial;
+  color: var(--font);
 }
 
 .badge {
@@ -187,4 +198,9 @@ body[light-mode=dark] .light-mode-button span:nth-child(2) {
 .badge-primary {
   color: var(--bg);
   background-color: var(--tag);
+}
+
+.btn-outline-info {
+  color: var(--form);
+  border-color: var(--form);
 }
