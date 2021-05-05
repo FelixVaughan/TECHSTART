@@ -53,7 +53,7 @@ def reddit_data(request):
     for message in user_data["all_unread"]:
         if type(message) == Message:
             unread.append([message.body_html, message.subject, message.author])
-    return render(request, "users/reddit_data.html", {'messages': messages,'top_year': top_year, 'unread':unread })
+    return render(request, "users/reddit.html", {'messages': messages,'top_year': top_year, 'unread':unread })
 
 def song(request):
     user_info = {}
