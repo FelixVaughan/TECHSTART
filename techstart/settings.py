@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 from django.views.decorators.cache import cache_page
+from decouple import config
+import django_heroku
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,12 +25,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'f0(n==(qnbz4#1m9#f2%wrf$konc#85km5ygkpoi(&%ih1m&^t' #TODO: set to environment variable in prod
+# TODO: set to environment variable in prod
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True # TODO: remove in prod
+DEBUG = True  # TODO: remove in prod
 
-ALLOWED_HOSTS = [] #TODO: Set to proper domain in prod
+ALLOWED_HOSTS = ['localhost']  # TODO: Set to proper domain in prod
 
 
 # Application definition
@@ -45,8 +48,9 @@ INSTALLED_APPS = [
 ]
 
 
-
 MIDDLEWARE = [
+    # add whitenoise middleware for deployment
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -94,7 +98,7 @@ CACHES = {
     }
 }
 
-SESSION_ENGINE = "django.contrib.sessions.backends.cached_db" 
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -133,6 +137,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 LOGIN_REDIRECT_URL = 'index'        # url redirect after login
 LOGIN_URL = 'login'                 # url for login page
+
+# Activate Django-Heroku.
+django_heroku.settings(locals())
