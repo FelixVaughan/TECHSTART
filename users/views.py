@@ -65,7 +65,13 @@ def song(request):
         spot = SpotifyApi(request.user.id)
         user_info = spot.prev()
         return render(request, 'users/song.html', {'user_info': user_info})
-
+    if request.GET.get('volume') :
+        volume = int(request.GET.get('volume'))  # ?state=spotify_volume&volume=
+        print("volume is ", volume)
+        spot = SpotifyApi(request.user.id)
+        spot.change_volume(volume)
+        return render(request, 'users/song.html')
+    return HttpResponse('')
 # renders articles page
 
 def article_overview(request):
