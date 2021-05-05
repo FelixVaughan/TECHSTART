@@ -35,11 +35,11 @@ def reddit_data(request):
         red = RedditApi(request.user.id)
         red.init_contact()
         user_data = red.contact_api()
-        messages = [[message.body, message.subject, message.author] for message in user_data["messages"]]
+        messages = [[message.body_html, message.subject, message.author] for message in user_data["messages"]]
         top_year = [
-            post.body for post in user_data["top_year"]]
+            [post.body_html, post.subject, post.author] for post in user_data["top_year"]]
         unread = [
-            [message.body, message.subject, message.author] for message in user_data["all_unread"]]
+            [message.body_html, message.subject, message.author] for message in user_data["all_unread"]]
         return render(request, "users/reddit_data.html", {'messages': messages,'top_year': top_year, 'unread':unread })
     return HttpResponse('')
 
