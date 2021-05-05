@@ -27,6 +27,10 @@
   --label: #bfc3cc;
   --form: #17a2b8;
 }
+* {
+  font-family: 'Roboto';
+  box-sizing: border-box;
+}
 
 body {
   background:var(--bg);
