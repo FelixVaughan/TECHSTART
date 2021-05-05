@@ -6,16 +6,19 @@ from .models import Spotify_User_Info, Reddit_User_Info, Discord_User_Info, Outl
 
 @receiver(post_save, sender=User)
 def create_socials(sender, instance, created, **kwargs):
-    if created:
-        Spotify_User_Info.objects.create(users=instance)
-        Reddit_User_Info.objects.create(users=instance)
-        Discord_User_Info.objects.create(users=instance)
-        Outlook_User_Info.objects.create(users=instance)
+    spot = Spotify_User_Info.objects.get_or_create(users=instance)
+    reddit = Reddit_User_Info.objects.get_or_create(users=instance)
+    discord = Discord_User_Info.objects.get_or_create(users=instance)
+    outlook = Outlook_User_Info.objects.get_or_create(users=instance)
+    spot.save()
+    reddit.save()
+    discord.save()
+    outlook.save()
 
 
-@receiver(post_save, sender=User)
-def save_socials(sender, instance, created, **kwargs):
-    instance.spotify_user_info.save()
-    instance.reddit_user_info.save()
-    instance.discord_user_info.save()
-    instance.outlook_user_info.save()
+# @receiver(post_save, sender=User)
+# def save_socials(sender, instance, created, **kwargs):
+#     instance.spotify_user_info.save()
+#     instance.reddit_user_info.save()
+#     instance.discord_user_info.save()
+#     instance.outlook_user_info.save()
