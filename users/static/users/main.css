@@ -204,3 +204,31 @@ body[light-mode=dark] .light-mode-button span:nth-child(2) {
   color: var(--form);
   border-color: var(--form);
 }
+
+/* Reddit css */
+
+.blockquote-custom {
+  position: relative;
+  font-size: 1.1rem;
+}
+.reddit-text{
+  color: black;
+}
+
+.reddit-subject{
+  color: #141414;
+  font-weight:bolder;
+  size: 20% !important;
+}
+
+.blockquote-custom-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -25px;
+  left: 50px;
+}

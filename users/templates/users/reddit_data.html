@@ -1,3 +1,43 @@
-<p class = "index"><strong>Top posts:</strong>{{ top_year }}</p>
-<p class = "index"><strong>Messages:</strong>{{ messages }}</p>
-<p class = "index"><strong>All Unread:</strong>{{ unread }}</p>
+<div class="container">
+    <h3>Messages</h3>
+    <div class="row">
+        <!-- Message iteration starts-->
+        {% for message in messages %}
+
+        <!-- Start Message -->
+        <div class="col-xl-4 col-lg-6 col-md-12">
+            <blockquote class="blockquote blockquote-custom bg-white p-5 shadow rounded">
+                <div class="blockquote-custom-icon bg-info shadow-sm"><i class="fa fa-envelope text-white"></i></div>
+                <p class="mb-0 mt-2 font-italic reddit-text">{{ message[0] }} <!--body--></p>
+                <p class="reddit-subject">{{ message[1] }} <!--subject--></p>
+            </blockquote>
+        </div>
+        <!-- End Message -->
+
+        {% endfor %}
+    </div>
+</div>
+
+<!--Posts-->
+<div class="container">
+    <h3>Top posts</h3>
+    <div class="row">
+
+        <!-- Posts iteration here-->
+
+        {% for posts in top_year %}
+        <!-- Start Post -->
+        <div class="col-xl-4 col-lg-6 col-md-12">
+            <blockquote class="blockquote blockquote-custom bg-white p-5 shadow rounded">
+                <div class="blockquote-custom-icon bg-info shadow-sm"><i class="fa fa-sticky-note text-white"></i></div>
+                <p class="mb-0 mt-2 font-italic reddit-text">{{ posts[0] }} <!--body--></p>
+                <footer class="blockquote-footer pt-4 mt-4 border-top">
+                    {{ posts[2] }} <!--author-->
+                </footer>
+            </blockquote>
+        </div>
+        <!-- End Post -->
+        {% endfor %}
+
+    </div>
+</div>
