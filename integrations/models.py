@@ -790,6 +790,8 @@ class NewsApi(Api):
 
     def __init__(self, user_id, api_name="newsapi"):
         super().__init__(user_id, api_name, NewsApiInfo)
+        self.user_id=user_id
+        self.check_for_entry_existence()
         self.current_user = News_User_Info.objects.get(users=user_id)
 
     def get_user_articles(self, article):
@@ -881,6 +883,13 @@ class NewsApi(Api):
             except Exception as e:
                 print(f"string parsing exception {e}")
 
+    def check_for_entry_existence(self):
+        try:
+            News_User_Info.objects.get(users=self.user_id)
+        except:
+            user = User.objects.get(pk=self.user_id)
+            s = News_User_Info.objects.create(users=user)
+            s.save()
 
 
 
