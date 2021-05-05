@@ -6,10 +6,10 @@ from .models import Spotify_User_Info, Reddit_User_Info, Discord_User_Info, Outl
 
 @receiver(post_save, sender=User)
 def create_socials(sender, instance, created, **kwargs):
-    spot = Spotify_User_Info.objects.get_or_create(users=instance)
-    reddit = Reddit_User_Info.objects.get_or_create(users=instance)
-    discord = Discord_User_Info.objects.get_or_create(users=instance)
-    outlook = Outlook_User_Info.objects.get_or_create(users=instance)
+    spot = Spotify_User_Info.objects.get_or_create(users=instance)[0]
+    reddit = Reddit_User_Info.objects.get_or_create(users=instance)[0]
+    discord = Discord_User_Info.objects.get_or_create(users=instance)[0]
+    outlook = Outlook_User_Info.objects.get_or_create(users=instance)[0]
     spot.save()
     reddit.save()
     discord.save()
