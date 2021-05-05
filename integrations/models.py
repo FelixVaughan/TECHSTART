@@ -807,25 +807,26 @@ class NewsApi(Api):
 
         r = requests.get(self.news_endpoint, params=params)
         result = r.json()
-        if (result['status'] == 'ok'):
+        if (result['status'] == 'ok' or len(result) != 0):
             return result
         else:
             print(result)
-            return "could not complete request"
+            return "could not complete request".split(" ")
 
     def contact_api(self):
         preferences = self.current_user.preferences.split("  ")
         urls = {}
-        for pref in preferences:
-            result = self.get_user_articles(pref)
-            articles = result['articles']
-            for article in articles:
-                if pref in urls:
-                    urls[pref].append((article['title'], article['url']))
-                else:
-                    urls[pref] = [(article['title'], article['url'])]
-        print(urls)
-        return urls  # returns dict of form {preference: url}
+        if(preferences):
+            for pref in preferences:
+                result = self.get_user_articles(pref)
+                articles = result['articles']
+                for article in articles:
+                    if pref in urls:
+                        urls[pref].append((article['title'], article['url']))
+                    else:
+                        urls[pref] = [(article['title'], article['url'])]
+            print(urls)
+            return urls  # returns dict of form {preference: url}
 
     def search_news(self, keywords, sources):
         now = datetime.now()
