@@ -21,7 +21,7 @@
   --nav: #181818;
   --font: #bfc3cc;
   --tag: #bfc3cc;
-  --content: #242526;
+  --content: #2f3133;
   --hover: #ffffff;
   --legend: #bfc3cc;
   --label: #bfc3cc;
@@ -74,15 +74,8 @@ body {
    border: 0px solid #242526;
    border-radius: 3px;
    margin-bottom: 20px;
+   margin-top: 1rem;
  }
-
- .content-section[light-mode=dark] {
-  background: #ffffff;
-  padding: 10px 20px;
-  border: 1px solid #242526;
-  border-radius: 3px;
-  margin-bottom: 20px;
-}
   
  .redirect {
    text-align: center;
@@ -93,7 +86,7 @@ body {
 
 
  .article-title {
-   color: #bfc3cc;
+   color: var(--font);
  }
 
  a.article-title:hover {
@@ -203,6 +196,23 @@ body[light-mode=dark] .light-mode-button span:nth-child(2) {
 .btn-outline-info {
   color: var(--form);
   border-color: var(--form);
+}
+
+.form-control:focus {
+  box-shadow: none;
+}
+
+.form-control-underlined {
+  border-width: 0;
+  border-bottom-width: 1px;
+  border-radius: 0;
+  padding-left: 0;
+}
+
+.form-control::placeholder {
+  font-size: 0.95rem;
+  color: #aaa;
+  font-style: italic;
 }
 
 /* Reddit css */

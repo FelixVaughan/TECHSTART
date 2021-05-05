@@ -7,16 +7,18 @@
     --oac2: #303133;
     --oac3: #ffe599;
     --font-color: var(--font);
+    --border: #7dc7bb;
   }
 
   [light-mode=dark] {
     --green: #1b1f1b;
     --white: #ffffff;
     --black: #000000;
-    --oac1: #242526;
+    --oac1: #2f3133;
     --oac2: #303133;
     --oac3: #bfc3cc;
     --font-color: var(--font);
+    --border: #30363d;
   }
 
   * {
@@ -78,14 +80,14 @@ h2.index {
 
   .block {
     display: block;
-    border: none;
+    border: 1px solid var(--border);
     background-color: var(--oac3);
     color: var(--bg);
     padding: 14px 28px;
     font-size: 16px;
     cursor: pointer;
-    margin-left: 45%;
-    margin-right: 45%;
+    margin-left: 0%;
+    margin-right: 0%;
     text-align: center;
   }
 
@@ -121,10 +123,10 @@ h2.index {
 }
 .formPopup {
   display: none;
-  position: fixed;
-  left: 52%;
-  top: 35%;
-  transform: translate(-50%, 5%);
+  position: absolute;
+  margin-left: 50%;
+  margin-top: 1%;
+  transform: translate(-50%, 20%);
   /*border: 3px solid #999999;*/
   z-index: 9;
 }
@@ -147,6 +149,7 @@ h2.index {
 }
 .formContainer .cancel {
   background-color: var(--oac3);
+  margin-bottom: 0px;
 }
 .formContainer .btn:hover,
 .openButton:hover {
@@ -157,13 +160,37 @@ h2.index {
   background-color: var(--oac2);
   border: none;
   color:#fff;
-  font-size: 15px;
-  padding: 10px;
 }
 
 .border {
-  border: 0px solid var(--nav)!important;
+  border: 1px solid var(--border)!important;
 }
+
+.form-control:focus {
+  box-shadow: none;
+}
+
+.form-control-underlined {
+  border-width: 0;
+  border-bottom-width: 1px;
+  border-radius: 0;
+  padding-left: 0;
+}
+
+.form-control::placeholder {
+  font-size: 0.95rem;
+  color: #aaa;
+  font-style: italic;
+}
+
+.center {
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  -ms-transform: translate(-50%);
+  transform: translate(-50%);
+}
+
 
 /* Reddit css */
 

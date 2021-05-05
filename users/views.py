@@ -18,7 +18,7 @@ def index(request):
     news = NewsApi(request.user.id)
     prefs = news.get_prefs()
     return render(request, "users/index.html", {'prefs': prefs})
-praw.m
+
 
 def ajax(request):
     user_info = {}

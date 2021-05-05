@@ -3,6 +3,7 @@
 {% block css %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'users/index.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 {% endblock %}
 {% block title %}
     <title>Home</title>
@@ -69,8 +70,12 @@
         {% endfor %}
         <form method="POST" action="{% url 'article' %}" style="margin: 0">
           {% csrf_token %}
-          <input type="search" placeholder="Search a preference..." name="searched">
-          <button class="search-button" type="submit">Submit</button>
+        <div class="input-group mb-4">
+          <input type="search" placeholder="Search a preference... (e.g. sports, technology, etc.)" aria-describedby="button-addon5" class="form-control" name="searched">
+          <div class="input-group-append">
+            <button id="button-addon5" type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+          </div>
+        </div>
         </form>
     </div>
 
@@ -91,10 +96,10 @@
 
 <!-- BUTTON TO INITIATE APP SELECTING FORM -->
 <br>
+<div class ="center">
 <button type="button" class="block" onclick="openForm()"><strong>Select Application</strong></button>
 <!-- JS and COLOUR THEME SEL -->
 <script src="{% static 'users/app.js' %}"></script>
+</div>
   </div>
-
-
 {% endblock content %}
