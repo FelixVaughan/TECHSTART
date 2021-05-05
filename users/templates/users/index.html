@@ -13,12 +13,12 @@
     <!-- SPOTIFY -->
     <div class ="index">
     <div id= "Spotify" style="display:none" class="container index p-3 my-3 border">
-        <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png" alt="Spotify logo" height="75" />
+        <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png" alt="Spotify logo" height="60" />
          <button type="button" class="innerbtn" onclick="spotifyClose()">Close</button>
         <br>
         <br>
           <!-- WILL DISPLAY TOP ARTISTS AND TRACKS -->
-        <button type="button" class="innerbtn" onclick="spotifyTop()">Click for Top Artists and Tracks <br></button>
+        <button type="button" class="innerbtn" onclick="spotifyTop()">Click for User Information <br></button>
         <p></p>
         <div id="ajax_spotify"> </div>
         <br>
@@ -47,21 +47,24 @@
 
         <!-- REDDIT -->
     <div id= "Reddit" style="display:none" class="container index p-3 my-3 border">
-        <img src="https://www.redditinc.com/assets/images/site/reddit-logo.png"  alt="Reddit Text Logo PNG icon" height="75"/>
+        <img src="https://logos-world.net/wp-content/uploads/2020/10/Reddit-Logo.png"  alt="Reddit Text Logo PNG icon" height="100"/>
         <button type="button" class="btn btn-primary" onclick="redditData()">Get reddit data</button>
           <button type="button" class="innerbtn" onclick="redditClose()">Close</button>
     </div>
 
          <!-- OUTLOOK -->
     <div id= "Outlook" style="display:none" class="container index p-3 my-3 border">
-         <img src="https://findicons.com/files/icons/2795/office_2013_hd/2000/outlook.png"  alt="Outlook Logo PNG icon" height="100"/>
+         <img src="https://cdn.cytrack.com/wpv1/wp-content/uploads/microsoft-outlook-logo.jpg"  alt="Outlook Logo PNG icon" height="100"/>
          <button type="button" class="innerbtn" onclick="outlookClose()">Close</button>
     </div>
 
            <!-- NEWS -->
     <div id= "News" style="display:none" class="container index p-3 my-3 border">
-      <p class = "index"> World News </p>
-      {% for pref in prefs %}
+    <h4 class = "index">
+    <img src="https://newsapi.org/images/n-logo-border.png"  alt="News Text Logo PNG icon" height="75"/>NewsApi.org
+    <button type="button" class="innerbtn" onclick="newsClose()">Close</button></h4>
+    <br>
+        {% for pref in prefs %}
         <span class="badge badge-pill badge-primary">{{ pref }}</span>
         {% endfor %}
         <form method="POST" action="{% url 'article' %}" style="margin: 0">
@@ -69,7 +72,6 @@
           <input type="search" placeholder="Search a preference..." name="searched">
           <button class="search-button" type="submit">Submit</button>
         </form>
-        <button type="button" class="innerbtn" onclick="newsClose()">Close</button>
     </div>
 
 

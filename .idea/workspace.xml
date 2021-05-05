@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="cf463b05-f91f-4f97-bcba-e335f7d1d867" name="Default Changelist" comment="Made sure volume slider passing in value parameter, and current song is being displayed">
+    <list default="true" id="cf463b05-f91f-4f97-bcba-e335f7d1d867" name="Default Changelist" comment="implemented login required, cleaned up spotify container, music pauses when you close Spotify">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/static/users/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/users/static/users/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/static/users/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/users/static/users/index.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/users/templates/users/ajax.html" beforeDir="false" afterPath="$PROJECT_DIR$/users/templates/users/ajax.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/users/templates/users/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/users/templates/users/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/templates/users/song.html" beforeDir="false" afterPath="$PROJECT_DIR$/users/templates/users/song.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/users/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +124,7 @@
       <workItem from="1619744919854" duration="12000" />
       <workItem from="1619744939162" duration="11249000" />
       <workItem from="1620094775380" duration="6002000" />
-      <workItem from="1620172586309" duration="7773000" />
+      <workItem from="1620172586309" duration="11399000" />
     </task>
     <task id="LOCAL-00001" summary="Extended Nav Bar, Homepage showing SpotifyAPI info (WITH HARDCODED USER in views)">
       <created>1619578393831</created>
@@ -179,7 +175,14 @@
       <option name="project" value="LOCAL" />
       <updated>1620175406138</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="implemented login required, cleaned up spotify container, music pauses when you close Spotify">
+      <created>1620187356067</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1620187356067</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -204,6 +207,7 @@
     <MESSAGE value="Removed spotify rendering as it was causing issues" />
     <MESSAGE value="Updated js method to html instead of append, added a separate html for song display" />
     <MESSAGE value="Made sure volume slider passing in value parameter, and current song is being displayed" />
-    <option name="LAST_COMMIT_MESSAGE" value="Made sure volume slider passing in value parameter, and current song is being displayed" />
+    <MESSAGE value="implemented login required, cleaned up spotify container, music pauses when you close Spotify" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented login required, cleaned up spotify container, music pauses when you close Spotify" />
   </component>
 </project>
