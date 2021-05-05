@@ -157,6 +157,8 @@ h2.index {
   background-color: var(--oac2);
   border: none;
   color:#fff;
+  font-size: 15px;
+  padding: 10px;
 }
 
 .border {

@@ -16,14 +16,19 @@
         <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png" alt="Spotify logo" height="75" />
          <button type="button" class="innerbtn" onclick="spotifyClose()">Close</button>
         <br>
+        <br>
           <!-- WILL DISPLAY TOP ARTISTS AND TRACKS -->
-        <button type="button" class="innerbtn" onclick="spotifyTop()">Click for Top Artists and Tracks</button>
-        <div id="ajax_spotify"></div>
+        <button type="button" class="innerbtn" onclick="spotifyTop()">Click for Top Artists and Tracks <br></button>
+        <p></p>
+        <div id="ajax_spotify"> </div>
+        <br>
 
-        <button type="button" class="innerbtn" onclick="spotifyPlayer()">Click for Player</button>
+        <button type="button" class="innerbtn" onclick="spotifyPlayer()">Click for Player <br></button>
         <!--PLAYER OPTIONS -->
         <div id= "SpotifyPlayer" style="display:none">
-        <div id="ajax_spotify_song"></div>
+        <p></p>
+        <div id="ajax_spotify_song"><br></div>
+        <br>
         <div class="btn-group">
           <button type="button" class="btn btn-primary" onclick="spotifyPlay()">Play</button>
           <button type="button" class="btn btn-primary" onclick="spotifyPause()">Pause</button>
@@ -32,9 +37,10 @@
           <button type="button" class="btn btn-primary" onclick="spotifyNext()">Next</button>
         </div>
             <div class="slidecontainer">
-              <p> <strong>Volume: </strong></p>
+                <br>
+                <p> <strong>Volume: </strong> <span id="demo"></span></p>
               <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-                  <p>Value: <span id="demo"></span></p>
+
             </div>
         </div>
     </div>
@@ -48,7 +54,7 @@
 
          <!-- OUTLOOK -->
     <div id= "Outlook" style="display:none" class="container index p-3 my-3 border">
-         <img src="https://download.logo.wine/logo/Microsoft_Outlook/Microsoft_Outlook-Logo.wine.png"  alt="Outlook Logo PNG icon" height="100"/>
+         <img src="https://findicons.com/files/icons/2795/office_2013_hd/2000/outlook.png"  alt="Outlook Logo PNG icon" height="100"/>
          <button type="button" class="innerbtn" onclick="outlookClose()">Close</button>
     </div>
 
