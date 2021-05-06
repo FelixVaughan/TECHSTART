@@ -877,9 +877,8 @@ class NewsApi(Api):
                 if "    " in preferences:
                     preferences = preferences.replace("    ", "  ",1)
                     preferences = preferences.replace("   ", "  ",1)
-                    pref =  list(filter(("").__ne__, preference.split("  ")))
-                    res = ''
-                    res = res.join(pref)
+                pref =  list(filter(("").__ne__, preference.split("  ")))
+                res = ''.join(pref)
                 self.current_user.preferences = res
                 self.current_user.save()
                 return self.get_prefs()
@@ -889,7 +888,7 @@ class NewsApi(Api):
     def clear_pref():
         self.current_user.preferences = ""
         self.current_user.save()
-        return self.get_prefs()
+        return self.get_prefs
 
     def check_for_entry_existence(self):
         try:
