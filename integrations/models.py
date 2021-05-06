@@ -256,9 +256,9 @@ class SpotifyApi(Api):
             self.spotify = tekore.Spotify(self.current_user.token)
 
     def init_contact(self):
+        print("trying to authenticate")
         if(self.current_user.authenticated):
             return
-        print("trying to authenticate")
         try:
             user = User.objects.get(pk=self.user_id)
             user.email = "spotify" #lol
