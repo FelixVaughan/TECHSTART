@@ -265,7 +265,9 @@ class SpotifyApi(Api):
             user.email = "spotify" #lol
             user.save()
             auth_url = self.spotify_auth.user_authorisation_url(scope=self.scope)
+            print("got here")
             webbrowser.open(auth_url)
+            print("got here")
         except KeyError:
             print("Authentication with spotify API could NOT be completed as no code was found. Access token NOT set!")
         except Exception as e:
