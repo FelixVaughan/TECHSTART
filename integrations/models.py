@@ -21,7 +21,7 @@ from urllib.parse import urlencode
 from django.contrib.sessions.models import Session
 
 ###########################
-newFile = open("integrations/ApiInfo.txt", "r")
+newFile = open("ApiInfo.txt", "r")
 apiArr = []   
 while(True):
     line = newFile.readline()
@@ -452,6 +452,7 @@ class SpotifyApi(Api):
 class RedditApi(Api):
     def __init__(self, user_id, api_name="reddit"):
         super().__init__(user_id, api_name, RedditAPIInfo)
+        self.auth_url = ""
         self.user_id = user_id
         self.check_for_entry_existence()
         self.current_user = Reddit_User_Info.objects.get(users=user_id)
@@ -489,6 +490,8 @@ class RedditApi(Api):
         if(self.current_user.authenticated):
             return
         auth_url = self.reddit.auth.url(["*"], "permanent")
+        self.auth_url = auth_url
+        print(auth_url)
         user = User.objects.get(pk=self.user_id)
         user.email = "reddit" #even though we are setting email, this can be seen as the state variable
         user.save()
