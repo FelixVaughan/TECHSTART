@@ -80,9 +80,10 @@ function spotifyClose() {
     
 function redditData() {
         document.getElementById("Reddit").style.display = "block";
-        closeForm();
         console.log('reddit data')
-        $.get('reddit/?state=redditData')
+        $.get('reddit', function (data) {
+            $("#ajax_reddit").html(data);
+        })
         }
 
 function redditOpen() {

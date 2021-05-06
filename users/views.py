@@ -44,10 +44,7 @@ def reddit_data(request):
     top_year = []
     for post in user_data["top_year"]:
         if type(post) == ModelSubmission:
-            top_year.append([post.body_html, post.title, post.author])
-        else:
-            top_year.append([type(post), type(post), type(post)])
-        
+            top_year.append([post.selftext, post.title, post.author])
 
     unread = []
     for message in user_data["all_unread"]:

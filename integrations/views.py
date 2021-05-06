@@ -3,6 +3,7 @@ from django.contrib.sessions.models import Session
 from django.http import *
 from tempfile import NamedTemporaryFile
 from integrations.models import *
+from django.contrib.auth.decorators import login_required
 import errno
 import os
 import tekore
@@ -152,7 +153,7 @@ def play(request):
 #                                End                                 #
 ######################################################################
 
-
+@login_required
 def redirect(request):
     print(f"AUTHENTICATION IN PROGRESS FOR {request.user.email}")
     try:

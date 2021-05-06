@@ -224,15 +224,40 @@ body[light-mode=dark] .light-mode-button span:nth-child(2) {
 .blockquote-custom {
   position: relative;
   font-size: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  height: 95%;
 }
-.reddit-text{
+.reddit-text-content{
   color: black;
+  word-wrap: break-word
 }
+
 
 .reddit-subject{
   color: #141414;
   font-weight:bolder;
   size: 20% !important;
+}
+
+.reddit-text-content * {
+  color: black;
+  font-size: medium;
+  word-wrap: break-word
+}
+
+.reddit-text-content a {
+  color: blue;
+}
+
+.reddit-text-content h2 {
+  font-size: large;
+  font-weight: bold;
+}
+
+.reddit-text-content h1 {
+  font-size: larger;
+  font-weight: bold;
 }
 
 .blockquote-custom-icon {
