@@ -877,7 +877,7 @@ class NewsApi(Api):
                 if "    " in preferences:
                     preferences = preferences.replace("    ", "  ",1)
                     preferences = preferences.replace("   ", "  ",1)
-                pref =  list(filter(("").__ne__, preference.split("  ")))
+                pref =  list(filter(("").__ne__, preferences.split("  ")))
                 res = ''.join(pref)
                 self.current_user.preferences = res
                 self.current_user.save()
