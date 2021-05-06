@@ -26,6 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # TODO: set to environment variable in prod
+os.environ['SECRET_KEY'] = 'asldfhdajsklfd)(AS98e&DF^S097^FDS&A*(2123=__)()_+0'# TODO: remove before prod
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!

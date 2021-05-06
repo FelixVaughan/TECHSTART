@@ -119,7 +119,7 @@ class ApiInfo(models.Model):
         max_length=2083, blank=False, default="N/A")  # undeeded
     token_endpoint = models.CharField(max_length=2083)
     redirect_url = models.CharField(max_length=500, default="")
-    scope = JSONField(max_length=1000, default="")
+    scope = JSONField(max_length=1000, default={})
 
 
 class Api:
