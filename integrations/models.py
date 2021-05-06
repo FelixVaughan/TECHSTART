@@ -942,6 +942,7 @@ class DiscordAPIInfo(ApiInfo):
         self.token_endpoint = apiArr[18]
         self.redirect_url = apiArr[19]
         self.scope = apiArr[20]
+        self.redirect_uri = 'http://oneapp-techstart.herokuapp.com/api/redirect'
         # self.scope 
 
 class OutlookAPIInfo(ApiInfo):
@@ -955,6 +956,7 @@ class OutlookAPIInfo(ApiInfo):
         self.token_endpoint = apiArr[25]
         self.redirect_url = apiArr[26]
         self.scope = apiArr[27]
+        self.redirect_uri = 'http://oneapp-techstart.herokuapp.com/api/redirect'
         # self.scope 
 
 class NewsApiInfo(ApiInfo):
