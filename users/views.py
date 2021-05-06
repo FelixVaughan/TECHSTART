@@ -102,6 +102,9 @@ def article_overview(request):
     else:
         return render(request, 'users/article.html', {})
 
+def contact_page(request):
+     return render(request, 'users/contact.html')
+
 # renders register page
 
 
