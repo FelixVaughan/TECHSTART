@@ -248,9 +248,9 @@ class SpotifyApi(Api):
         self.current_user = Spotify_User_Info.objects.get(users=user_id)
         self.token = self.current_user.token
         self.refresh_token = self.current_user.refresh_token
-        self.conf = (self.client_id, self.client_secret, self.redirect_uri)
+        self.conf = (self.client_id, self.client_secret, 'http://oneapp-techstart.herokuapp.com/api/redirect')
         self.spotify_auth = tekore.RefreshingCredentials(
-            client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
+            client_id=self.client_id, client_secret=self.client_secret, redirect_uri='http://oneapp-techstart.herokuapp.com/api/redirect')
         self.spotify = None
         if(self.current_user.token):
             self.spotify = tekore.Spotify(self.current_user.token)
@@ -377,7 +377,7 @@ class SpotifyApi(Api):
 
     def get_new_token(self, retry):  # retry is used to try a failed api contact
         spotify = tekore.RefreshingCredentials(
-            client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
+            client_id=self.client_id, client_secret=self.client_secret, redirect_uri='http://oneapp-techstart.herokuapp.com/api/redirect')
         if(self.current_user.refresh_token):
             new_access_token = spotify.refresh_user_token(
                 self.current_user.refresh_token)
@@ -458,7 +458,7 @@ class RedditApi(Api):
         self.current_user = Reddit_User_Info.objects.get(users=user_id)
         self.token = self.current_user.token
         self.refresh_token = self.current_user.refresh_token
-        self.reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri, user_agent="techstart")
+        self.reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret, redirect_uri='http://oneapp-techstart.herokuapp.com/api/redirect', user_agent="techstart")
 
     def init_contact(self):
         """Initializes contact with the API
@@ -917,7 +917,6 @@ class SpotifyAPIInfo(ApiInfo):
         self.token_endpoint = apiArr[4]
         self.redirect_url = apiArr[5]
         self.scope = apiArr[6]
-        self.redirect_url = 'http://oneapp-techstart.herokuapp.com/api/redirect'
 
 class RedditAPIInfo(ApiInfo):
     """The reddit specific ApiInfo subclass"""
@@ -930,7 +929,6 @@ class RedditAPIInfo(ApiInfo):
         self.token_endpoint = apiArr[11]
         self.redirect_url = apiArr[12]
         self.scope = {} #TODO:   #apiArr[13]
-        self.redirect_url = 'http://oneapp-techstart.herokuapp.com/api/redirect'
         # self.scope 
 
 class DiscordAPIInfo(ApiInfo):
@@ -944,7 +942,6 @@ class DiscordAPIInfo(ApiInfo):
         self.token_endpoint = apiArr[18]
         self.redirect_url = apiArr[19]
         self.scope = apiArr[20]
-        self.redirect_uri = 'http://oneapp-techstart.herokuapp.com/api/redirect'
         # self.scope 
 
 class OutlookAPIInfo(ApiInfo):
@@ -958,7 +955,6 @@ class OutlookAPIInfo(ApiInfo):
         self.token_endpoint = apiArr[25]
         self.redirect_url = apiArr[26]
         self.scope = apiArr[27]
-        self.redirect_uri = 'http://oneapp-techstart.herokuapp.com/api/redirect'
         # self.scope 
 
 class NewsApiInfo(ApiInfo):
