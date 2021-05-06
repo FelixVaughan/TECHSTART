@@ -26,7 +26,7 @@ def ajax(request):
         spot = SpotifyApi(request.user.id)
         spot.init_contact()
         print(f"redirecting to {spot.auth_url}")
-        return redirect(spot.auth_url)
+        return render("redirectSpotify.html")
     if request.GET.get('social') == 'spotify_top':
         spot = SpotifyApi(request.user.id)
         user_info = spot.contact_api()
