@@ -33,9 +33,11 @@ def obtain_url_code(url):
 #Authenication Methods used for applications that reqire user consent#
 ######################################################################
 def authenticate_spotify(request):
+    print("in the view")
     spot = SpotifyApi(request.user.id)
     spot.init_contact()
-    return redirect(self.auth_url)
+    print("redirecting")
+    return redirect(spot.auth_url)
 
 
 def authenticate_reddit(request):

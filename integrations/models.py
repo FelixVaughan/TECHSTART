@@ -256,18 +256,14 @@ class SpotifyApi(Api):
             self.spotify = tekore.Spotify(self.current_user.token)
 
     def init_contact(self):
-        print("trying to authenticate")
         if(self.current_user.authenticated):
             return
-        print("dont even get here")
         try:
             user = User.objects.get(pk=self.user_id)
             user.email = "spotify" #lol
             user.save()
             self.auth_url = self.spotify_auth.user_authorisation_url(scope=self.scope)
-            print("got here")
             webbrowser.open(self.auth_url)
-            print("got here pt 2")
         except KeyError:
             print("Authentication with spotify API could NOT be completed as no code was found. Access token NOT set!")
         except Exception as e:
