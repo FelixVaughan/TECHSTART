@@ -15,7 +15,10 @@
     <div class ="index">
     <div id= "Spotify" style="display:none" class="container index p-3 my-3 border">
         <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png" alt="Spotify logo" height="60" />
-         <button type="button" class="innerbtn" onclick="spotifyClose()">Close</button>
+        <a href="https://accounts.spotify.com/authorize?client_id=eab08f62731b44c4a49010295cd3776f&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fapi%2Fredirect&response_type=code&scope=user-top-read+user-read-recently-played+user-read-playback-position+user-read-playback-state+user-library-read+user-modify-playback-state+user-read-currently-playing+app-remote-control+streaming&show_dialog=false>authenticate!">
+          <button type="button" class="innerbtn">Click to authenticate</button>
+        </a>
+        <button type="button" class="innerbtn" onclick="spotifyClose()">Close</button>
         <br>
         <br>
           <!-- WILL DISPLAY TOP ARTISTS AND TRACKS -->
