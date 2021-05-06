@@ -52,6 +52,9 @@
         <!-- REDDIT -->
     <div id= "Reddit" style="display:none" class="container index p-3 my-3 border">
         <img src="https://logos-world.net/wp-content/uploads/2020/10/Reddit-Logo.png"  alt="Reddit Text Logo PNG icon" height="100"/>
+        <a href="https://www.reddit.com/api/v1/authorize?client_id=RouUl0Nxn9pysw&duration=permanent&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fapi%2Fredirect&response_type=code&scope=%2A&state=permanent">
+          <button type="button" class="innerbtn">Click to authenticate</button>
+        </a>
         <button type="button" class="btn btn-primary" onclick="redditData()">Get reddit data</button>
         <div id="ajax_reddit"><br></div>
           <button type="button" class="innerbtn" onclick="redditClose()">Close</button>
