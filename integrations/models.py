@@ -249,6 +249,7 @@ class SpotifyApi(Api):
         self.token = self.current_user.token
         self.refresh_token = self.current_user.refresh_token
         self.conf = (self.client_id, self.client_secret, self.redirect_uri)
+        self.auth_url = ""
         self.spotify_auth = tekore.RefreshingCredentials(
             client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
         self.spotify = None
@@ -263,7 +264,7 @@ class SpotifyApi(Api):
             user.email = "spotify" #lol
             user.save()
             self.auth_url = self.spotify_auth.user_authorisation_url(scope=self.scope)
-            webbrowser.open(self.auth_url)
+            #webbrowser.open(self.auth_url)
         except KeyError:
             print("Authentication with spotify API could NOT be completed as no code was found. Access token NOT set!")
         except Exception as e:
