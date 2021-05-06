@@ -258,6 +258,7 @@ class SpotifyApi(Api):
     def init_contact(self):
         if(self.current_user.authenticated):
             return
+        print("trying to authenticate")
         try:
             user = User.objects.get(pk=self.user_id)
             user.email = "spotify" #lol
@@ -353,6 +354,7 @@ class SpotifyApi(Api):
 
         user_values = {}
         try:
+            self.init_contact()
             spotify = tekore.Spotify(self.current_user.token)
 
             user_values["current_user"] = spotify.current_user()
@@ -554,6 +556,7 @@ class RedditApi(Api):
         user_data = red.contact_api(reddit, reddit_user)
 
         """
+        self.init_contact()
         data = {}
         refresh_file = "./reddit_refresh.txt"
         try:
