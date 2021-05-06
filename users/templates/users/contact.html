@@ -1,0 +1,59 @@
+{% extends "users/base.html"%}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'users/contact.css' %}">
+{% endblock %}
+{% block title %}
+    <title>Contact Us</title>
+{% endblock %}
+ {% block content %}
+            <h1>Contact Us</h1>
+            <p>We would love to respond to your queries! <br>Feel free to get in touch with us!</p>
+            <div class = "contactBox">
+                <div class="contactBoxLeft">
+                    <h3>Send your request</h3>
+                    <form>
+                        <div class="input-row"> 
+                            <div class="input-group">
+                                <label>Phone</label>
+                                <input type="text" placeholder="(123)456-7890">
+                            </div>
+                            <div class="input-group">
+                                <label>Name</label>
+                                <input type="text" placeholder="John Smith">
+                            </div>
+                        </div>
+                        <div class="input-row"> 
+                            <div class="input-group">
+                                <label>Subject</label>
+                                <input type="text" placeholder="Account Issues">
+                            </div>
+                            <div class="input-group">
+                                <label>Email</label>
+                                <input type="email" placeholder="john.smith@oneapp.com">
+                            </div>
+                        </div>
+                        <label>Message</label>
+                        <textarea rows="5" placeholder="Write any concerns/problems here"></textarea>
+                        <button class="send" type="Send">Send Request</button>
+                    </form>
+                </div>
+                <div class="contactBoxRight">
+                    <h3 id="right">Reach us</h3>
+                    <table>
+                        <tr>
+                            <td>Email</td>
+                            <td>techstartucalgary@gmail.com</td>
+                        </tr>
+                        <tr>
+                            <td>Phone Number</td>
+                            <td>(403) 409-3926</td>
+                        </tr> 
+                        <tr>
+                            <td>Address</td>
+                            <td>2500 University Dr NW, Calgary, AB T2N 1N4</td>
+                        </tr> 
+                    </table>
+                </div>
+            </div>
+{% endblock content %}

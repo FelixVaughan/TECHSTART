@@ -11,6 +11,7 @@
   --legend: #ffffff;
   --label: #ffffff;
   --form: #ffe599;
+  --contact: #ffe599;
 }
 
 [light-mode=dark] {
@@ -26,7 +27,9 @@
   --legend: #bfc3cc;
   --label: #bfc3cc;
   --form: #17a2b8;
+  --contact: #bfc3cc;
 }
+
 * {
   font-family: 'Roboto';
   box-sizing: border-box;
@@ -40,7 +43,7 @@ body {
  }
 
  h1, h2, h3, h4 {
-   color: var(--font); 
+   color: var(--font)!important; 
  }
  
  h5 {
@@ -151,6 +154,10 @@ body[light-mode="dark"] .light-mode-button span:nth-child(1){
 body[light-mode=dark] .light-mode-button span:nth-child(2) {
   left: 65px;
   background-color: #141516;
+}
+
+.mode {
+  padding-top: 0px;
 }
 
 .light-mode-button {
