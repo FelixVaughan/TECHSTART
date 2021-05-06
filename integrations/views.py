@@ -35,7 +35,7 @@ def obtain_url_code(url):
 def authenticate_spotify(request):
     spot = SpotifyApi(request.user.id)
     spot.init_contact()
-    return HttpResponse('')
+    return redirect(self.auth_url)
 
 
 def authenticate_reddit(request):

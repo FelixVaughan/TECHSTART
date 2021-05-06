@@ -264,7 +264,7 @@ class SpotifyApi(Api):
             user = User.objects.get(pk=self.user_id)
             user.email = "spotify" #lol
             user.save()
-            auth_url = self.spotify_auth.user_authorisation_url(scope=self.scope)
+            self.auth_url = self.spotify_auth.user_authorisation_url(scope=self.scope)
             print("got here")
             webbrowser.open(auth_url)
             print("got here pt 2")
