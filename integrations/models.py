@@ -259,6 +259,7 @@ class SpotifyApi(Api):
         print("trying to authenticate")
         if(self.current_user.authenticated):
             return
+        print("dont even get here")
         try:
             user = User.objects.get(pk=self.user_id)
             user.email = "spotify" #lol
