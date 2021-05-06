@@ -917,6 +917,7 @@ class SpotifyAPIInfo(ApiInfo):
         self.token_endpoint = apiArr[4]
         self.redirect_url = apiArr[5]
         self.scope = apiArr[6]
+        self.redirect_url = 'http://oneapp-techstart.herokuapp.com/api/redirect'
 
 class RedditAPIInfo(ApiInfo):
     """The reddit specific ApiInfo subclass"""
@@ -929,6 +930,7 @@ class RedditAPIInfo(ApiInfo):
         self.token_endpoint = apiArr[11]
         self.redirect_url = apiArr[12]
         self.scope = {} #TODO:   #apiArr[13]
+        self.redirect_url = 'http://oneapp-techstart.herokuapp.com/api/redirect'
         # self.scope 
 
 class DiscordAPIInfo(ApiInfo):
