@@ -21,7 +21,7 @@ from urllib.parse import urlencode
 from django.contrib.sessions.models import Session
 
 ###########################
-newFile = open("ApiInfo.txt", "r")
+newFile = open("integrations/ApiInfo.txt", "r")
 apiArr = []   
 while(True):
     line = newFile.readline()
@@ -940,7 +940,7 @@ class DiscordAPIInfo(ApiInfo):
         self.secret = apiArr[16] #TODO: 
         self.base_url = apiArr[17]
         self.token_endpoint = apiArr[18]
-        self.redirect_url = apiArr[19]
+        self.redirect_url = 'https://oneapp-techstart.herokuapp.com/api/redirect'
         self.scope = apiArr[20]
         # self.scope 
 
@@ -953,7 +953,7 @@ class OutlookAPIInfo(ApiInfo):
         self.secret = apiArr[23]
         self.base_url = apiArr[24]
         self.token_endpoint = apiArr[25]
-        self.redirect_url = apiArr[26]
+        self.redirect_url = 'https://oneapp-techstart.herokuapp.com/api/redirect'
         self.scope = apiArr[27]
         # self.scope 
 
