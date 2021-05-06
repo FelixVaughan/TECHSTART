@@ -7,13 +7,14 @@
         <div class="col-lg-6 col-md-12" style="flex-direction: column;">
             <blockquote class="blockquote blockquote-custom bg-white p-5 shadow rounded">
                 <div class="blockquote-custom-icon bg-info shadow-sm"><i class="fa fa-envelope text-white"></i></div>
+                <p class="reddit-subject">{{ message.1 | safe }} <!--subject--></p>
                 <p class="mb-0 mt-2 font-italic reddit-text">
                     
                     <div class="reddit-text-content">
                         {{ message.0 | safe }}
                     </div>
                     <!--body--></p>
-                <p class="reddit-subject">{{ message.1 | safe }} <!--subject--></p>
+                
             </blockquote>
         </div>
         <!-- End Message -->
