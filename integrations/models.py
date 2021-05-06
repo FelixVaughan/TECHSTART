@@ -940,7 +940,7 @@ class DiscordAPIInfo(ApiInfo):
         self.secret = apiArr[16] #TODO: 
         self.base_url = apiArr[17]
         self.token_endpoint = apiArr[18]
-        self.redirect_url = 'https://oneapp-techstart.herokuapp.com/api/redirect'
+        self.redirect_url = apiArr[19]
         self.scope = apiArr[20]
         # self.scope 
 
@@ -953,7 +953,7 @@ class OutlookAPIInfo(ApiInfo):
         self.secret = apiArr[23]
         self.base_url = apiArr[24]
         self.token_endpoint = apiArr[25]
-        self.redirect_url = 'https://oneapp-techstart.herokuapp.com/api/redirect'
+        self.redirect_url = apiArr[26]
         self.scope = apiArr[27]
         # self.scope 
 
