@@ -878,12 +878,18 @@ class NewsApi(Api):
                     preferences = preferences.replace("    ", "  ",1)
                     preferences = preferences.replace("   ", "  ",1)
                     pref =  list(filter(("").__ne__, preference.split("  ")))
-                    res = ''.join(pref)
+                    res = ''
+                    res = res.join(pref)
                 self.current_user.preferences = res
                 self.current_user.save()
                 return self.get_prefs()
             except Exception as e:
                 print(f"string parsing exception {e}")
+
+    def clear_pref():
+        self.current_user.preferences = ""
+        self.current_user.save()
+        return self.get_prefs()
 
     def check_for_entry_existence(self):
         try:
