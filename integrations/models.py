@@ -248,9 +248,9 @@ class SpotifyApi(Api):
         self.current_user = Spotify_User_Info.objects.get(users=user_id)
         self.token = self.current_user.token
         self.refresh_token = self.current_user.refresh_token
-        self.conf = (self.client_id, self.client_secret, 'http://oneapp-techstart.herokuapp.com/api/redirect')
+        self.conf = (self.client_id, self.client_secret, self.redirect_uri)
         self.spotify_auth = tekore.RefreshingCredentials(
-            client_id=self.client_id, client_secret=self.client_secret, redirect_uri='http://oneapp-techstart.herokuapp.com/api/redirect')
+            client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
         self.spotify = None
         if(self.current_user.token):
             self.spotify = tekore.Spotify(self.current_user.token)
@@ -264,6 +264,7 @@ class SpotifyApi(Api):
             user.email = "spotify" #lol
             user.save()
             auth_url = self.spotify_auth.user_authorisation_url(scope=self.scope)
+            print(auth_url)
             webbrowser.open(auth_url)
         except KeyError:
             print("Authentication with spotify API could NOT be completed as no code was found. Access token NOT set!")
@@ -377,7 +378,7 @@ class SpotifyApi(Api):
 
     def get_new_token(self, retry):  # retry is used to try a failed api contact
         spotify = tekore.RefreshingCredentials(
-            client_id=self.client_id, client_secret=self.client_secret, redirect_uri='http://oneapp-techstart.herokuapp.com/api/redirect')
+            client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri)
         if(self.current_user.refresh_token):
             new_access_token = spotify.refresh_user_token(
                 self.current_user.refresh_token)
@@ -458,7 +459,7 @@ class RedditApi(Api):
         self.current_user = Reddit_User_Info.objects.get(users=user_id)
         self.token = self.current_user.token
         self.refresh_token = self.current_user.refresh_token
-        self.reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret, redirect_uri='http://oneapp-techstart.herokuapp.com/api/redirect', user_agent="techstart")
+        self.reddit = praw.Reddit(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri, user_agent="techstart")
 
     def init_contact(self):
         """Initializes contact with the API
@@ -490,8 +491,8 @@ class RedditApi(Api):
         if(self.current_user.authenticated):
             return
         auth_url = self.reddit.auth.url(["*"], "permanent")
-        self.auth_url = auth_url
         print(auth_url)
+        self.auth_url = auth_url
         user = User.objects.get(pk=self.user_id)
         user.email = "reddit" #even though we are setting email, this can be seen as the state variable
         user.save()
@@ -917,6 +918,7 @@ class SpotifyAPIInfo(ApiInfo):
         self.token_endpoint = apiArr[4]
         self.redirect_url = apiArr[5]
         self.scope = apiArr[6]
+        self.redirect_url = "http://oneapp-techstart.herokuapp.com/api/redirect"
 
 class RedditAPIInfo(ApiInfo):
     """The reddit specific ApiInfo subclass"""
@@ -929,6 +931,7 @@ class RedditAPIInfo(ApiInfo):
         self.token_endpoint = apiArr[11]
         self.redirect_url = apiArr[12]
         self.scope = {} #TODO:   #apiArr[13]
+        self.redirect_url = "http://oneapp-techstart.herokuapp.com/api/redirect"
         # self.scope 
 
 class DiscordAPIInfo(ApiInfo):
@@ -980,3 +983,4 @@ class NewsApiInfo(ApiInfo):
 #             self.current_user.save()
 #         except Exception as e:
 #             print(f"string parsing exception {e}")
+
