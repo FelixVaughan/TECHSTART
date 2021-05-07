@@ -793,7 +793,7 @@ user_data = outlook_User.contact_api()
 
 class NewsApi(Api):
     news_endpoint = "https://newsapi.org/v2/everything"
-    apiKey = "6a543392d0834d8c8b26c04b3b9e4f58"
+    apiKey = "cce67af05ae04866ad9820f0edbdf363"
 
     def __init__(self, user_id, api_name="newsapi"):
         super().__init__(user_id, api_name, NewsApiInfo)
